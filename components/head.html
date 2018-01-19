@@ -1,0 +1,89 @@
+<title><?node $title ?></title>
+<link rel="shortcut icon" type="image/png" href="/images/favicon.png"/>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<style>
+@font-face {
+    font-family: Hiragino Kaku Gothic Std;
+    src: url(/fonts/custom.otf);
+}
+.jumbotron {
+    margin-bottom: 0px;
+    color: inherit;
+    background-image: url(/images/banner.png);
+	padding-top: 5px;
+	padding-bottom: 10px;
+	padding-left: 20px;
+	padding-right: 20px;
+}
+.jumbotron h1 {
+    color: #E0E0E0;
+    font-family: "Hiragino Kaku Gothic Std";
+	font-size: 36px;
+}
+@media screen and (min-width: 1280px) {
+	.jumbotron {
+		padding-top: 15px;
+		padding-bottom: 20px;
+	}
+	.jumbotron h1 {
+		font-size: 52px;
+	}
+}
+.navbar {
+	border-radius: 0;
+}
+.alert {
+	padding: 7px 35px 7px 10px;
+	margin-bottom: 15px;
+}
+@media screen and (min-width: 1280px) {
+	.dropdown-menu>li>span {
+		color: #333;
+	}
+}
+.table {
+	margin-top: 20px;
+}
+.form-control-feedback{
+	z-index: 4;
+}
+.has-feedback label~.form-control-feedback {
+    top: 15px;
+}
+.help-block {
+	text-align: right;
+	margin: 0;
+}
+
+.panel-compact {
+	max-width: 400px;
+	margin: 15px auto;
+}
+.input-group-info {
+	display: block;
+	font-size: 8pt;
+	font-weight: bold;
+	padding: 0 12px;
+	margin: 0;
+	background-color: #eee;
+	border: 1px solid #ccc;
+	border-bottom: 0;
+}
+
+.has-error .input-group-info {
+    color: #a94442;
+    background-color: #f2dede;
+    border-color: #a94442;
+}
+
+.has-success .input-group-info {
+    color: #3c763d;
+    background-color: #dff0d8;
+    border-color: #3c763d;
+}
+</style>
