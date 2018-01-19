@@ -1,10 +1,10 @@
-const Collection = require("./Collection");
+// const Collection = require("./Collection");
 const path = require("path");
 const fs = require("fs");
 
 class Cache {
     constructor() {
-        this.cache = new Collection();
+        this.cache = new Map();
     }
 
     async get(url) {

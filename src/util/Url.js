@@ -3,19 +3,16 @@ const url2 = require("url");
 const absolute = path.dirname(process.mainModule.filename);
 
 class Url {
-    constructor(url, location="/pages") {
-        this.location = location
+    constructor(url) {
         this.type = "";
         this.url = url2.parse(url, true);
         if(this.url.pathname === "/") this.url.pathname = "/index";
         this.path = path.parse(this.url.pathname);
         if(this.path.ext === "" || this.path.ext === ".html") {
+            this.path.dir = `/pages${this.path.dir}`;
             this.path.ext = ".html";
             this.type = "utf8";
-        } else if (this.path.ext === ".png" || this.path.ext === ".otf") {
-            this.location="";
         }
-        if(this.path.dir === "/") this.path.dir = "";
     }
 
     static get dirTop() {
@@ -27,7 +24,7 @@ class Url {
     }
 
     get fullPath() {
-        return `${absolute}${this.location}${this.shortPath}`;
+        return `${absolute}${this.shortPath}`;
     }
 
     get ext() {
