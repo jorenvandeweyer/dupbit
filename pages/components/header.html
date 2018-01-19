@@ -18,49 +18,39 @@
 					<ul class="dropdown-menu">
 						<li><a href="/dupbot">Dupbot for Discord</a></li>
 						<li><a href="/calendar">Calendars</a></li>
-						<?php
-						if(getLevelByID(getLogin()) >= 2) {
-						?>
+						<?node if(getLevelByID(getLogin()) >= 2) ?>
 						<li><a href="/music">Music</a></li>
-						<?php
-						}
-						?>
+						<?node ?>
 					</ul>
 				</li>
 				<li><a href="#">About</a></li>
 				<li><a href="#">Contact</a></li>
 			</ul>
 			<ul class="nav navbar-nav navbar-right">
-				<?php
-				if(isLoggedIn()) {
-				?>
+				<?node if(isLoggedIn()) ?>
 					<li class="dropdown">
-						<a class="dropdown-toggle" data-toggle="dropdown" href="#"><?php echo getUsernameByID(getLogin())?> <span class="caret"></span></a>
+						<a class="dropdown-toggle" data-toggle="dropdown" href="#"><?node ?getUsernameByID(getLogin())?> <span class="caret"></span></a>
 						<ul class="dropdown-menu">
 							<li><a href="/welcome">Welcome</a></li>
 							<li class="divider"></li>
 							<li class="dropdown-header">Profile actions</li>
 							<li><a href="/profile">Profile</a></li>
 							<li><a href="/settings">Settings</a></li>
-							<?php if(getLevelById(getLogin()) == 3) {?>
+							<?node if(getLevelByID(getLogin()) == 3) ?>
 							<li class="divider"></li>
 							<li class="dropdown-header">Admin actions</li>
 							<li><a href="/users">Manage users</a></li>
 							<li><a href="/logins">Login attempts</a></li>
-							<?php } ?>
+							<?node ?>
 							<li class="divider"></li>
 							<li><a href="/action/logout">Log out</a></li>
 						</ul>
 					</li>
-				<?php
-				}
-				else {
-				?>
+				<?node ?>
+                <?node if(!isLoggedIn()) ?>
 					<li><a href="/register"><span class="glyphicon glyphicon-user"></span> Register</a></li>
-					<li><a href="/login?redirect=<?php echo $currentPage; ?>"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
-				<?php
-				}
-				?>
+					<li><a href="/login?redirect=<?node $currentPage ?>"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
+				<?node ?>
 			</ul>
 		</div>
 	</div>

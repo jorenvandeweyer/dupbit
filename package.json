@@ -10,5 +10,8 @@
   "license": "ISC",
   "devDependencies": {
     "nodemon": "^1.14.11"
+  },
+  "dependencies": {
+    "mysql": "^2.15.0"
   }
 }
