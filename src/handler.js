@@ -1,6 +1,10 @@
 const Cache = require("./util/Cache");
 const Url = require("./util/Url");
 const Dupbit = require("./dupbit");
+const ejs = require('ejs');
+// const Data = require('./util/Data');
+const Database = require("./util/Database");
+
 const cache = new Cache();
 
 const mimeTypes = {
@@ -17,122 +21,97 @@ const mimeTypes = {
     '.ttf': 'application/font-ttf',
     '.eot': 'application/vnd.ms-fontobject',
     '.otf': 'application/font-otf',
-    '.svg': 'application/image/svg+xml'
+    '.svg': 'application/image/svg+xml',
+    '.ejs': 'text/html'
 };
 
 class Page {
-    constructor(url, params) {
+    constructor(url, request) {
         this.url = url;
         this.params = {
             currentPage: "index",
-            title: "HELLO",
-
+            path: Url.dirTop + "/pages",
+            test: function() {
+                return "hi";
+            },
+            getLogin: function() {
+                return 1;
+            },
+            getLevelByID: function(id) {
+                return 1;
+            },
+            isLoggedIn: function() {
+                return true;
+            },
+            getUsernameByID: function(id) {
+                return "Joren";
+            }
+            // include: async function(path) {
+            //     let url = new Url(path);
+            //     let subPage = await new Page(url).load();
+            //     return subPage.content;
+            // }
         };
+        this.cookies = parseCookies(request);
         this.subPage = new Map();
-        this.status = 200;
-        this.contentType = mimeTypes[url.ext];
-        this.offset = 0;
+        // this.status = 200;
+        this.data = {
+            "Content-Type": mimeTypes[url.ext]
+        };
     }
 
     async load() {
+        // this.params = await new Data(this.params).load();
         this.content = await cache.get(this.url);
         if (this.content) {
             this.status = 200;
-            if (this.url.ext === ".html") {
-                await this.ifStatements();
-                await this.extendPage();
-                await this.fillParams();
-                await this.execFun();
+            if (this.url.ext === ".ejs") {
+                console.log(this.params);
+                this.content = await ejs.render(this.content, this.params, {filename: this.url.fullPath});
+                console.log(ejs);
             }
         } else {
             this.status = 404;
             this.content = await cache.get(new Url("/notfound"));
-            await this.ifStatements();
-            await this.extendPage();
-            await this.fillParams();
-            await this.execFun();
+            this.content = await ejs.render(this.content, this.params, {filename: this.url.fullPath});
         }
         return this;
     }
 
-    executeIf(begin, end){
-        let code = this.content.slice(begin, end);
-        let match = code.match(/<\?node\s*if\((.*)\)\s*\?>((.*\n)+?)\s*<\?node\s+\?>/);
-        let replacement = returnOnTrue(match[1], match[2]);
+    async load2() {
+        let data = await Data.get(this);
+        if (this.content) {
+            this.status = data.status;
+            this.content = await ejs.render(this.content, this.params, {filename: this.url.fullPath});
+            this.data["Content-Type"] = mimeTypes[data.mimeType];
 
-        this.content = this.content.slice(0, begin) + replacement + this.content.slice(end, this.content.length);
-    }
-
-    async ifStatements() {
-        let begin = [];
-        let end = [];
-        let regB = /<\?node\s*if\((.*)\)\s*\?>/g;
-        let regE = /<\?node\s+\?>/g;
-        let result;
-
-        while ((result = regB.exec(this.content)) !== null) {
-            result.lastIndex = regB.lastIndex
-            begin.push(result);
-        }
-        while ((result = regE.exec(this.content)) !== null) {
-            result.lastIndex = regE.lastIndex
-            end.push(result);
-        }
-
-        for(let i = 0; i < begin.length; i++){
-            let nextStart = Infinity;
-            if(i+1 < begin.length) nextStart = begin[i+1].lastIndex;
-            if(end[0].lastIndex < nextStart){
-                this.executeIf(begin[i].index, end[0].lastIndex);
-                end.splice(0, 1);
-                begin.splice(i, 1);
-                return await this.ifStatements();
-            }
-        }
-    }
-
-    async extendPage() {
-        let match = this.content.match(/<\?node\s*include\("(.+)"\)\s*\?>/);
-        if (match === null) return;
-
-        let url = new Url(match[1], "");
-
-        let subPage = await new Page(url).load();
-
-        if (subPage) {
-            this.content = this.content.replace(/<\?node\s*include\("(.+)"\)\s*\?>/, subPage.content);
-            return await this.extendPage();
         } else {
-            return this;
+            this.status = 404;
+            this.concent = await cache.get(new Url("/notfound"));
+            this.content = await ejs.render(this.content, this.params, {filename: this.url.fullPath});
+            this.data["Content-Type"] = mimeTypes[".ejs"];
         }
     }
 
-    async fillParams() {
-        let match = this.content.match(/<\?node\s*\$([A-z]+)\s*\?>/);
-        if (match === null) return;
-        this.content = this.content.replace(/<\?node\s*\$([A-z]+)\s*\?>/, this.params[match[1]]);
-        return await this.fillParams();
-    }
-
-    async execFun() {
-        let match = this.content.match(/<\?node\s*\?(.+)\s*\?>/);
-        if (match === null) return;
-        this.content = this.content.replace(/<\?node\s*\?(.+)\s*\?>/, Dupbit.evalFun(match[1]));
-        return await this.fillParams();
+    addCookie(name, content, expires=1000*60*60*24*365) {
+        this.data["Set-Cookie"] = `${name}=${content}; expires=${new Date(Date.now() + expires).toUTCString()}`;
     }
 }
 
-function returnOnTrue(statement, content){
-    if(Dupbit.evalFun(statement)){
-        console.log("true");
-        return content;
-    } else {
-        return "";
-    }
+async function get(url, request) {
+    return new Page(url, request).load();
 }
 
-async function get(url) {
-    return new Page(url).load();
+function parseCookies (request) {
+    let list = {};
+    let rc = request.headers.cookie;
+
+    rc && rc.split(';').forEach((cookie) => {
+        let parts = cookie.split('=');
+        list[parts.shift().trim()] = decodeURI(parts.join('='));
+    });
+
+    return list;
 }
 
 module.exports = {

@@ -8,9 +8,10 @@ class Url {
         this.url = url2.parse(url, true);
         if(this.url.pathname === "/") this.url.pathname = "/index";
         this.path = path.parse(this.url.pathname);
-        if(this.path.ext === "" || this.path.ext === ".html") {
+        if(this.path.dir === "/") this.path.dir === "";
+        if(this.path.ext === "" || this.path.ext === ".ejs") {
             this.path.dir = `/pages${this.path.dir}`;
-            this.path.ext = ".html";
+            this.path.ext = ".ejs";
             this.type = "utf8";
         }
     }

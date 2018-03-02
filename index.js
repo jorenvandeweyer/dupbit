@@ -8,11 +8,11 @@ process.on('unhandledRejection', (reason, p) => {
 });
 
 http.createServer(async (request, response) => {
-
     const url = new Url(request.url);
-    let page = await handler.get(url);
+    let page = await handler.get(url, request);
 
-    response.writeHead(page.status, {"Content-Type": page.contentType});
+    response.writeHead(page.status, page.data);
+
     response.write(page.content);
     response.end();
     //response.end(content, 'utf-8');
