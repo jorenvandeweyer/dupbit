@@ -1,0 +1,20 @@
+{
+	"username.label":			"Username:",
+	"username.help":			"Please enter a username.",
+	"username.availability":	"Username is taken.",
+	"username.tooshort":		"Username must contain at least 3 characters.",
+	"username.toolong":			"Username can contain at most 20 characters.",
+	"username.invalidchars":	"Username contains invalid characters.",
+	"password.label":			"Password:",
+	"password.help":			"Please choose a password.",
+	"password.confirmlabel":	"Confirm password:",
+	"password.confirmhelp":		"Please confirm your password.",
+	"password.tooshort":		"Password must contain at least 8 characters.",
+	"password.toolong":			"Password can contain at most 30 characters.",
+	"password.invalidchars":	"Password contains invalid characters.",
+	"password.match":			"Passwords do not match.",
+	"email.label":				"Email:",
+	"email.help":				"Please enter your email.",
+	"email.availability":		"E-mail address is already in use.",
+	"email.format":				"E-mail address is invalid."
+}

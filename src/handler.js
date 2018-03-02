@@ -2,7 +2,7 @@ const Cache = require("./util/Cache");
 const Url = require("./util/Url");
 const Dupbit = require("./dupbit");
 const ejs = require('ejs');
-// const Data = require('./util/Data');
+const Data = require('./util/Data');
 const Database = require("./util/Database");
 
 const cache = new Cache();
@@ -28,30 +28,6 @@ const mimeTypes = {
 class Page {
     constructor(url, request) {
         this.url = url;
-        this.params = {
-            currentPage: "index",
-            path: Url.dirTop + "/pages",
-            test: function() {
-                return "hi";
-            },
-            getLogin: function() {
-                return 1;
-            },
-            getLevelByID: function(id) {
-                return 1;
-            },
-            isLoggedIn: function() {
-                return true;
-            },
-            getUsernameByID: function(id) {
-                return "Joren";
-            }
-            // include: async function(path) {
-            //     let url = new Url(path);
-            //     let subPage = await new Page(url).load();
-            //     return subPage.content;
-            // }
-        };
         this.cookies = parseCookies(request);
         this.subPage = new Map();
         // this.status = 200;
@@ -66,9 +42,7 @@ class Page {
         if (this.content) {
             this.status = 200;
             if (this.url.ext === ".ejs") {
-                console.log(this.params);
                 this.content = await ejs.render(this.content, this.params, {filename: this.url.fullPath});
-                console.log(ejs);
             }
         } else {
             this.status = 404;
@@ -79,18 +53,21 @@ class Page {
     }
 
     async load2() {
+        this.content = await cache.get(this.url);
         let data = await Data.get(this);
         if (this.content) {
             this.status = data.status;
-            this.content = await ejs.render(this.content, this.params, {filename: this.url.fullPath});
-            this.data["Content-Type"] = mimeTypes[data.mimeType];
-
+            if(this.url.ext === ".ejs") {
+                this.content = await ejs.render(this.content, data, {filename: this.url.fullPath});
+                // this.data["Content-Type"] = mimeTypes[data.mimeType];
+            }
         } else {
             this.status = 404;
             this.concent = await cache.get(new Url("/notfound"));
             this.content = await ejs.render(this.content, this.params, {filename: this.url.fullPath});
             this.data["Content-Type"] = mimeTypes[".ejs"];
         }
+        return this;
     }
 
     addCookie(name, content, expires=1000*60*60*24*365) {
@@ -99,7 +76,7 @@ class Page {
 }
 
 async function get(url, request) {
-    return new Page(url, request).load();
+    return new Page(url, request).load2();
 }
 
 function parseCookies (request) {

@@ -7,19 +7,19 @@ class Cache {
     }
 
     async get(url) {
-        console.log(url.fullPath);
-        console.log(url.shortPath)
+        // console.log(url.fullPath);
+        // console.log(url.shortPath)
         if (!this.cache.has(url.shortPath)) {
             let file = await this.loadFile(url.fullPath, url.type);
             if (file) {
-                console.log(`Cached: ${url.shortPath}!`);
+                // console.log(`Cached: ${url.shortPath}!`);
                 this.cache.set(url.shortPath, file);
             } else {
-                console.log(`No such path: ${url.shortPath}!`)
+                // console.log(`No such path: ${url.shortPath}!`)
                 return null;
             }
         } else {
-            console.log(`Already cached: ${url.shortPath}!`);
+            // console.log(`Already cached: ${url.shortPath}!`);
         }
         return this.cache.get(url.shortPath);
     }

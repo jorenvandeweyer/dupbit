@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<%- include components/head %>
+	</head>
+	<body>
+		<%- include components/header %>
+
+		<div class="container">
+			<div><b>Welcome <%= user.username %></b></div>
+
+			</br>
+
+			<form action="calendar" method="post">
+				<div class="input-group">
+					<input type = "submit" class="btn btn-primary" value = " Manage calendars "/>
+				</div>
+			</form>
+
+			</br>
+
+			<% if(user.level >= 2) { %>
+			<form action="music" method="post">
+				<div class="input-group">
+					<input type = "submit" class="btn btn-primary" value = " Music "/>
+				</div>
+			</form>
+			<% } %>
+
+			</br>
+		</div>
+
+	</body>
+</html>

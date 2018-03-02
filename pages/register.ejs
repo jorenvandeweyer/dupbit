@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+
+	<head>
+		<%- include components/head %>
+	</head>
+
+	<body>
+
+		<%- include components/header %>
+
+		<div class="container">
+			<div class="panel panel-default panel-compact">
+				<div class="panel-heading"><b>Register</b></div>
+				<div class="panel-body">
+					<form id="register" action="action/register.php" method="post">
+                        <% errorMessageList.forEach((errorMessage) => { %>
+						<div class="alert alert-danger alert-dismissable">
+							<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+							<strong><%= errorMessage %></strong>
+						</div>
+                        <% }) %>
+						<div class="form-group" id="username">
+							<span class="help-block"><%= lang["username.help"] %></span>
+							<div class="input-group has-feedback">
+								<span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
+								<span class="form-control-feedback glyphicon"></span>
+								<input type="text" class="form-control" name="username" placeholder="Username"/>
+							</div>
+						</div>
+						<div class="form-group" id="password">
+							<span class="help-block"><%= lang["password.help"] %></span>
+							<div class="input-group has-feedback">
+								<span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
+								<span class="form-control-feedback glyphicon"></span>
+								<input type="password" class="form-control" name="password" placeholder="Password"/>
+							</div>
+						</div>
+						<div class="form-group" id="confirmpassword">
+							<span class="help-block"><%= lang["password.confirmhelp"] %></span>
+							<div class="input-group has-feedback">
+								<span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
+								<span class="form-control-feedback glyphicon"></span>
+								<input type="password" class="form-control" name="confirmpassword" placeholder="Confirm password"/>
+							</div>
+						</div>
+						<div class="form-group" id="email">
+							<span class="help-block"><%= lang["email.help"] %></span>
+							<div class="input-group has-feedback">
+								<span class="input-group-addon"><i class="glyphicon glyphicon-envelope"></i></span>
+								<span class="form-control-feedback glyphicon"></span>
+								<input type="email" class="form-control" name="email" placeholder="Email"/>
+							</div>
+						</div>
+						<div class="form-group">
+							<div class="input-group pull-right">
+								<input type="submit" class="btn btn-primary" value="Register"/>
+							</div>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+
+		<script>
+		function validate() {
+
+			var inputList = [$("#username"), $("#password"), $("#confirmpassword"), $("#email")];
+			var labelList = ["<%= lang["username.help"] %>","<%= lang["password.help"] %>","<%= lang["password.confirmhelp"] %>","<%= lang["email.help"] %>"];
+
+			postData = {
+				username: inputList[0].find("input").val(),
+				password: inputList[1].find("input").val(),
+				confirmpassword: inputList[2].find("input").val(),
+				email: inputList[3].find("input").val()
+			}
+
+			$.post("ajax/verifyRegistration.php", postData, function(errorList) {
+				for (i in inputList) {
+					var label = labelList[i];
+					var inputGroup = inputList[i];
+					var helpBlock = inputList[i].find(".help-block");
+					var input = inputGroup.find("input");
+					var feedback = inputGroup.find(".form-control-feedback");
+					var inputName = input.attr("name");
+					var error = errorList[inputName];
+
+					if(input.val().length) {
+						if (error) {
+							inputGroup.removeClass("has-success");
+							feedback.removeClass("glyphicon-ok");
+							inputGroup.addClass("has-error");
+							feedback.addClass("glyphicon-remove");
+							helpBlock.text(error);
+						}
+						else {
+							inputGroup.removeClass("has-error");
+							feedback.removeClass("glyphicon-remove");
+							inputGroup.addClass("has-success");
+							feedback.addClass("glyphicon-ok");
+							helpBlock.text(label);
+						}
+					}
+					else {
+						inputGroup.removeClass("has-success");
+						feedback.removeClass("glyphicon-ok");
+						inputGroup.removeClass("has-error");
+						feedback.removeClass("glyphicon-remove");
+						helpBlock.text(label);
+					}
+				}
+			}, "json");
+		}
+
+		$("#register input").on("input", function() {
+			validate();
+		});
+	</script>
+
+	</body>
+</html>
