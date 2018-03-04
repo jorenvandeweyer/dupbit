@@ -28,6 +28,10 @@ class Url {
         return `${absolute}${this.shortPath}`;
     }
 
+    get fullAPIPath() {
+        return `${absolute}/pages${this.shortPath}`;
+    }
+
     get ext() {
         return this.path.ext;
     }

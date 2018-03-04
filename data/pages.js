@@ -4,6 +4,7 @@ module.exports = {
         currentPage: "index"
     },
     "/welcome": {
+        title: "Dupbit - Welcome",
         currentPage: "welcome",
         requireLogin: true
     },
@@ -13,6 +14,14 @@ module.exports = {
         requireLogout: true,
         //errorCode = GET["fail"] ? GET["fail"] : 0
         //errorMessageList = decodeErrorCude(errorCode)
+    },
+    "/login": {
+        title: "Dupbit - Login",
+        currentPage: "login",
+        requireLogout: true,
+        //$redirect = isset($_GET["redirect"]) ? $_GET["redirect"] : "welcome";
+        //$fail = isset($_GET["fail"]);
+        //$notActivated = isset($_GET["notActivated"]);
     },
     notfound: {
 

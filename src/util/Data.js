@@ -1,27 +1,26 @@
-const Session = require('express-session');
+// const Session = require('express-session');
 // const Dupbit = require("../dupbit");
 const Database = require("./Database");
 const pageInfo = require("../../data/pages");
 const Url = require("./Url");
+const Session = require("./Session");
+const User = require("./User");
+
+const sessions = new Session();
 
 class Data {
     constructor(page) {
-        this.pageData = page;
-        this.page = pageInfo[this.pageData.url.url.pathname];
+        this.page = page;
+        this.pageInfo = pageInfo[this.page.url.url.pathname];
         this.lang = require("../../lang/en.json");
-        this.session = {
-            isLoggedIn: true
-        };
-        this.user = {
-            level: 1,
-            username: "Joren"
-        };
-        this.path = page.url.url.pathname;
+        this.path = this.page.url.url.pathname;
         this.mimeType = ".ejs";
         this.errorMessageList = [];
     }
 
     async load() {
+        this.session = await sessions.get(this.page.cookies);
+        this.user = await new User(this.session.id).load();
         this.status = 200;
         return this;
     }
@@ -31,6 +30,11 @@ async function get(page) {
     return new Data(page).load();
 }
 
+function createSession(id) {
+    sessions.create(id);
+}
+
 module.exports = {
-    get
+    get,
+    createSession
 };

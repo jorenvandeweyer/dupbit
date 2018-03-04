@@ -31,7 +31,7 @@ class Page {
         this.cookies = parseCookies(request);
         this.subPage = new Map();
         // this.status = 200;
-        this.data = {
+        this.header = {
             "Content-Type": mimeTypes[url.ext]
         };
     }
@@ -59,19 +59,19 @@ class Page {
             this.status = data.status;
             if(this.url.ext === ".ejs") {
                 this.content = await ejs.render(this.content, data, {filename: this.url.fullPath});
-                // this.data["Content-Type"] = mimeTypes[data.mimeType];
+                // this.header["Content-Type"] = mimeTypes[data.mimeType];
             }
         } else {
             this.status = 404;
             this.concent = await cache.get(new Url("/notfound"));
             this.content = await ejs.render(this.content, this.params, {filename: this.url.fullPath});
-            this.data["Content-Type"] = mimeTypes[".ejs"];
+            this.header["Content-Type"] = mimeTypes[".ejs"];
         }
         return this;
     }
 
     addCookie(name, content, expires=1000*60*60*24*365) {
-        this.data["Set-Cookie"] = `${name}=${content}; expires=${new Date(Date.now() + expires).toUTCString()}`;
+        this.header["Set-Cookie"] = `${name}=${content}; expires=${new Date(Date.now() + expires).toUTCString()}`;
     }
 }
 
@@ -92,5 +92,5 @@ function parseCookies (request) {
 }
 
 module.exports = {
-    get
+    get,
 };

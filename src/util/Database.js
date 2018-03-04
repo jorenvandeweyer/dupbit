@@ -1,5 +1,6 @@
 const mysql = require("mysql");
 const settings = require("../../config.json");
+const bcrypt = require('bcrypt');
 
 const con = mysql.createConnection({
     host: settings.MYSQL_HOST,
