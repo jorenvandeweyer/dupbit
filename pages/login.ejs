@@ -1,4 +1,4 @@
-<% var fail = false; var notActivated = false; var redirect = "welcome" %>
+<% if(!("redirect" in locals)) {locals.redirect = "welcome"} %>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -14,13 +14,13 @@
 			<div class="panel panel-default panel-compact">
 				<div class="panel-heading"><b>Login</b></div>
 				<div class="panel-body">
-					<% if(fail) { %>
+					<% if("fail" in locals) { %>
 					<div class="alert alert-danger alert-dismissable">
 						<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
 						<strong>Wrong password or username!</strong> Try again.
 					</div>
 					<% } %>
-					<% if(notActivated) { %>
+					<% if("notActivated" in locals) { %>
 					<div class="alert alert-danger alert-dismissable">
 						<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
 						<strong>Account activated!</strong> Please activate your account first.

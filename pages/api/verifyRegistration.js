@@ -1,33 +1,26 @@
-<?php
-	header('Access-Control-Allow-Origin: *');
+const Database = require("../../src/util/Database");
 
-	include("dupbit.php");
+async function resolve(data) {
+    if ("username" in data && "password" in data && "confirmpassword" in data && "email" in data) {
+        let usernameErrorCode = await Database.verifyUsername(data.username);
+        let passwordErrorCode = Database.verifyPassword(data.password);
+        let confirmPasswordErrorCode = Database.verifyPasswordMatch(data.password, data.confirmpassword);
+        let emailErrorCode = await Database.verifyEmail(data.email);
 
-	if (isset($_POST["username"]) and isset($_POST["password"]) and isset($_POST["confirmpassword"]) and isset($_POST["email"])) {
+        let usernameError = Database.decodeErrorCode(usernameErrorCode).join(" ");
+        let passwordError = Database.decodeErrorCode(passwordErrorCode).join(" ");
+        let confirmPasswordError = Database.decodeErrorCode(confirmPasswordErrorCode).join(" ");
+        let emailError = Database.decodeErrorCode(emailErrorCode).join(" ");
+        let errors = {
+            "username": usernameError,
+            "password": passwordError,
+            "confirmpassword": confirmPasswordError,
+            "email": emailError
+        };
+        return errors;
+    }
+}
 
-		$username = $_POST["username"];
-		$password = $_POST["password"];
-		$confirmpassword = $_POST["confirmpassword"];
-		$email = $_POST["email"];
-
-		$usernameErrorCode = verifyUsername($username);
-		$passwordErrorCode = verifyPassword($password);
-		$confirmPasswordErrorCode = verifyPasswordMatch($password, $confirmpassword);
-		$emailErrorCode = verifyEmail($email);
-
-		$usernameError = join(" ", decodeErrorCode($usernameErrorCode));
-		$passwordError = join(" ", decodeErrorCode($passwordErrorCode));
-		$confirmPasswordError = join(" ", decodeErrorCode($confirmPasswordErrorCode));
-		$emailError = join(" ", decodeErrorCode($emailErrorCode));
-
-		$errors = array(
-			"username" => $usernameError,
-			'password' => $passwordError,
-			'confirmpassword' => $confirmPasswordError,
-			'email' => $emailError
-		);
-
-		echo json_encode($errors);
-
-	}
-?>	
+module.exports = {
+    resolve
+}

@@ -13,7 +13,7 @@
 			<div class="panel panel-default panel-compact">
 				<div class="panel-heading"><b>Register</b></div>
 				<div class="panel-body">
-					<form id="register" action="action/register.php" method="post">
+					<form id="register" action="api/register" method="post">
                         <% errorMessageList.forEach((errorMessage) => { %>
 						<div class="alert alert-danger alert-dismissable">
 							<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
@@ -75,7 +75,7 @@
 				email: inputList[3].find("input").val()
 			}
 
-			$.post("ajax/verifyRegistration.php", postData, function(errorList) {
+			$.post("api/verifyRegistration", postData, function(errorList) {
 				for (i in inputList) {
 					var label = labelList[i];
 					var inputGroup = inputList[i];
@@ -86,6 +86,7 @@
 					var error = errorList[inputName];
 
 					if(input.val().length) {
+
 						if (error) {
 							inputGroup.removeClass("has-success");
 							feedback.removeClass("glyphicon-ok");

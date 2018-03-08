@@ -1,6 +1,7 @@
 const mysql = require("mysql");
 const settings = require("../../config.json");
 const bcrypt = require('bcrypt');
+const lang = require("../../lang/en.json");
 
 const con = mysql.createConnection({
     host: settings.MYSQL_HOST,
@@ -450,127 +451,133 @@ function sendEmail2($email, $subject, $message){
 }
 
 // Verify if the given username, password and email make a valid user instance
-function verifyRegistration($username, $password, $confirmpassword, $email) {
-    $errorCode = 0;
-    $errorCode += verifyUsername($username);
-    $errorCode += verifyPassword($password);
-    $errorCode += verifyPasswordMatch($password, $confirmpassword);
-    $errorCode += verifyEmail($email);
-    return $errorCode;
+async function verifyRegistration(username, password, confirmpassword, email) {
+    errorCode = 0;
+    errorCode += await verifyUsername(username);
+    errorCode += verifyPassword(password);
+    errorCode += verifyPasswordMatch(password, confirmpassword);
+    errorCode += await verifyEmail(email);
+    return errorCode;
 }
 
 // Verify if the given username is valid for registration
-function verifyUsername($username) {
-    $errorCode = 0;
-    if (isRegistered($username)) {
-        $errorCode += pow(2,0);
+async function verifyUsername(username) {
+    errorCode = 0;
+    if (await isRegistered(username)) {
+        errorCode += 2 ** 0;
     }
-    if (strlen($username) < 3) {
-        $errorCode += pow(2,1);
+    if (username.length < 3) {
+        errorCode += 2 ** 1;
     }
-    if (strlen($username) > 20) {
-        $errorCode += pow(2,2);
+    if (username.length > 20) {
+        errorCode += 2 ** 2;
     }
-    if (!verifyUsernameChars($username)) {
-        $errorCode += pow(2,3);
+    if (!verifyUsernameChars(username)) {
+        errorCode += 2 ** 3;
     }
-    return $errorCode;
+    return errorCode;
 }
 
 // Verify if the given username is valid for registration
-function verifyPassword($password) {
-    $errorCode = 0;
-    if (strlen($password) < 8) {
-        $errorCode += pow(2,4);
+function verifyPassword(password) {
+    errorCode = 0;
+    if (password.length < 8) {
+        errorCode += 2 ** 4;
     }
-    if (strlen($password) > 30) {
-        $errorCode += pow(2,5);
+    if (password.length > 30) {
+        errorCode += 2 ** 5;
     }
-    if (!verifyPasswordChars($password)) {
-        $errorCode += pow(2,6);
+    if (!verifyPasswordChars(password)) {
+        errorCode += 2 ** 6;
     }
-    return $errorCode;
+    return errorCode;
 }
 
 // Check if passwords match
-function verifyPasswordMatch($password, $confirmpassword) {
-    $errorCode = 0;
-    if ($password !== $confirmpassword) {
-        $errorCode += pow(2,7);
+function verifyPasswordMatch(password, confirmpassword) {
+    errorCode = 0;
+    if (password !== confirmpassword) {
+        errorCode += 2 ** 7;
     }
-    return $errorCode;
+    return errorCode;
 }
 
 // Verify if the email is valid
-function verifyEmail($email) {
-    $errorCode = 0;
-    if (isInUse($email)) {
-      $errorCode += pow(2,8);
+async function verifyEmail(email) {
+    errorCode = 0;
+    if (await isInUse(email)) {
+      errorCode += 2 ** 8;
     }
-    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-      $errorCode += pow(2,9);
-    }
-    return $errorCode;
+    // if (!filter_var(email, FILTER_VALIDATE_EMAIL)) {
+    //   errorCode += 2 ** 9;
+    // }
+    return errorCode;
 }
 
 // Verify string for valid chars
-function verifyUsernameChars($string) {
-    return !preg_match('/[^A-Za-z0-9._-]/', $string);
+function verifyUsernameChars(string) {
+    return !string.match(/[^A-Za-z0-9._-]/);
+    // return !preg_match('/[^A-Za-z0-9._-]/', string);
 }
 
 // Verify string for valid chars
-function verifyPasswordChars($string) {
-    return !preg_match('/[^A-Za-z0-9!"#$%&\'()*+,-.\/:;<=>?@[\]^_`{|}~]/', $string);
+function verifyPasswordChars(string) {
+    return !string.match(/[^A-Za-z0-9!"#$%&\'()*+,-.\/:;<=>?@[\]^_`{|}~]/);
+    // return !preg_match('/[^A-Za-z0-9!"#$%&\'()*+,-.\/:;<=>?@[\]^_`{|}~]/', $string);
 }
 
 // Get the error message of this errorCode
-function getErrorMessage($errorCode) {
-    switch($errorCode) {
+function getErrorMessage(errorCode) {
+    let errorMessage;
+    switch(errorCode) {
         case 0:
-            $errorMessage = $lang["username.availability"];
+            errorMessage = lang["username.availability"];
             break;
         case 1:
-            $errorMessage = $lang["username.tooshort"];
+            errorMessage = lang["username.tooshort"];
             break;
         case 2:
-            $errorMessage = $lang["username.toolong"];
+            errorMessage = lang["username.toolong"];
             break;
         case 3:
-            $errorMessage = $lang["username.invalidchars"];
+            errorMessage = lang["username.invalidchars"];
             break;
         case 4:
-            $errorMessage = $lang["password.tooshort"];
+            errorMessage = lang["password.tooshort"];
             break;
         case 5:
-            $errorMessage = $lang["password.toolong"];
+            errorMessage = lang["password.toolong"];
             break;
         case 6:
-            $errorMessage = $lang["password.invalidchars"];
+            errorMessage = lang["password.invalidchars"];
             break;
         case 7:
-            $errorMessage = $lang["password.match"];
+            errorMessage = lang["password.match"];
             break;
         case 8:
-            $errorMessage = $lang["email.availability"];
+            errorMessage = lang["email.availability"];
             break;
         case 9:
-            $errorMessage = $lang["email.format"];
+            errorMessage = lang["email.format"];
             break;
     }
-    return $errorMessage;
+    return errorMessage;
 }
 
 // Decode errorCode
-function decodeErrorCode($errorCode) {
-    $errorMessageList = array();
-    $binErrorCode = decbin($errorCode);
-    $n = strlen($binErrorCode);
-    for ($i = 1; $i <= $n; $i++) {
-        if ($binErrorCode[$n - $i] == "1") {
-            array_push($errorMessageList, getErrorMessage($i-1));
+function decodeErrorCode(errorCode) {
+    let errorMessageList = [];
+    let binErrorCode = dec2bin(errorCode);
+    for (let i = 1; i <= binErrorCode.length; i++) {
+        if (binErrorCode.charAt(binErrorCode.length - i) == "1") {
+            errorMessageList.push(getErrorMessage(i-1));
         }
     }
-    return $errorMessageList;
+    return errorMessageList;
+}
+
+function dec2bin(dec) {
+    return (dec >>> 0).toString(2);
 }
 
 // Make a login session for the given id

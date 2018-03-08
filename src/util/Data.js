@@ -16,6 +16,14 @@ class Data {
         this.path = this.page.url.url.pathname;
         this.mimeType = ".ejs";
         this.errorMessageList = [];
+        this.addQuery();
+    }
+
+    addQuery() {
+        let query = this.page.url.url.query;
+        for (let key in query) {
+            this[key] = query[key];
+        }
     }
 
     async load() {

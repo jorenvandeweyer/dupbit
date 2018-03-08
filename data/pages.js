@@ -19,6 +19,7 @@ module.exports = {
         title: "Dupbit - Login",
         currentPage: "login",
         requireLogout: true,
+        // redirect: "welcome"
         //$redirect = isset($_GET["redirect"]) ? $_GET["redirect"] : "welcome";
         //$fail = isset($_GET["fail"]);
         //$notActivated = isset($_GET["notActivated"]);

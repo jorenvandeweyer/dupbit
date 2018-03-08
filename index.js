@@ -21,7 +21,8 @@ http.createServer(async (request, response) => {
         response.write(page.content);
         response.end();
         //response.end(content, 'utf-8');
-    } else if (request.method === "POST") {
+    }
+    if (request.method === "POST") {
         let body = "";
 
         request.on("data", (data) => {

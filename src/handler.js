@@ -36,25 +36,26 @@ class Page {
         };
     }
 
-    async load() {
-        // this.params = await new Data(this.params).load();
-        this.content = await cache.get(this.url);
-        if (this.content) {
-            this.status = 200;
-            if (this.url.ext === ".ejs") {
-                this.content = await ejs.render(this.content, this.params, {filename: this.url.fullPath});
-            }
-        } else {
-            this.status = 404;
-            this.content = await cache.get(new Url("/notfound"));
-            this.content = await ejs.render(this.content, this.params, {filename: this.url.fullPath});
-        }
-        return this;
-    }
+    // async load() {
+    //     // this.params = await new Data(this.params).load();
+    //     this.content = await cache.get(this.url);
+    //     if (this.content) {
+    //         this.status = 200;
+    //         if (this.url.ext === ".ejs") {
+    //             this.content = await ejs.render(this.content, this.params, {filename: this.url.fullPath});
+    //         }
+    //     } else {
+    //         this.status = 404;
+    //         this.content = await cache.get(new Url("/notfound"));
+    //         this.content = await ejs.render(this.content, this.params, {filename: this.url.fullPath});
+    //     }
+    //     return this;
+    // }
 
     async load2() {
         this.content = await cache.get(this.url);
         let data = await Data.get(this);
+        console.log(data);
         if (this.content) {
             this.status = data.status;
             if(this.url.ext === ".ejs") {

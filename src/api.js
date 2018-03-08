@@ -12,7 +12,10 @@ class Api {
         const api_call = require(this.url.fullAPIPath);
         let data = await api_call.resolve(this.url.url.query);
 
-        if ("redirect" in data) {
+        if (data && "redirect" in data) {
+            if (!data.redirect.includes("http")) {
+                data.redirect = "/" + data.redirect;
+            }
             this.header = {
                 "Location": data.redirect
             };
