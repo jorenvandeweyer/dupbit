@@ -1,17 +1,16 @@
-// const Session = require('express-session');
-// const Dupbit = require("../dupbit");
 const Database = require("./Database");
 const pageInfo = require("../../data/pages");
 const Url = require("./Url");
-const Session = require("./Session");
 const User = require("./User");
-
-const sessions = new Session();
+const Token = require("./Token");
 
 class Data {
     constructor(page) {
         this.page = page;
         this.pageInfo = pageInfo[this.page.url.url.pathname];
+        if (this.pageInfo == undefined) {
+            this.pageInfo = pageInfo["/notfound"];
+        }
         this.lang = require("../../lang/en.json");
         this.path = this.page.url.url.pathname;
         this.mimeType = ".ejs";
@@ -27,9 +26,25 @@ class Data {
     }
 
     async load() {
-        this.session = await sessions.get(this.page.cookies);
-        this.user = await new User(this.session.id).load();
-        this.status = 200;
+        let decoded = Token.verifyToken(this.page.cookies["sid"]);
+
+        if (decoded) {
+            this.session = decoded.data;
+            this.user = await new User(this.session.id).load();
+        } else {
+            this.session = {
+                isLoggedIn: false,
+            }
+            this.user = User.nullUser();
+        }
+
+        if (this.pageInfo && this.pageInfo.requireLogin && !this.session.isLoggedIn) {
+            this.status = 303;
+            this.redirectHeader = "login?redirect=" + this.pageInfo.currentPage;
+        } else {
+            this.status = 200;
+        }
+
         return this;
     }
 }
@@ -38,11 +53,6 @@ async function get(page) {
     return new Data(page).load();
 }
 
-function createSession(id) {
-    sessions.create(id);
-}
-
 module.exports = {
     get,
-    createSession
 };

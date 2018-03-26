@@ -10,9 +10,7 @@ process.on('unhandledRejection', (reason, p) => {
 });
 
 http.createServer(async (request, response) => {
-    console.log(request.method);
-
-    if (request.method == "GET") {
+    if (request.method === "GET" && !request.url.includes("/api/")) {
         const url = new Url(request.url);
         let page = await handler.get(url, request);
 
@@ -21,8 +19,7 @@ http.createServer(async (request, response) => {
         response.write(page.content);
         response.end();
         //response.end(content, 'utf-8');
-    }
-    if (request.method === "POST") {
+    } else if (request.method === "POST" || request.url.includes("/api/")) {
         let body = "";
 
         request.on("data", (data) => {

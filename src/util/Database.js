@@ -382,7 +382,7 @@ function redirect(url, statusCode = 303) {
 }
 
 // Redirect the user to the previous page
-function backdirect() {
+function backdirect(req) {
     if (req.headers.referer) {
         redirect(req.headers.referer);
     } else {
@@ -580,34 +580,6 @@ function dec2bin(dec) {
     return (dec >>> 0).toString(2);
 }
 
-// Make a login session for the given id
-function login($uid) {
-    session_start();
-    $_SESSION["login"] = $uid;
-    session_write_close();
-}
-
-// Check if the user is logged in
-function isLoggedIn() {
-    session_start();
-    $login = isset($_SESSION["login"]);
-    session_write_close();
-    return $login;
-}
-
-// Return the id of the current login session
-async function getLogin() {
-    if (isLoggedIn()) {
-        session_start();
-        $login = $_SESSION["login"];
-        session_write_close();
-    }
-    else {
-        $login = null;
-    }
-    return $login;
-}
-
 // Verify if the given username and password make a valid login
 async function verifyLogin(username, password) {
     let id = await getIDByUsername(username);
@@ -706,9 +678,6 @@ module.exports = {
     verifyPasswordChars,
     getErrorMessage,
     decodeErrorCode,
-    login,
-    isLoggedIn,
-    getLogin,
     verifyLogin,
     logout,
     validate,

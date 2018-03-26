@@ -5,6 +5,14 @@ module.exports = class User {
         this.id = id;
     }
 
+    static nullUser() {
+        this.username = "Not Logged In";
+        this.level = 0;
+        this.password = "";
+        this.email = "";
+        return this;
+    }
+
     async load() {
         this.username = await Database.getUsernameByID(this.id);
         this.level = await Database.getLevelByID(this.id);

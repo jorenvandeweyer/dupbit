@@ -1,8 +1,10 @@
 const Data = require("./util/Data");
+const Cookie = require("./util/Cookie");
 
 class Api {
     constructor(url, request) {
         this.url = url;
+        this.request = request;
         this.header = {
             "Content-Type": 'application/json'
         };
@@ -16,18 +18,21 @@ class Api {
             if (!data.redirect.includes("http")) {
                 data.redirect = "/" + data.redirect;
             }
-            this.header = {
-                "Location": data.redirect
-            };
+            this.header["Location"] =  data.redirect;
             this.status = 303;
         } else {
             this.status = 200;
             this.content = data;
         }
 
-        // this.status = 200;
-        // this.content = data;
+        if (data && "cookie" in data) {
+            this.header["Set-Cookie"] = data["cookie"];
+        }
 
+        if (data && data.backdirect) {
+            this.status = 303;
+            this.header["Location"] = this.request.headers.referer;
+        }
 
         return this;
     }

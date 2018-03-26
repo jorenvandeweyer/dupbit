@@ -16,6 +16,8 @@
     "ejs": "^2.5.7",
     "express": "^4.16.2",
     "express-session": "^1.15.6",
-    "mysql": "^2.15.0"
+    "jsonwebtoken": "^8.2.0",
+    "mysql": "^2.15.0",
+    "node-rsa": "^0.4.2"
   }
 }

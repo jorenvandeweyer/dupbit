@@ -1,5 +1,6 @@
 const Database = require("../../src/util/Database");
-const Session = require("../../src/util/Session");
+const Token = require("../../src/util/Token");
+const Cookie = require("../../src/util/Cookie");
 
 async function resolve(data) {
     if (data.username && data.password) {
@@ -17,6 +18,13 @@ async function resolve(data) {
                     data.redirect = "login?notActivated"
                 }
             } else {
+                let token = Token.createToken({
+                    isLoggedIn: true,
+                    id: id,
+                    username: data.username,
+                    level: level,
+                });
+                let cookie = Cookie.create("sid", token);
                 if (data.redirect) {
                     if (data.redirect === "index") {
                         data.redirect = "welcome";
@@ -28,7 +36,8 @@ async function resolve(data) {
                     success: true,
                     login: true,
                     id: id,
-                    redirect: data.redirect
+                    redirect: data.redirect,
+                    cookie: cookie,
                 };
             }
 

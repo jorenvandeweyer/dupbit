@@ -24,7 +24,8 @@ module.exports = {
         //$fail = isset($_GET["fail"]);
         //$notActivated = isset($_GET["notActivated"]);
     },
-    notfound: {
-
+    "/notfound": {
+        title: "Dupbit - Not Found",
+        currentPage: "notfound",
     }
 };
