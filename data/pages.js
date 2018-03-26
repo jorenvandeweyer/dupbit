@@ -36,5 +36,14 @@ module.exports = {
     "/notfound": {
         title: "Dupbit - Not Found",
         currentPage: "notfound",
-    }
+    },
+    "/logins": {
+        title: "Dupbit - Logins",
+        currentPage: "logins",
+        requireLogin: true,
+        requireLevel: 3,
+        pageData: {
+            "attempts": "Database.getLoginAttempts()",
+        }
+    },
 };

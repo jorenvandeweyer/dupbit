@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+
+	<head>
+		<%- include components/head %>
+	</head>
+
+	<body>
+
+		<%- include components/header %>
+
+		<div class="container">
+			<div class="panel panel-default">
+				<div class="panel-heading"><b>Login Attempts</b></div>
+				<div class="panel-body">
+					<table class='table table-hover table-condensed table-responsive'>
+						<thead>
+							<tr>
+								<th>ID</th>
+								<th>Username</th>
+								<th>IP</th>
+								<th>Success</th>
+								<th>Timestamp</th>
+							</tr>
+						</thead>
+						<tbody>
+                            <% var attempts = pageData.attempts %>
+                            <% for (let attempt in attempts) { %>
+                                <%- "<tr>" %>
+                                    <%- "<td>" + attempts[attempt]['uid'] + "</td>" %>
+                                    <%- "<td>" + attempts[attempt]['username'] + "</td>" %>
+                                    <%- "<td>" + attempts[attempt]['ip'] + "</td>" %>
+                                    <%- "<td>" + attempts[attempt]['success'] + "</td>" %>
+                                    <%- "<td>" + attempts[attempt]['timestamp'] + "</td>" %>
+                                <%- "</tr>" %>
+                            <% } %>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+
+	</body>
+</html>

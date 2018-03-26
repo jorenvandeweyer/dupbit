@@ -2,12 +2,20 @@ const Database = require("../../src/util/Database");
 const Token = require("../../src/util/Token");
 const Cookie = require("../../src/util/Cookie");
 
-async function resolve(data) {
+async function resolve(data, apidata) {
     if (data.username && data.password) {
         let login = await Database.verifyLogin(data.username, data.password);
+        let req = apidata.request;
+        console.log(req.headers["['x-forwarded-for']"]);
+        console.log(req.connection.remoteAddress);
+        console.log(req.socket.localAddress);
+        let ip = req.headers['x-forwarded-for'] ||
+            req.connection.remoteAddress ||
+            req.socket.remoteAddress ||
+            (req.connection.socket ? req.connection.socket.remoteAddress : null);
 
         if (login) {
-            Database.addLoginAttempt(data.username, true);
+            Database.addLoginAttempt(data.username, true, ip);
             let id = await Database.getIDByUsername(data.username);
             let level = await Database.getLevelByID(id);
 
@@ -47,7 +55,7 @@ async function resolve(data) {
 
 
         } else {
-            Database.addLoginAttempt(data.username, false);
+            Database.addLoginAttempt(data.username, false, ip);
             if (data.redirect) {
                 data.redirect = `login?redirect=${data.redirect}&fail`;
             } else {
