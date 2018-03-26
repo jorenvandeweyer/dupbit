@@ -38,17 +38,29 @@ class Data {
             this.user = User.nullUser();
         }
 
-        if (this.pageInfo && this.pageInfo.requireLogin && !this.session.isLoggedIn) {
-            this.status = 303;
-            this.redirectHeader = "login?redirect=" + this.pageInfo.currentPage;
-        } else {
-            this.status = 200;
-        }
+        // if (this.pageInfo && this.pageInfo.requireLogin && !this.session.isLoggedIn) {
+        //     this.status = 303;
+        //     this.redirectHeader = "login?redirect=" + this.pageInfo.currentPage;
+        // } else {
+        //     this.status = 200;
+        // }
 
-        if (this.pageInfo && this.pageInfo.pageData) {
-            this.pageData = {};
-            for (let key in this.pageInfo.pageData) {
-                this.pageData[key] = await eval(this.pageInfo.pageData[key]);
+        if (this.pageInfo) {
+            if (this.pageInfo.requireLogin && !this.session.isLoggedIn) {
+                this.status = 303;
+                this.redirectHeader = "login?redirect=" + this.pageInfo.currentPage;
+            } else if (this.pageInfo.requireLevel && this.pageInfo.requireLevel > this.session.level) {
+                this.status = 303;
+                this.redirectHeader = "notfound";
+            } else {
+                this.status = 200;
+            }
+
+            if (this.pageInfo.pageData) {
+                this.pageData = {};
+                for (let key in this.pageInfo.pageData) {
+                    this.pageData[key] = await eval(this.pageInfo.pageData[key]);
+                }
             }
         }
 

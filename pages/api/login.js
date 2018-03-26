@@ -17,6 +17,10 @@ async function resolve(data) {
                 } else {
                     data.redirect = "login?notActivated"
                 }
+                return {
+                    success: false,
+                    redirect: data.redirect
+                };
             } else {
                 let token = Token.createToken({
                     isLoggedIn: true,
