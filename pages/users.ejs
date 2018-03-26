@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+
+	<head>
+		<%- include components/head %>
+		<script>
+		function editUser(id){
+			var level = $("#" + id + " td:eq(3)").text();
+			$("#" + id + " td")[1].innerHTML = '<input id="username" value="'+ $("#" + id + " td:eq(1)").text() +'"></input>';
+			$("#" + id + " td")[2].innerHTML = '<input id="email"value="'+ $("#" + id + " td:eq(2)").text() +'"></input>';
+			$("#" + id + " td")[3].innerHTML = '<select id="level"><option>0</option><option>1</option><option>2</option><option>3</option></select>';
+			$("#" + id + " td")[5].innerHTML = '<button type="button" class="btn btn-link" onclick="saveUser(' + id + ')">Save</button>';
+			$("#" + id + " option:eq("+ level +")").prop("selected", true);
+		}
+
+		function saveUser(id){
+			$("#submitform #id").val(id);
+			$("#submitform #username").val($("#"+id+" #username").val());
+			$("#submitform #email").val($("#"+id+" #email").val());
+			$("#submitform #level").val($("#"+id+" #level").val());
+			$("#submitform #action").val("update");
+			$("#submitform").submit();
+		}
+
+		function deleteUser(id){
+			$("#submitform #id").val(id);
+			$("#submitform #action").val("delete");
+			$("#submitform").submit();
+		}
+		</script>
+	</head>
+
+	<body>
+
+		<%- include components/header %>
+
+		<div class="container">
+			<div class="panel panel-default">
+				<div class="panel-heading"><b>Users</b></div>
+				<div class="panel-body">
+					<table class='table table-hover .table-condensed table-responsive'>
+						<thead>
+							<tr>
+								<th>ID</th>
+								<th>Username</th>
+								<th>Email</th>
+								<th>Level</th>
+								<th>Registration</th>
+								<th>Edit</th>
+								<th>Delete</th>
+							</tr>
+						</thead>
+						<tbody>
+                            <% var users = pageData.users %>
+                            <% for(let user in users) { %>
+                                <%- "<tr id=" + users[user]['id'] + ">" %>
+                                    <%- "<td>" + users[user]['id'] + "</td>" %>
+                                    <%- "<td>" + users[user]['username'] + "</td>" %>
+                                    <%- "<td>" + users[user]['email'] + "</td>" %>
+                                    <%- "<td>" + users[user]['level'] + "</td>" %>
+                                    <%- "<td>" + users[user]['registrationTimestamp'] + "</td>" %>
+                                    <%- "<td><button type='button' class='btn btn-link' onclick='editUser(" + users[user]['id'] + ")'>Edit</button></td>" %>
+                                    <%- "<td><button type='button' class='btn btn-danger' onclick='deleteUser(" + users[user]['id'] + ")'>Edit</button></td>" %>
+                                <%- "</tr>" %>
+                            <% } %>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+
+		<form action="api/editUser" style="visibility:hidden" method="post" id="submitform">
+			<input type="hidden" name="id" id="id"/>
+			<input type="hidden" name="level" id="level"/>
+			<input type="hidden" name="email" id="email"/>
+			<input type="hidden" name="username" id="username"/>
+			<input type="hidden" name="action" id="action"/>
+		</form>
+
+	</body>
+</html>

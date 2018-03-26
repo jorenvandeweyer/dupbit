@@ -34,7 +34,7 @@ class Data {
         } else {
             this.session = {
                 isLoggedIn: false,
-            }
+            };
             this.user = User.nullUser();
         }
 
@@ -43,6 +43,13 @@ class Data {
             this.redirectHeader = "login?redirect=" + this.pageInfo.currentPage;
         } else {
             this.status = 200;
+        }
+
+        if (this.pageInfo && this.pageInfo.pageData) {
+            this.pageData = {};
+            for (let key in this.pageInfo.pageData) {
+                this.pageData[key] = await eval(this.pageInfo.pageData[key]);
+            }
         }
 
         return this;

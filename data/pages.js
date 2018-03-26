@@ -24,6 +24,15 @@ module.exports = {
         //$fail = isset($_GET["fail"]);
         //$notActivated = isset($_GET["notActivated"]);
     },
+    "/users": {
+        title: "Dupbit -Users",
+        currentPage: "users",
+        requireLogin: true,
+        requireLevel: 3,
+        pageData: {
+            "users": "Database.getUsers()",
+        }
+    },
     "/notfound": {
         title: "Dupbit - Not Found",
         currentPage: "notfound",
