@@ -22,7 +22,8 @@ const mimeTypes = {
     '.eot': 'application/vnd.ms-fontobject',
     '.otf': 'application/font-otf',
     '.svg': 'application/image/svg+xml',
-    '.ejs': 'text/html'
+    '.ejs': 'text/html',
+    '.ico': 'image/x-icon',
 };
 
 class Page {

@@ -9,11 +9,11 @@
   "author": "Joren Vandeweyer",
   "license": "ISC",
   "devDependencies": {
-    "nodemon": "^1.14.11"
+    "nodemon": "^1.17.2"
   },
   "dependencies": {
     "bcrypt": "^1.0.3",
-    "ejs": "^2.5.7",
+    "ejs": "^2.5.8",
     "jsonwebtoken": "^8.2.0",
     "mailgun-js": "^0.16.0",
     "mysql": "^2.15.0",

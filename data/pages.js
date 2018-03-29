@@ -25,13 +25,19 @@ module.exports = {
         //$notActivated = isset($_GET["notActivated"]);
     },
     "/users": {
-        title: "Dupbit -Users",
+        title: "Dupbit - Users",
         currentPage: "users",
         requireLogin: true,
         requireLevel: 3,
         pageData: {
             "users": "Database.getUsers()",
         }
+    },
+    "/dupbot": {
+        title: "Dupbit - Dupbot",
+        currentPage: "dupbot",
+        metaKeywords: "Dupbot, Discord, Bot, Discordbot",
+        metaDescription: "Dupbot the bot for you Discord server.",
     },
     "/notfound": {
         title: "Dupbit - Not Found",
