@@ -2,6 +2,7 @@ const mysql = require("mysql");
 const settings = require("../../config.json");
 const bcrypt = require('bcrypt');
 const lang = require("../../lang/en.json");
+const Mail = require("./Mail");
 
 const con = mysql.createConnection({
     host: settings.MYSQL_HOST,
@@ -29,30 +30,17 @@ function query(query, options) {
 
 // Register a user with the given username, password, email and level
 async function register(username, password, email, level=0) {
-    return await query("INSERT INTO users (username, password, email, level) VALUES (?, ?, ?, ?)", [username, password, email, level]);
-}
+    let hash = bcrypt.hashSync(password, 10);
+    let emailhash = bcrypt.hashSync(hash, 10);
 
-// function register(username, password, email, level=0) {
-//     return new Promise((resolve, reject) => {
-//         con.query("INSERT INTO users (username, password, email, level) VALUES (?, ?, ?, ?)", [username, password, email, level], (err, result) => {
-//             if (err) return reject(err);
-//             resolve(result);
-//         });
-//     });
-// }
+    let q = await query("INSERT INTO users (username, password, email, level) VALUES (?, ?, ?, ?)", [username, hash, email, level]);
+    await Mail.register(email, await getIDByUsername(username), username, emailhash);
+    return q;
+}
 
 async function unregister(id) {
     return await query("DELETE FROM users WHERE id=?", [id]);
 }
-
-// function unregister(id) {
-//     return new Promise((resolve, reject) => {
-//         con.query("DELETE FROM users WHERE id=?", [id], (err, result) => {
-//             if (err) return reject(err);
-//             resolve(result);
-//         });
-//     });
-// }
 
 // Check if the given username is registered
 async function isRegistered(username) {
@@ -60,29 +48,11 @@ async function isRegistered(username) {
     return result.length === 1;
 }
 
-// function isRegistered(username) {
-//     return new Promise((resolve, reject) => {
-//         con.query("SELECT username FROM users WHERE username=?", [username], (err, result) => {
-//             if (err) return reject(err);
-//             resolve(result.length === 1);
-//         });
-//     });
-// }
-
 // Check if the given email is in use
 async function isInUse(email) {
     let result = await query("SELECT email FROM users WHERE email=?", [email]);
     return result.length === 1;
 }
-
-// function isInUse(email) {
-//     return new Promise((resolve, reject) => {
-//         con.query("SELECT email FROM users WHERE email=?", [email], (err, result) => {
-//             if (err) return reject(err);
-//             resolve(result.length === 1);
-//         });
-//     });
-// }
 
 // Return the id of the user with given username
 async function getIDByUsername(username) {
@@ -94,19 +64,6 @@ async function getIDByUsername(username) {
     }
 }
 
-// function getIDByUsername(username) {
-//     return new Promise((resolve, reject) => {
-//         con.query("SELECT id FROM users WHERE username=?", [username], (err, result) => {
-//             if (err) return reject(err);
-//             if (result.length) {
-//                 resolve(result[0].id);
-//             } else {
-//                 resolve(null);
-//             }
-//         });
-//     });
-// }
-
 // Return the username of the user with given id
 async function getUsernameByID(id) {
     let result = await query("SELECT username FROM users WHERE id=?", [id]);
@@ -117,32 +74,10 @@ async function getUsernameByID(id) {
     }
 }
 
-// function getUsernameByID(id) {
-//     return new Promise((resolve, reject) => {
-//         con.query("SELECT username FROM users WHERE id=?", [id], (err, result) => {
-//             if (err) return reject(err);
-//             if (result.length) {
-//                 resolve(result[0].username);
-//             } else {
-//                 resolve(null);
-//             }
-//         });
-//     });
-// }
-
 // Set the username of the user with the given id to the given username
 async function setUsername(id, username) {
     return await query("UPDATE users SET username=? WHERE id=?", [username, id]);
 }
-
-// function setUsername(id, username) {
-//     return new Promise((resolve, reject) => {
-//         con.query("UPDATE users SET username=? WHERE id=?", [username, id], (err, result) => {
-//             if (err) return reject(err);
-//             resolve(result);
-//         });
-//     });
-// }
 
 // Return the password of the user with given id
 async function getPasswordByID(id) {
@@ -154,32 +89,10 @@ async function getPasswordByID(id) {
     }
 }
 
-// function getPasswordByID(id) {
-//     return new Promise((resolve, reject) => {
-//         con.query("SELECT password FROM users WHERE id=?", [id], (err, result) => {
-//             if (err) return reject(err);
-//             if (result.length) {
-//                 resolve(result[0].password);
-//             } else {
-//                 resolve(null);
-//             }
-//         });
-//     });
-// }
-
 // Set the password of the user with the given id to the given username
 async function setPassword(id, password) {
     return await query("UPDATE users SET password=? WHERE id=?", [password, id]);
 }
-
-// function setPassword(id, password) {
-//     return new Promise((resolve, reject) => {
-//         con.query("UPDATE users SET password=? WHERE id=?", [password, id], (err, result) => {
-//             if (err) return reject(err);
-//             resolve(result);
-//         });
-//     });
-// }
 
 // Return the email of the user with given id
 async function getEmailByID(id) {
@@ -219,6 +132,12 @@ async function setLevel(id, level) {
 // Register the client's IP and the current timestamp of login attempt with the given username
 async function addLoginAttempt(username, success, ip) {
     let id = await getIDByUsername(username);
+    return await query("INSERT INTO loginAttempts (username, uid, ip, success) VALUES (?, ?, ?, ?)", [username, id, ip, success]);
+}
+
+// Register the client's IP and the current timestamp of login attempt with the given id
+async function addLoginAttemptByID(id, success, ip) {
+    let username = await getUsernameByID(id);
     return await query("INSERT INTO loginAttempts (username, uid, ip, success) VALUES (?, ?, ?, ?)", [username, id, ip, success]);
 }
 
@@ -342,112 +261,13 @@ async function getSongsIn(pid) {
 /*these commands need to be in seperate files*/
 /*********************************************/
 
-function testInclude() {
-    console.log("loaded includes");
-}
-
-// Require the page to be logged in
-function requireLogin() {
-    if(!isLoggedIn()) {
-        redirect("login?redirect=" + currentPage);
-    }
-}
-
-// Require the page not to be logged in
-function requireLogout() {
-    if(isLoggedIn()) {
-        redirect("index");
-    }
-}
-
-// Require the page to be logged in with at least the given level
-function requireLevel(level) {
-    if (isLoggedIn()) {
-        let id = getLogin();
-        if (getLevelById(id) < level) {
-            redirect("not_authorized", 401);
-        }
-    } else {
-        redirect("login?redirect=" + currentPage);
-    }
-}
-
-// Redirect the user to the given url
-function redirect(url, statusCode = 303) {
-    if(url.substring(0, 4) == "http") {
-        header("Location:" + url, true, statusCode);
-    } else {
-        header("Location: https://dupbit.com/" + url, true, statusCode);
-    }
-}
-
-// Redirect the user to the previous page
-function backdirect(req) {
-    if (req.headers.referer) {
-        redirect(req.headers.referer);
-    } else {
-        redirect("index");
-    }
-}
-
 // Return string without illegal chars for filename
 function filename($string) {
     return preg_replace('/[\\\\\/:*?"<>|]/', '', $string);
 }
 
-function sendMail($email, $id, $username, $hash){
-    $to = $email;
-    $subject = "Welcome to Dupbit! Confirm your email " + $username + "!";
-    $message = `
-    <!DOCTYPE html>
-    <html lang="en"
-    <html>
-    <head>
-    <title>Confirm Email</title>
-    </head>
-    <body>
-    <a href=https://dupbit.com/action/validate.php?id=' . $id . '&hash=' . $hash . '>Activate account</a>
-    </body>
-    </html>
-    `;
-
-    $headers = "MIME-Version: 1.0" + "\r\n";
-    $headers += "Content-type:text/html;charset=UTF-8" + "\r\n";
-    $headers += "From: Dupbit <noreply@dupbit.com>" + "\r\n";
-
-    mail($to,$subject,$message,$headers);
-}
-
-function confirmChangesMail($email, $id, $username, $hash){
-    $to = $email;
-    $subject = "Please confirm these changes to your account";
-    $message = `
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-    <title> Confirm account update </title>
-    </head>
-    <body>
-    <a href=https://dupbit.com/action/validate.php?id=' . $id . '&hash=' . $hash . '> Confirm changes</a>
-    </body>
-    </html>
-    `;
-
-    $headers = "MIME-Version: 1.0" + "\r\n";
-    $headers += "Content-type:text/html;charset=UTF-8" + "\r\n";
-    $headers += "From: Dupbit <noreply@dupbit.com>" + "\r\n";
-
-    mail($to, $subject, $message, $headers);
-}
-
 function recoverAccount(){
 
-}
-
-function sendEmail2($email, $subject, $message){
-    $headers = "MIME-Version: 1.0" + "\r\n";
-    $headers += "Content-type:text/html;charset=UTF-8" + "\r\n";
-    $headers += 'From: Dupbit <noreply@dupbit.com>' + "\r\n";
 }
 
 // Verify if the given username, password and email make a valid user instance
@@ -588,33 +408,6 @@ async function verifyLogin(username, password) {
     return bcrypt.compareSync(password, hash.replace("$2y$", "$2a$"));
 }
 
-// Destroy the current login session
-function logout() {
-    session_start();
-    if (isset($_SESSION["login"])) {
-        unset($_SESSION["login"]);
-    }
-    session_write_close();
-}
-
-async function validate(id, emailhash) {
-    let password = await getPasswordByID(id);
-    let notActivated = (await getLevelByID(id) === 0);
-
-    if (bcrypt.compareSync(password, emailhash.replace("$2y$", "$2a$")) && notActivated) {
-        setLevel(id, 1);
-        login(id);
-        redirect("index");
-    } else {
-        redirect("not_authorized", 401);
-    }
-}
-
-// Return client's IP address
-function getIP() {
-    //noidea
-}
-
 // Return if the user with given id can do a namechange
 async function canDoUsernameChange(id) {
     let data = await getLatestUsernameChange(id);
@@ -639,6 +432,7 @@ module.exports = {
     getUsers,
     setLevel,
     addLoginAttempt,
+    addLoginAttemptByID,
     getLoginAttempts,
     addUsernameChange,
     getUsernameChangeHistory,
@@ -658,17 +452,8 @@ module.exports = {
     getUserOfPlaylist,
     getPlaylistsOfSong,
     getSongsIn,
-    testInclude,
-    requireLogin,
-    requireLogout,
-    requireLevel,
-    redirect,
-    backdirect,
     filename,
-    sendMail,
-    confirmChangesMail,
     recoverAccount,
-    sendEmail2,
     verifyRegistration,
     verifyUsername,
     verifyPassword,
@@ -679,8 +464,5 @@ module.exports = {
     getErrorMessage,
     decodeErrorCode,
     verifyLogin,
-    logout,
-    validate,
-    getIP,
     canDoUsernameChange
 };

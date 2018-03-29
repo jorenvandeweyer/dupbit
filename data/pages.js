@@ -37,6 +37,10 @@ module.exports = {
         title: "Dupbit - Not Found",
         currentPage: "notfound",
     },
+    "/not_authorized": {
+        title: "Dupbit - Not Authorized",
+        currentPage: "not_authorized",
+    },
     "/logins": {
         title: "Dupbit - Logins",
         currentPage: "logins",

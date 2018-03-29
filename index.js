@@ -27,9 +27,12 @@ http.createServer(async (request, response) => {
         });
 
         request.on("end", async () => {
+            if (request.method === "GET") {
+                body = request.url.split("?")[1];
+                request.url = request.url.split("?")[0];
+            }
             const url = new Url(`${request.url}.js?${body}`);
             let answer = await api.get(url, request);
-
             response.writeHead(answer.status, answer.header);
             response.end(JSON.stringify(answer.content));
         });

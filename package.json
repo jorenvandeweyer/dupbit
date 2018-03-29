@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
+  "author": "Joren Vandeweyer",
   "license": "ISC",
   "devDependencies": {
     "nodemon": "^1.14.11"
@@ -14,10 +14,10 @@
   "dependencies": {
     "bcrypt": "^1.0.3",
     "ejs": "^2.5.7",
-    "express": "^4.16.2",
-    "express-session": "^1.15.6",
     "jsonwebtoken": "^8.2.0",
+    "mailgun-js": "^0.16.0",
     "mysql": "^2.15.0",
-    "node-rsa": "^0.4.2"
+    "node-rsa": "^0.4.2",
+    "nodemailer": "^4.6.3"
   }
 }

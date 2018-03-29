@@ -1,21 +1,14 @@
 const Database = require("../../src/util/Database");
 const Token = require("../../src/util/Token");
 const Cookie = require("../../src/util/Cookie");
+const IP = require("../../src/util/IP");
 
 async function resolve(data, apidata) {
     if (data.username && data.password) {
         let login = await Database.verifyLogin(data.username, data.password);
-        let req = apidata.request;
-        console.log(req.headers["['x-forwarded-for']"]);
-        console.log(req.connection.remoteAddress);
-        console.log(req.socket.localAddress);
-        let ip = req.headers['x-forwarded-for'] ||
-            req.connection.remoteAddress ||
-            req.socket.remoteAddress ||
-            (req.connection.socket ? req.connection.socket.remoteAddress : null);
-
+        let ip = IP.extract(apidata.request);
         if (login) {
-            Database.addLoginAttempt(data.username, true, ip);
+            await Database.addLoginAttempt(data.username, true, ip);
             let id = await Database.getIDByUsername(data.username);
             let level = await Database.getLevelByID(id);
 

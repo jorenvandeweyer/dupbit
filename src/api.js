@@ -29,7 +29,6 @@ class Api {
 
     async load() {
         await this.authenticate();
-
         const api_call = require(this.url.fullAPIPath);
         let data = await api_call.resolve(this.url.url.query, this);
 
@@ -38,7 +37,11 @@ class Api {
                 data.redirect = "/" + data.redirect;
             }
             this.header["Location"] =  data.redirect;
-            this.status = 303;
+            if ("status" in data) {
+                this.status = data.status;
+            } else {
+                this.status = 303;
+            }
         } else {
             this.status = 200;
             this.content = data;
