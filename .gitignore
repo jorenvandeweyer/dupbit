@@ -3,3 +3,4 @@ package-lock.json
 config.json
 data/private.key
 data/public.key
+data/settings.json
