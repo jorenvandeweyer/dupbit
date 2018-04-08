@@ -1,5 +1,5 @@
 const MailComposer = require('nodemailer/lib/mail-composer');
-const { mailgun_api_key } = require("../../data/settings.json");
+const { mailgun_api_key } = require("../../config.json");
 const domain = 'dupbit.com';
 
 const mailgun = require('mailgun-js')({apiKey: mailgun_api_key, domain: domain});

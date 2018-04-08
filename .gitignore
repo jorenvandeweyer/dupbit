@@ -2,4 +2,3 @@ node_modules/
 config.json
 data/private.key
 data/public.key
-data/settings.json

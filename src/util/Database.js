@@ -14,7 +14,12 @@ const con = mysql.createConnection({
 con.connect((err) => {
     if(err) throw err;
     // console.log("DATABASE CONNECTED");
+    checkTables();
 });
+
+function checkTables() {
+    // con.query('SELET table_name FROM information_schema')
+}
 
 function query(query, options) {
     return new Promise((resolve, reject) => {
