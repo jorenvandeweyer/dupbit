@@ -12,7 +12,7 @@ async function resolve(data, apidata) {
         let passwordHash = await Database.getPasswordByID(id);
         let notActivated = await Database.getLevelByID(id) === 0;
 
-        if (bcrypt.compareSync(passwordHash, hash.replace("$2y$", "$2a$")) && notActivated) {
+        if (passwordHash && bcrypt.compareSync(passwordHash, hash.replace("$2y$", "$2a$")) && notActivated) {
             await Database.setLevel(id, 1);
             let ip = IP.extract(apidata.request);
             await Database.addLoginAttemptByID(id, true, ip);

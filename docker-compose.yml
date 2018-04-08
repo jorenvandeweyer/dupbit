@@ -1,0 +1,24 @@
+version: "3"
+services:
+  web:
+    build: .
+    ports:
+      - "8125:8125"
+    volumes:
+      - ./config.json:/usr/src/app/config.json
+      - ./data/private.key:/usr/src/app/data/private.key
+      - ./data/public.key:/usr/src/app/data/public.key
+    depends_on:
+      - mariadbdupbit
+    links:
+      - "mariadbdupbit:database"
+    restart: always
+  mariadbdupbit:
+    image: mariadb:10.3.5
+    environment:
+      - MYSQL_ALLOW_EMPTY_PASSWORD=1
+    ports:
+      - "3306:3306"
+    volumes:
+      - .db/:/var/lib/mysql
+    restart: always

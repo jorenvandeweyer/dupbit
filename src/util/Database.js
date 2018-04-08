@@ -12,13 +12,101 @@ const con = mysql.createConnection({
 });
 
 con.connect((err) => {
-    if(err) throw err;
-    // console.log("DATABASE CONNECTED");
+    if(err) {
+        throw err;
+    }
     checkTables();
 });
 
-function checkTables() {
-    // con.query('SELET table_name FROM information_schema')
+async function checkTables() {
+    await query('CREATE DATABASE IF NOT EXISTS users;').then((result) => {
+        con.changeUser({database : 'users'}, function(err) {
+            if (err) throw err;
+        });
+        if (result.warningCount == 0) {
+            console.log("Created Database \"users\".");
+        }
+    });
+    await query('CREATE DATABASE IF NOT EXISTS music;').then((result) => {
+        if (result.warningCount == 0) {
+            console.log("Created Database \"music\".");
+        }
+    });
+
+    await query(`CREATE TABLE IF NOT EXISTS users.users (
+        id INT NOT NULL UNIQUE AUTO_INCREMENT,
+        username VARCHAR(20) NOT NULL UNIQUE,
+        password CHAR(60) NOT NULL,
+        email VARCHAR(255) NOT NULL UNIQUE,
+        level INT DEFAULT 0,
+        registrationTimestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        PRIMARY KEY (id)
+    )`).then((result) => {
+        if (result.warningCount == 0) {
+            console.log("Created table \"users.users\".");
+        }
+    });
+
+    await query(`CREATE TABLE IF NOT EXISTS users.loginAttempts (
+		username VARCHAR(20) NOT NULL,
+		uid INT,
+		ip CHAR(40),
+		timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+		success BOOLEAN NOT NULL,
+		FOREIGN KEY (uid) REFERENCES users.users(id) ON DELETE CASCADE
+    )`).then((result) => {
+        if (result.warningCount == 0) {
+            console.log("Created table \"users.loginAttempts\".");
+        }
+    });
+
+    await query(`CREATE TABLE IF NOT EXISTS users.usernameChanges (
+		uid INT NOT NULL,
+		username VARCHAR(20) NOT NULL,
+		timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+		FOREIGN KEY (uid) REFERENCES users.users(id) ON DELETE CASCADE
+    )`).then((result) => {
+        if (result.warningCount == 0) {
+            console.log("Created table \"users.usernameChanges\".");
+        }
+    });
+
+    await query(`CREATE TABLE IF NOT EXISTS music.songs (
+		id INT NOT NULL UNIQUE AUTO_INCREMENT,
+		ytid CHAR(11) NOT NULL,
+		title VARCHAR(255),
+		artist VARCHAR(255),
+		uid INT NOT NULL,
+		PRIMARY KEY (id),
+		FOREIGN KEY (uid) REFERENCES users.users(id) ON DELETE CASCADE
+    )`).then((result) => {
+        if (result.warningCount == 0) {
+            console.log("Created table \"music.songs\".");
+        }
+    });
+
+    await query(`CREATE TABLE IF NOT EXISTS music.playlists (
+		id INT NOT NULL UNIQUE AUTO_INCREMENT,
+		name VARCHAR(30) NOT NULL,
+		uid INT NOT NULL,
+		PRIMARY KEY (id),
+		FOREIGN KEY (uid) REFERENCES users.users(id) ON DELETE CASCADE
+    )`).then((result) => {
+        if (result.warningCount == 0) {
+            console.log("Created table \"music.playlists\".");
+        }
+    });
+
+    await query(`CREATE TABLE IF NOT EXISTS music.songInPlaylist (
+		sid INT NOT NULL,
+		pid INT NOT NULL,
+		FOREIGN KEY (sid) REFERENCES music.songs(ID) ON DELETE CASCADE,
+		FOREIGN KEY (pid) REFERENCES music.playlists(ID) ON DELETE CASCADE
+    )`).then((result) => {
+        if (result.warningCount == 0) {
+            console.log("Created table \"music.songInPlaylist\".");
+        }
+    });
 }
 
 function query(query, options) {
