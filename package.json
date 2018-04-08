@@ -18,7 +18,6 @@
     "jsonwebtoken": "^8.2.1",
     "mailgun-js": "^0.16.0",
     "mysql": "^2.15.0",
-    "node-rsa": "^0.4.2",
-    "nodemailer": "^4.6.4"
+    "node-rsa": "^0.4.2"
   }
 }
