@@ -6,8 +6,7 @@ services:
       - "8125:8125"
     volumes:
       - ./config.json:/usr/src/app/config.json
-      - ./data/private.key:/usr/src/app/data/private.key
-      - ./data/public.key:/usr/src/app/data/public.key
+      - ./data/secrets/:/usr/src/app/data/secrets/
     depends_on:
       - mariadbdupbit
     links:
