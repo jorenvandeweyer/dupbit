@@ -4,17 +4,17 @@ const fs = require('fs');
 
 let privateKey, publicKey;
 
-if (fs.existsSync("./data/secret/private.key")) {
-    privateKey = fs.readFileSync("./data/secret/private.key", "utf8");
-    publicKey = fs.readFileSync("./data/secret/public.key", "utf8");
+if (fs.existsSync("./data/secrets/private.key")) {
+    privateKey = fs.readFileSync("./data/secrets/private.key", "utf8");
+    publicKey = fs.readFileSync("./data/secrets/public.key", "utf8");
 } else {
     console.log("[+]Generating keypair...");
     let key = new NodeRSA({b: 2048});
     privateKey = key.exportKey("pkcs1-private-pem");
     publicKey = key.exportKey("pkcs1-public-pem");
     console.log("[+]Keypair generated, savind...");
-    fs.writeFileSync("./data/secret/private.key", privateKey);
-    fs.writeFileSync("./data/secret/public.key", publicKey);
+    fs.writeFileSync("./data/secrets/private.key", privateKey);
+    fs.writeFileSync("./data/secrets/public.key", publicKey);
     console.log("[+]Keypair saved");
 }
 

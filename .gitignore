@@ -1,5 +1,5 @@
 node_modules/
 config.json
-data/private.key
-data/public.key
+data/secrets/private.key
+data/secrets/public.key
 .db/
