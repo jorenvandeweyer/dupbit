@@ -11,8 +11,8 @@ process.on('unhandledRejection', (reason, p) => {
 });
 
 const options = {
-  key: fs.readFileSync('data/secrets/dupbit.com/privkey.pem'),
-  cert: fs.readFileSync('data/secrets/dupbit.com/fullchain.pem')
+  key: fs.readFileSync('./data/secrets/dupbit.com/privkey.pem'),
+  cert: fs.readFileSync('./data/secrets/dupbit.com/fullchain.pem')
 };
 
 https.createServer(options, async (request, response) => {
