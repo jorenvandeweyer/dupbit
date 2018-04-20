@@ -1,6 +1,5 @@
 node_modules
 npm-debug.log
 config.json
-data/private.key
-data/public.key
+data/secrets/
 data/settings.json
