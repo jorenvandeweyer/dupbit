@@ -496,9 +496,13 @@ function dec2bin(dec) {
 // Verify if the given username and password make a valid login
 async function verifyLogin(username, password) {
     let id = await getIDByUsername(username);
-    let hash = await getPasswordByID(id);
 
-    return bcrypt.compareSync(password, hash.replace("$2y$", "$2a$"));
+    if (id) {
+        let hash = await getPasswordByID(id);
+        return bcrypt.compareSync(password, hash.replace("$2y$", "$2a$"));
+    } else {
+        return false;
+    }
 }
 
 // Return if the user with given id can do a namechange
