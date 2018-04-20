@@ -1,15 +1,21 @@
-const http = require('http');
+const https = require('https');
 const Url = require("./src/util/Url");
 const handler = require("./src/handler");
 const api = require("./src/api");
 const url2 = require("url");
+const fs = require("fs");
 
 process.on('unhandledRejection', (reason, p) => {
   console.log('Unhandled Rejection at: Promise', p, 'reason:', reason);
   // application specific logging, throwing an error, or other logic here
 });
 
-http.createServer(async (request, response) => {
+const options = {
+  key: fs.readFileSync('data/secrets/dupbit.com/privkey.pem'),
+  cert: fs.readFileSync('data/secrets/dupbit.com/fullchain.pem')
+};
+
+https.createServer(options, async (request, response) => {
     if (request.method === "GET" && !request.url.includes("/api/")) {
         const url = new Url(request.url);
         let page = await handler.get(url, request);

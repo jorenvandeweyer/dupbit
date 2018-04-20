@@ -3,7 +3,8 @@ services:
   web:
     build: .
     ports:
-      - "8125:8125"
+      - "80:8125"
+      - "443:8125"
     volumes:
       - ./config.json:/usr/src/app/config.json
       - ./data/secrets/:/usr/src/app/data/secrets/
