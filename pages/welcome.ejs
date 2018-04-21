@@ -11,7 +11,7 @@
 
 			</br>
 
-			<form action="calendar" method="post">
+			<form action="/projects/calendar" method="get">
 				<div class="input-group">
 					<input type = "submit" class="btn btn-primary" value = " Manage calendars "/>
 				</div>
@@ -20,7 +20,7 @@
 			</br>
 
 			<% if(user.level >= 2) { %>
-			<form action="music" method="post">
+			<form action="/projects/music" method="get">
 				<div class="input-group">
 					<input type = "submit" class="btn btn-primary" value = " Music "/>
 				</div>

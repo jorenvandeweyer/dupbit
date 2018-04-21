@@ -1,4 +1,5 @@
 const https = require('https');
+const http = require('http');
 const Url = require("./src/util/Url");
 const handler = require("./src/handler");
 const api = require("./src/api");
@@ -11,8 +12,8 @@ process.on('unhandledRejection', (reason, p) => {
 });
 
 const options = {
-  key: fs.readFileSync('/usr/src/app/data/secrets/dupbit.com/privkey.pem'),
-  cert: fs.readFileSync('/usr/src/app/data/secrets/dupbit.com/fullchain.pem')
+  key: fs.readFileSync('data/secrets/dupbit.com/privkey.pem'),
+  cert: fs.readFileSync('data/secrets/dupbit.com/fullchain.pem')
 };
 
 https.createServer(options, async (request, response) => {
@@ -45,6 +46,11 @@ https.createServer(options, async (request, response) => {
     } else {
         console.log("ELSE???????");
     }
-}).listen(8125);
+}).listen(443);
 
-console.log('Server running at http://127.0.0.1:8125/');
+http.createServer(function (req, res) {
+    res.writeHead(301, { "Location": "https://" + req.headers['host'] + req.url });
+    res.end();
+}).listen(80);
+
+console.log('Server running at http://127.0.0.1:443/');

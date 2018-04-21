@@ -4,25 +4,22 @@ const bcrypt = require('bcrypt');
 const lang = require("../../lang/en.json");
 const Mail = require("./Mail");
 
-const con = mysql.createConnection({
+const pool = mysql.createPool({
     host: settings.MYSQL_HOST,
     user: settings.MYSQL_USER,
     password: settings.MYSQL_PASSWORD,
     database: settings.MYSQL_DATABASE
 });
 
-con.connect((err) => {
-    if(err) {
-        throw err;
-    }
-    checkTables();
-});
+checkTables();
+// con.connect((err) => {
+//     if(err) {
+//         throw err;
+//     }
+// });
 
 async function checkTables() {
     await query('CREATE DATABASE IF NOT EXISTS users;').then((result) => {
-        con.changeUser({database : 'users'}, function(err) {
-            if (err) throw err;
-        });
         if (result.warningCount == 0) {
             console.log("Created Database \"users\".");
         }
@@ -30,6 +27,11 @@ async function checkTables() {
     await query('CREATE DATABASE IF NOT EXISTS music;').then((result) => {
         if (result.warningCount == 0) {
             console.log("Created Database \"music\".");
+        }
+    });
+    await query('CREATE DATABASE IF NOT EXISTS calendar').then((result) => {
+        if (result.warningCOunt == 0) {
+            console.log("Created Database \"calendar\".");
         }
     });
 
@@ -107,14 +109,74 @@ async function checkTables() {
             console.log("Created table \"music.songInPlaylist\".");
         }
     });
+
+    await query(`CREATE TABLE IF NOT EXISTS calendar.calendars (
+        id INT NOT NULL UNIQUE AUTO_INCREMENT,
+        name VARCHAR(64) NOT NULL,
+        uid INT NOT NULL,
+        PRIMARY KEY (id),
+        FOREIGN KEY (uid) REFERENCES users.users(id)
+            ON DELETE CASCADE
+    )`).then((result) => {
+        if (result.warningCount == 0) {
+            console.log("Created table \"calendar.calendars\".");
+        }
+    });
+
+    await query(`CREATE TABLE IF NOT EXISTS calendar.urls (
+        id INT NOT NULL UNIQUE AUTO_INCREMENT,
+        data VARCHAR(255) NOT NULL,
+        name VARCHAR(255) NOT NULL,
+        cid INT NOT NULL,
+        PRIMARY KEY (id),
+        FOREIGN KEY (cid) REFERENCES calendar.calendars(id)
+            ON DELETE CASCADE
+    )`).then((result) => {
+        if (result.warningCount == 0) {
+            console.log("Created table \"calendar.urls\".");
+        }
+    });
+
+    await query(`CREATE TABLE IF NOT EXISTS calendar.courses (
+        id INT NOT NULL UNIQUE AUTO_INCREMENT,
+        data VARCHAR(255) NOT NULL,
+        name VARCHAR(255) NOT NULL,
+        cid INT NOT NULL,
+        PRIMARY KEY (id),
+        FOREIGN KEY (cid) REFERENCES calendar.calendars(id)
+            ON DELETE CASCADE
+    )`).then((result) => {
+        if (result.warningCount == 0) {
+            console.log("Created table \"calendar.courses\".");
+        }
+    });
+}
+
+function getConnection() {
+    return new Promise((resolve, reject) => {
+        pool.getConnection((err, connection) => {
+            if (err) return reject(err);
+            resolve(connection);
+        });
+    }).catch((err) => {
+        console.log(err);
+        return null;
+    });
 }
 
 function query(query, options) {
-    return new Promise((resolve, reject) => {
-        con.query(query, options, (err, result) => {
+    return new Promise(async (resolve, reject) => {
+        let connection = await getConnection();
+        connection.query(query, options, (err, result) => {
+            connection.release();
+
             if (err) return reject(err);
             resolve(result);
         });
+        // con.query(query, options, (err, result) => {
+        //     if (err) return reject(err);
+        //     resolve(result);
+        // });
     }).catch((err) => {
         console.log(err);
         return null;
@@ -126,30 +188,30 @@ async function register(username, password, email, level=0) {
     let hash = bcrypt.hashSync(password, 10);
     let emailhash = bcrypt.hashSync(hash, 10);
 
-    let q = await query("INSERT INTO users (username, password, email, level) VALUES (?, ?, ?, ?)", [username, hash, email, level]);
+    let q = await query("INSERT INTO users.users (username, password, email, level) VALUES (?, ?, ?, ?)", [username, hash, email, level]);
     await Mail.register(email, await getIDByUsername(username), username, emailhash);
     return q;
 }
 
 async function unregister(id) {
-    return await query("DELETE FROM users WHERE id=?", [id]);
+    return await query("DELETE FROM users.users WHERE id=?", [id]);
 }
 
 // Check if the given username is registered
 async function isRegistered(username) {
-    let result = await query("SELECT username FROM users WHERE username=?", [username]);
+    let result = await query("SELECT username FROM users.users WHERE username=?", [username]);
     return result.length === 1;
 }
 
 // Check if the given email is in use
 async function isInUse(email) {
-    let result = await query("SELECT email FROM users WHERE email=?", [email]);
+    let result = await query("SELECT email FROM users.users WHERE email=?", [email]);
     return result.length === 1;
 }
 
 // Return the id of the user with given username
 async function getIDByUsername(username) {
-    let result = await query("SELECT id FROM users WHERE username=?", [username]);
+    let result = await query("SELECT id FROM users.users WHERE username=?", [username]);
     if (result.length) {
         return result[0].id;
     } else {
@@ -159,7 +221,7 @@ async function getIDByUsername(username) {
 
 // Return the username of the user with given id
 async function getUsernameByID(id) {
-    let result = await query("SELECT username FROM users WHERE id=?", [id]);
+    let result = await query("SELECT username FROM users.users WHERE id=?", [id]);
     if (result.length) {
         return result[0].username;
     } else {
@@ -169,12 +231,12 @@ async function getUsernameByID(id) {
 
 // Set the username of the user with the given id to the given username
 async function setUsername(id, username) {
-    return await query("UPDATE users SET username=? WHERE id=?", [username, id]);
+    return await query("UPDATE users.users SET username=? WHERE id=?", [username, id]);
 }
 
 // Return the password of the user with given id
 async function getPasswordByID(id) {
-    let result = await query("SELECT password FROM users WHERE id=?", [id]);
+    let result = await query("SELECT password FROM users.users WHERE id=?", [id]);
     if (result.length) {
         return result[0].password;
     } else {
@@ -184,12 +246,12 @@ async function getPasswordByID(id) {
 
 // Set the password of the user with the given id to the given username
 async function setPassword(id, password) {
-    return await query("UPDATE users SET password=? WHERE id=?", [password, id]);
+    return await query("UPDATE users.users SET password=? WHERE id=?", [password, id]);
 }
 
 // Return the email of the user with given id
 async function getEmailByID(id) {
-    let result = await query("SELECT email FROM users WHERE id=?", [id]);
+    let result = await query("SELECT email FROM users.users WHERE id=?", [id]);
     if (result.length) {
         return result[0].email;
     } else {
@@ -199,12 +261,12 @@ async function getEmailByID(id) {
 
 // Set the email of the user with the given id to the given username
 async function setEmail(id, email) {
-    return await query("UPDATE users SET email=? WHERE id=?", [email, id]);
+    return await query("UPDATE users.users SET email=? WHERE id=?", [email, id]);
 }
 
 // Return the level of the user with given id
 async function getLevelByID(id) {
-    let result = await query("SELECT level FROM users WHERE id=?", [id]);
+    let result = await query("SELECT level FROM users.users WHERE id=?", [id]);
     if (result.length) {
         return result[0].level;
     } else {
@@ -214,44 +276,44 @@ async function getLevelByID(id) {
 
 // Get all users
 async function getUsers() {
-    return await query("SELECT * FROM users");
+    return await query("SELECT * FROM users.users");
 }
 
 // Set the level of the user with the given id to the given level
 async function setLevel(id, level) {
-    return await query("UPDATE users SET level=? WHERE id=?", [level, id]);
+    return await query("UPDATE users.users SET level=? WHERE id=?", [level, id]);
 }
 
 // Register the client's IP and the current timestamp of login attempt with the given username
 async function addLoginAttempt(username, success, ip) {
     let id = await getIDByUsername(username);
-    return await query("INSERT INTO loginAttempts (username, uid, ip, success) VALUES (?, ?, ?, ?)", [username, id, ip, success]);
+    return await query("INSERT INTO users.loginAttempts (username, uid, ip, success) VALUES (?, ?, ?, ?)", [username, id, ip, success]);
 }
 
 // Register the client's IP and the current timestamp of login attempt with the given id
 async function addLoginAttemptByID(id, success, ip) {
     let username = await getUsernameByID(id);
-    return await query("INSERT INTO loginAttempts (username, uid, ip, success) VALUES (?, ?, ?, ?)", [username, id, ip, success]);
+    return await query("INSERT INTO users.loginAttempts (username, uid, ip, success) VALUES (?, ?, ?, ?)", [username, id, ip, success]);
 }
 
 // Get all login attempts
 async function getLoginAttempts() {
-    return await query("SELECT * FROM loginAttempts ORDER BY Timestamp DESC");
+    return await query("SELECT * FROM users.loginAttempts ORDER BY Timestamp DESC");
 }
 
 // Register a namechange to the given username of a user with given ID
 async function addUsernameChange(id, username) {
-    return await query("INSERT INTO usernameChanges (uid, username) VALUES (?, ?)", [id, username]);
+    return await query("INSERT INTO users.usernameChanges (uid, username) VALUES (?, ?)", [id, username]);
 }
 
 // Get all namechanges of a user with given id
 async function getUsernameChangeHistory(id) {
-    return await query("SELECT * FROM usernameChanges WHERE uid=?", [id]);
+    return await query("SELECT * FROM users.usernameChanges WHERE uid=?", [id]);
 }
 
 // Get latest namechange of a user with given id
 async function getLatestUsernameChange(id) {
-    return await query("SELECT * FROM usernameChanges WHERE uid=? ORDER BY Timestamp DESC LIMIT 1", [id]);
+    return await query("SELECT * FROM users.usernameChanges WHERE uid=? ORDER BY Timestamp DESC LIMIT 1", [id]);
 }
 
 //MUST RETURN INSERT ID INSTEAD
@@ -349,6 +411,35 @@ async function getSongsIn(pid) {
     return await query("SELECT * FROM music.songInPlaylist JOIN music.songs WHERE sid = id AND pid=? ORDER BY artist, title", [pid]);
 }
 
+async function getCalendarUrls(userId, calendarId) {
+    check_id = await checkCalendarOwner(userId, calendarId)
+    if (!check_id) {
+        return [];
+    }
+    return await query("SELECT * FROM calendar.urls WHERE cid = ?", [calendarId]);
+
+}
+
+async function getCalendarCourseNumbers(userId, calendarId) {
+    check_id = await checkCalendarOwner(userId, calendarId)
+    if (!check_id) {
+        return [];
+    }
+    return await query("SELECT * FROM calendar.courses WHERE cid = ?", [calendarId]);
+}
+
+async function getCalendarTable(userId) {
+    return await query("SELECT * FROM calendar.calendars WHERE uid = ?", [userId]);
+}
+
+async function checkCalendarOwner(userId, calendarId) {
+    let result = await query("SELECT id FROM calendar.calendars WHERE id = ? AND uid = ?", [calendarId, userId]);
+    if (result.length){
+        return true;
+    } else {
+        return false;
+    }
+}
 
 /*********************************************/
 /*these commands need to be in seperate files*/
@@ -514,6 +605,10 @@ async function canDoUsernameChange(id) {
 }
 
 module.exports = {
+    getCalendarUrls,
+    getCalendarCourseNumbers,
+    getCalendarTable,
+    query,
     register,
     unregister,
     isRegistered,

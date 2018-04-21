@@ -3,11 +3,13 @@ services:
   web:
     build: .
     ports:
-      - "80:8125"
-      - "443:8125"
+      - "80:80"
+      - "443:443"
     volumes:
       - ./config.json:/usr/src/app/config.json
       - ./data/secrets/:/usr/src/app/data/secrets/
+      - ./pages/:/usr/src/app/pages/
+      - ./src/:/usr/src/app/src/
     depends_on:
       - mariadbdupbit
     links:

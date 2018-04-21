@@ -51,9 +51,18 @@ class Api {
             this.header["Set-Cookie"] = data["cookie"];
         }
 
-        if (data && data.backdirect) {
+        if (data && data.backdirect && this.request.headers.referer) {
             this.status = 303;
             this.header["Location"] = this.request.headers.referer;
+            if ("data" in data) {
+                if (!this.header["Location"].includes("?")) this.header["Location"] += "?"
+                for (let key in data.data){
+                    this.header["Location"] += `&${key}`;
+                    if (data.data[key]) {
+                        this.header["Location"] += `=${data.data[key]}`
+                    }
+                }
+            }
         }
 
         return this;

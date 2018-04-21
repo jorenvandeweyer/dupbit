@@ -20,9 +20,10 @@ class Data {
 
     addQuery() {
         let query = this.page.url.url.query;
-        for (let key in query) {
-            this[key] = query[key];
-        }
+        this.query = this.page.url.url.query;
+        // for (let key in query) {
+        //     this[key] = query[key];
+        // }
     }
 
     async load() {
@@ -48,10 +49,10 @@ class Data {
         if (this.pageInfo) {
             if (this.pageInfo.requireLogin && !this.session.isLoggedIn) {
                 this.status = 303;
-                this.redirectHeader = "login?redirect=" + this.pageInfo.currentPage;
+                this.redirectHeader = "/login?redirect=" + this.pageInfo.currentPage;
             } else if (this.pageInfo.requireLevel && this.pageInfo.requireLevel > this.session.level) {
                 this.status = 303;
-                this.redirectHeader = "notfound";
+                this.redirectHeader = "/notfound";
             } else {
                 this.status = 200;
             }

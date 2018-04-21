@@ -1,4 +1,4 @@
-<% if(!("redirect" in locals)) {locals.redirect = "welcome"} %>
+<% if(!("redirect" in query)) {query.redirect = "welcome"} %>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -14,13 +14,13 @@
 			<div class="panel panel-default panel-compact">
 				<div class="panel-heading"><b>Login</b></div>
 				<div class="panel-body">
-					<% if("fail" in locals) { %>
+					<% if("fail" in query) { %>
 					<div class="alert alert-danger alert-dismissable">
 						<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
 						<strong>Wrong password or username!</strong> Try again.
 					</div>
 					<% } %>
-					<% if("notActivated" in locals) { %>
+					<% if("notActivated" in query) { %>
 					<div class="alert alert-danger alert-dismissable">
 						<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
 						<strong>Account not activated!</strong> Please activate your account first.
@@ -44,7 +44,7 @@
 								<input class="btn btn-primary" type="submit" value="Login"/>
 							</div>
 						</div>
-						<input name="redirect" type="hidden" value="<%= redirect %>"/>
+						<input name="redirect" type="hidden" value="<%= query.redirect %>"/>
 					</form>
 				</div>
 			</div>
