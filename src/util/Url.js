@@ -6,13 +6,16 @@ class Url {
     constructor(url) {
         this.type = "";
         this.url = url2.parse(url, true);
-        if(this.url.pathname === "/") this.url.pathname = "/index";
+        if (this.url.pathname === "/") this.url.pathname = "/index";
         this.path = path.parse(this.url.pathname);
-        if(this.path.dir === "/") this.path.dir === "";
-        if(this.path.ext === "" || this.path.ext === ".ejs") {
+        if (this.path.dir === "/") this.path.dir === "";
+        if (this.path.ext === "" || this.path.ext === ".ejs") {
             this.path.dir = `/pages${this.path.dir}`;
             this.path.ext = ".ejs";
             this.type = "utf8";
+        }
+        if (this.path.ext === ".ics") {
+            this.path.dir = `/pages${this.path.dir}`;
         }
     }
 
