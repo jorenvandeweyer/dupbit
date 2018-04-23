@@ -34,7 +34,6 @@ class Calendar {
     }
 
     filterEvents(calendar, filter) {
-        //console.log(calendar);
         for (let e in calendar) {
             let ev = calendar[e];
             for (let i = 0; i < filter.length; i++) {
@@ -150,6 +149,7 @@ function saveFile(calendar, path="../pages/ics") {
     fs.writeFileSync(`${path}/calendar_${calendar.id}.ics`, calendar.toString());
 
 }
+
 if (require.main === module) {
     main();
 }
