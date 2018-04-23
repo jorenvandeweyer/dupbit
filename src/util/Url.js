@@ -22,7 +22,6 @@ class Url {
         const path = Path.parse(this.pathname);
 
         this.name = path.name
-
         this.ext = path.ext || ".ejs";
 
         if (path.dir === "/") path.dir = "";
