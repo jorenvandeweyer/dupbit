@@ -159,4 +159,3 @@ module.exports = {
         main();
     }
 }
-// filterFile("http://collegeroosters.uhasselt.be/1300_2017_2018.ics");
