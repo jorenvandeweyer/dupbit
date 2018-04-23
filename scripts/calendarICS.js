@@ -35,10 +35,12 @@ class Calendar {
 
     filterEvents(calendar, filter) {
         for (let e in calendar) {
-            let ev = calendar[e];
+            const ev = calendar[e];
             for (let i = 0; i < filter.length; i++) {
-                if ( (ev.summary && (ev.summary.includes(filter[i].name) || ev.summary.includes(filter[i].data)))
-                    || (ev.description && (ev.description.includes(filter[i].name) || ev.summary.includes(filter[i].data)))) {
+                const f = filter[i];
+                const is_valid = obj => obj &&
+                    (obj.includes(f.name) || obj.includes(f.date));
+                if (is_valid(ev.summary) || is_valid(ev.description)) {
                     this.addEvent(new Event(ev));
                     break;
                 }
@@ -83,28 +85,28 @@ class Event {
 }
 
 function formatDate(date) {
-    return date.toISOString().replace(".000Z", "Z").replace(/-/g, "").replace(/:/g, "");
+    return date.toISOString()
+        .replace(".000Z", "Z")
+        .replace(/-/g, "")
+        .replace(/:/g, "");
 }
 
 async function main() {
-    let calendars = await db.query("SELECT * FROM calendar.calendars");
-
+    const calendars = await db.query("SELECT * FROM calendar.calendars");
     for (let i = 0; i < calendars.length; i++) {
         await createCalendar(calendars[i]);
     }
 }
 
 async function createCalendar(calendar) {
-    let urls = await db.getCalendarUrls(calendar.uid, calendar.id);
-    let courses = await db.getCalendarCourseNumbers(calendar.uid, calendar.id);
-
-    let cal = new Calendar(calendar.name, calendar.id);
+    const cal = new Calendar(calendar.name, calendar.id);
+    const urls = await db.getCalendarUrls(calendar.uid, calendar.id);
+    const courses = await db.getCalendarCourseNumbers(calendar.uid, calendar.id);
 
     for (let i = 0; i < urls.length; i++) {
         try {
             let file = await fetchFile(urls[i].data);
             file = ical.parseICS(file);
-
             cal.filterEvents(file, courses);
         } catch(e) {
             console.log(e);
@@ -151,7 +153,6 @@ function saveFile(calendar, path="../pages/ics") {
         fs.mkdirSync("../pages/ics");
     }
     fs.writeFileSync(`${path}/calendar_${calendar.id}.ics`, calendar.toString());
-
 }
 
 if (require.main === module) {

@@ -29,8 +29,8 @@ class Api {
 
     async load() {
         await this.authenticate();
-        const api_call = require(this.url.fullAPIPath);
-        let data = await api_call.resolve(this.url.url.query, this);
+        const api_call = require(this.url.fullPath);
+        let data = await api_call.resolve(this.url.query, this);
 
         if (data && "redirect" in data) {
             if (!data.redirect.includes("http")) {

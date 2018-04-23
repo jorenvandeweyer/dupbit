@@ -7,20 +7,19 @@ const Token = require("./Token");
 class Data {
     constructor(page) {
         this.page = page;
-        this.pageInfo = pageInfo[this.page.url.url.pathname];
+        this.pageInfo = pageInfo[this.page.url.pathname];
         if (this.pageInfo == undefined) {
             this.pageInfo = pageInfo["/notfound"];
         }
         this.lang = require("../../lang/en.json");
-        this.path = this.page.url.url.pathname;
+        this.path = this.page.url.pathname;
         this.mimeType = ".ejs";
         this.errorMessageList = [];
         this.addQuery();
     }
 
     addQuery() {
-        let query = this.page.url.url.query;
-        this.query = this.page.url.url.query;
+        this.query = this.page.url.query;
     }
 
     async load() {
@@ -35,13 +34,6 @@ class Data {
             };
             this.user = User.nullUser();
         }
-
-        // if (this.pageInfo && this.pageInfo.requireLogin && !this.session.isLoggedIn) {
-        //     this.status = 303;
-        //     this.redirectHeader = "login?redirect=" + this.pageInfo.currentPage;
-        // } else {
-        //     this.status = 200;
-        // }
 
         if (this.pageInfo) {
             if (this.pageInfo.requireLogin && !this.session.isLoggedIn) {

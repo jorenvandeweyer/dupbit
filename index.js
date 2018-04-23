@@ -17,7 +17,26 @@ const options = {
 };
 
 https.createServer(options, async (request, response) => {
-    if (request.method === "GET" && !request.url.includes("/api/")) {
+    console.log(`${request.method}\t${request.url}`);
+    if (request.url.includes("/api/") || request.method === "POST") {
+        let body = "";
+
+        request.on("data", (data) => {
+            body += data;
+        });
+
+        request.on("end", async () => {
+            let url;
+            if (request.method === "GET" && request.url.includes("?")) {
+                url = new Url(request.url.replace("?", ".js?"));
+            } else {
+                url = new Url(`${request.url}.js?${body}`);
+            }
+            let answer = await api.get(url, request);
+            response.writeHead(answer.status, answer.header);
+            response.end(JSON.stringify(answer.content));
+        });
+    } else if (request.method === "GET") {
         const url = new Url(request.url);
         let page = await handler.get(url, request);
 
@@ -26,23 +45,6 @@ https.createServer(options, async (request, response) => {
         response.write(page.content);
         response.end();
         //response.end(content, 'utf-8');
-    } else if (request.method === "POST" || request.url.includes("/api/")) {
-        let body = "";
-
-        request.on("data", (data) => {
-            body += data;
-        });
-
-        request.on("end", async () => {
-            if (request.method === "GET") {
-                body = request.url.split("?")[1];
-                request.url = request.url.split("?")[0];
-            }
-            const url = new Url(`${request.url}.js?${body}`);
-            let answer = await api.get(url, request);
-            response.writeHead(answer.status, answer.header);
-            response.end(JSON.stringify(answer.content));
-        });
     } else {
         console.log("ELSE???????");
     }

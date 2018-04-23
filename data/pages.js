@@ -56,7 +56,7 @@ module.exports = {
             "attempts": "Database.getLoginAttempts()",
         }
     },
-    "/projects/calendar": {
+    "/projects/calendar/index": {
         title: "Dupbit - Calendar",
         currentPage: "projects/calendar",
         requireLogin: true,

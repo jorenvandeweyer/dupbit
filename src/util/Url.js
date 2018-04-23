@@ -1,21 +1,35 @@
-const path = require("path");
+const Path = require("path");
 const url2 = require("url");
-const absolute = path.dirname(process.mainModule.filename);
+const fs = require("fs");
+const absolute = Path.dirname(process.mainModule.filename);
+const utf8 = [".ejs", ".js"];
 
 class Url {
     constructor(url) {
-        this.type = "";
-        this.url = url2.parse(url, true);
-        if (this.url.pathname === "/") this.url.pathname = "/index";
-        this.path = path.parse(this.url.pathname);
-        if (this.path.dir === "/") this.path.dir === "";
-        if (this.path.ext === "" || this.path.ext === ".ejs") {
-            this.path.dir = `/pages${this.path.dir}`;
-            this.path.ext = ".ejs";
-            this.type = "utf8";
+        this.original = url;
+
+        const url_parsed = url2.parse(this.original, true);
+
+        this.query = url_parsed.query;
+        this.pathname = url_parsed.pathname;
+
+        if (fs.existsSync(`${absolute}/pages${this.pathname}`)) {
+            if (fs.lstatSync(`${absolute}/pages${this.pathname}`).isDirectory()) {
+                this.pathname += "/index";
+            }
         }
-        if (this.path.ext === ".ics") {
-            this.path.dir = `/pages${this.path.dir}`;
+
+        const path = Path.parse(this.pathname);
+
+        this.name = path.name
+
+        this.ext = path.ext || ".ejs";
+
+        if (path.dir === "/") path.dir = "";
+        this.dir = `/pages${path.dir}`
+
+        if (utf8.includes(this.ext)) {
+            this.type = "utf8";
         }
     }
 
@@ -24,40 +38,28 @@ class Url {
     }
 
     get shortPath() {
-        return `${this.path.dir}/${this.fullFilname}`;
+        return `${this.dir}/${this.fullFilname}`;
     }
 
     get fullPath() {
         return `${absolute}${this.shortPath}`;
     }
 
-    get fullAPIPath() {
-        return `${absolute}/pages${this.shortPath}`;
-    }
-
-    get ext() {
-        return this.path.ext;
-    }
-
     get filename() {
-        return this.path.name;
+        return this.name;
     }
 
     get fullFilname() {
         return `${this.filename}${this.ext}`;
     }
 
-    get query() {
-        return this.url.query;
-    }
-
     queryHas(param) {
-        return (param in this.url.query);
+        return (param in this.query);
     }
 
     queryGet(param) {
-        if (!(param in this.url.query)) return null;
-        return this.url.query[param];
+        if (!(param in this.query)) return null;
+        return this.query[param];
     }
 
 }
