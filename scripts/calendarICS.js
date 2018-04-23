@@ -63,23 +63,27 @@ class Event {
             this.sequence = sequence;
             this.summary = summary;
             this.uid = uid;
-            this.stamp = stamp;
+            this.dtstamp = stamp;
             this.class = _class;
         }
     }
 
     toString() {
         return "BEGIN:VEVENT\n"
-            + `DTSTART:${this.start}\n`
-            + `DTEND:${this.end}\n`
+            + `DTSTART:${formatDate(this.start)}\n`
+            + `DTEND:${formatDate(this.end)}\n`
             + `SEQUENCE:${this.sequence}\n`
             + `SUMMARY:${this.summary}\n`
             + `DESCRIPTION:${this.description}\n`
             + `UID:${this.uid}\n`
-            + `DTSTAMP:${this.stamp}\n`
+            + `DTSTAMP:${this.dtstamp}\n`
             + `CLASS:${this.class}\n`
             + "END:VEVENT\n";
     }
+}
+
+function formatDate(date) {
+    return date.toISOString().replace(".000Z", "Z").replace(/-/g, "").replace(/:/g, "");
 }
 
 async function main() {
