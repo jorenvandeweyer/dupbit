@@ -36,7 +36,7 @@ async function checkFile(url) {
 }
 
 async function resolve(data, apidata) {
-    if (data.url) {
+    if (apidata.session.isLoggedIn && apidata.session.level >=2 && data.url) {
         const isDownloaded = await checkFile(data.url);
         let filename;
         if (isDownloaded) {
