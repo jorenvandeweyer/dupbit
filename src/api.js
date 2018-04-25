@@ -8,6 +8,7 @@ class Api {
         this.url = url;
         this.request = request;
         this.cookies = Cookie.parse(request.headers.cookie);
+        this.json = true;
         this.header = {
             "Content-Type": 'application/json'
         };
@@ -42,6 +43,12 @@ class Api {
             } else {
                 this.status = 303;
             }
+        } else if(data && "download" in data){
+            this.status = 200;
+            this.json = false;
+            this.header['Content-disposition'] = `attachment; filename=${data.name}`;
+            this.content = data.download;
+            this.header['Content-Type'] = 'audio/mpeg';
         } else {
             this.status = 200;
             this.content = data;

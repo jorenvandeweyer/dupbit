@@ -18,6 +18,7 @@ const mimeTypes = {
     '.gif': 'image/gif',
     '.wav': 'audio/wav',
     '.mp4': 'video/mp4',
+    '.mp3': 'audio/mpeg',
     '.woff': 'application/font-woff',
     '.ttf': 'application/font-ttf',
     '.eot': 'application/vnd.ms-fontobject',

@@ -17,7 +17,6 @@ const options = {
 };
 
 https.createServer(options, async (request, response) => {
-    console.log(`${request.method}\t${request.url}`);
     if (request.url.includes("/api/") || request.method === "POST") {
         let body = "";
 
@@ -34,7 +33,12 @@ https.createServer(options, async (request, response) => {
             }
             let answer = await api.get(url, request);
             response.writeHead(answer.status, answer.header);
-            response.end(JSON.stringify(answer.content));
+
+            if (answer.json) {
+                response.end(JSON.stringify(answer.content));
+            } else {
+                response.end(answer.content, "binary");
+            }
         });
     } else if (request.method === "GET") {
         const url = new Url(request.url);
