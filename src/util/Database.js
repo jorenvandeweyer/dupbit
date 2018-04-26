@@ -366,6 +366,29 @@ async function getSongsOf(uid) {
     return await query("SELECT * FROM music.songs WHERE uid=? ORDER BY artist, title", [uid]);
 }
 
+// Get all songs in playlist with given id
+async function getSongsIn(pid) {
+    return await query("SELECT * FROM music.songInPlaylist JOIN music.songs WHERE sid = id AND pid=? ORDER BY artist, title", [pid]);
+}
+
+// Get all songs decided by playlist and userid
+async function getSongsSmart(pid, uid) {
+    let songs;
+    if (pid && pid > 0) {
+        songs = await getSongsIn(pid);
+    } else {
+        songs = await getSongsOf(uid);
+    }
+
+    for (let i = 0; i < songs.length; i++) {
+        const song = songs[i];
+        song.playlists = await getPlaylistsOfSong(song.id);
+        song.playlistIds = song.playlists.filter(playlist => playlist.id);
+        song.playlistNames = song.playlists.filter(playlist => playlist.name);
+    }
+    return songs;
+}
+
 // Get owner of the song with given id
 async function getUserOfSong(sid) {
     let result = await query("SELECT uid FROM music.songs WHERE id=?", [sid]);
@@ -644,6 +667,7 @@ module.exports = {
     getUserOfPlaylist,
     getPlaylistsOfSong,
     getSongsIn,
+    getSongsSmart,
     filename,
     recoverAccount,
     verifyRegistration,

@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+
+	<head>
+		<%- include /usr/src/app/pages/components/head %>
+		<script>
+		function editSong(sid, artist, title, pidList) {
+			$("#editSongModal #sid").val(sid);
+			$("#editSongModal #artist").val(artist);
+			$("#editSongModal #title").val(title);
+			$("#editSongModal input[type=checkbox]").prop('checked', false);
+			for (pid of pidList) {
+				$("#editSongModal #playlist"+pid).prop('checked', true);
+			}
+		}
+		function removeSong(sid) {
+			$("#removeSongModal #sid").val(sid);
+		}
+		</script>
+	</head>
+
+	<body>
+
+		<%- include /usr/src/app/pages/components/header %>
+
+		<div class="container">
+			<div class="panel panel-default">
+				<div class="panel-heading"><b>Music</b></div>
+				<div class="panel-body">
+					<div class='btn-group'>
+					<a class='btn btn-default' href='music'><i class='glyphicon glyphicon-music'></i> All</a>
+                    <% var playlists = pageData.playlists %>
+                    <% for (let playlist in playlists) { %>
+                        <%- "<a class='btn btn-default' href='projects/music?playlist=" + playlists[playlist]["id"] + "'><i class='glyphicon glyphicon-music'></i>" + playlists[playlist]['name'] + "</a>"%>
+                    <% } %>
+					<?php
+					<a class="btn btn-default" data-toggle="modal" data-target="#editPlaylistModal"><i class='glyphicon glyphicon-edit'></i></a>
+					</div>
+					<div class="table-responsive">
+						<table class='table table-hover table-condensed table-responsive'>
+							<thead>
+								<tr>
+									<th></th>
+									<th>Artist</th>
+									<th>Title</th>
+									<th>Playlists</th>
+									<th>Download</th>
+									<th>Youtube</th>
+									<th>Edit</th>
+									<th>Remove</th>
+								</tr>
+							</thead>
+							<tbody>
+                                <% var songs = pageData.songs %>
+                                <% for (let song in songs) { %>
+                                    <%- "<tr>" %>
+                                        <%- "<td>" %>
+                                            <%- "<a class='playButton btn btn-link btn-xs' data-ytid='" + songs[song]['ytid'] + "'><i class='glyphicon glyphicon-play'></i></a>" %>
+                                            <%- "<a class='pauseButton btn btn-link btn-xs' style='display: none;'><i class='glyphicon glyphicon-pause'></i></a>" %>
+                                        <%- "</td>" %>
+                                        <%- "<td>" + songs[song]['artist'] + "</td>" %>
+                                        <%- "<td>" + songs[song]['title'] + "</td>" %>
+                                        <%- "<td>" + songs[song].playlistNames.join(",") + "</td>" %>
+                                        <%- "<td><a class='btn btn-success btn-xs' href='projects/music/downloadSong?id=" + songs[song]['id'] + "'><i class='glyphicon glyphicon-download-alt'></i> Download </td>" %>
+                                        <%- "<td><a class='btn btn-link btn-xs' href='https://www.youtube.com/watch?v=" + songs[song]['ytid'] + "'><i class='fa fa-youtube-play'></i>" + songs[song]['ytid'] + "</a></td>" %>
+                                        <%- "<td><a class='btn btn-info btn-xs' data-toggle='modal' data-target='#editSongModal' onclick='" + `editSong(${songs[song]['id']}, "${songs[song]['artist']}","${songs[song]['title']}",[${songs[song].playlistIds.join(",")}])` + "'><i class='glyphicon glyphicon-edit'></i> Edit </a></td>" %>
+                                        <%- "<td><a class='btn btn-danger btn-xs' data-toggle='modal' data-target='#removeSongModal' onlclick='removeSong(" + songs[song]['id'] + ")'><i class='glyphicon glyphicon-trash'></i> Remove </a></td>" %>
+                                    <%- "</tr>" %>
+                                <% } %>
+								<?php
+								foreach($songs as $song){
+									$playlists = getPlaylistsOfSong($song['id']);
+									$playlistIds = array();
+									$playlistNames = array();
+									foreach($playlists as $playlist){
+										array_push($playlistIds, $playlist["id"]);
+										array_push($playlistNames, $playlist["name"]);
+									};
+
+									$playListArgument = "[".join(",",$playlistIds)."]";
+									$editEvent = "editSong(".$song["id"].",\"".$song["artist"]."\",\"".$song["title"]."\",".$playListArgument.")";
+								};
+								?>
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<audio id="audio"></audio>
+		<script>
+		$(".playButton").click(function() {
+			var ytid = $(this).attr("data-ytid");
+			$("#audio").attr("src", "https://dupbit.com/projects/music/playSong.php?ytid="+ytid);
+			$("#audio")[0].play();
+			$(".pauseButton").hide();
+			$(".playButton").show();
+			$(this).hide();
+			$(this).next().show();
+		});
+		$(".pauseButton").click(function() {
+			$("#audio")[0].pause();
+			$(".pauseButton").hide();
+			$(".playButton").show();
+		});
+		</script>
+
+		<div id="editPlaylistModal" class="modal fade" role="dialog">
+			<div class="modal-dialog">
+				<div class="modal-content">
+						<div class="modal-header">
+							<button type="button" class="close" data-dismiss="modal">&times;</button>
+							<h4 class="modal-title">Edit playlist</h4>
+						</div>
+						<div class="modal-body">
+							<table class='table table-hover table-condensed table-responsive'>
+								<thead>
+									<tr>
+										<th>Name</th>
+										<th>Content</th>
+										<th>Edit</th>
+										<th>Remove</th>
+									</tr>
+								</thead>
+								<tbody>
+								<?php
+								$playlists = getPlaylistsOf(getLogin());
+								if (count($playlists)) {
+									foreach($playlists as $playlist) {
+										echo "<tr class='playlist' id='".$playlist["id"]."'>";
+										echo "<td><span>".$playlist["name"]."</span><input type='text' style='display: none;' value='".$playlist["name"]."'/></td>";
+										echo "<td>".count(getSongsIn($playlist["id"]))." songs</td>";
+										echo "<td><a class='btn btn-info btn-xs'><i class='glyphicon glyphicon-edit'></i> Edit</a><a class='btn btn-success btn-xs' style='display: none;><i class='glyphicon glyphicon-save'></i> Save</a></td>";
+										echo "<td><a class='btn btn-danger btn-xs'><i class='glyphicon glyphicon-trash'></i> Remove</a></td>";
+										echo "<tr>";
+									}
+								}
+								?>
+								</tbody>
+							</table>
+						</div>
+					<form action = "projects/music/addPlaylist.php" method = "post">
+						<div class="modal-header">
+							<h4 class="modal-title">Add playlist</h4>
+						</div>
+						<div class="modal-body">
+							<div class="form-group">
+								<div class="input-group">
+									<span class="input-group-addon"><i class="glyphicon glyphicon-music"></i></span>
+									<input name="name" type="text" class="form-control" placeholder="New Playlist"/>
+								</div>
+							</div>
+						</div>
+						<div class="modal-footer">
+							<button type="submit" class="btn btn-primary">Add</button>
+							<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+
+		<script>
+		$(".playlist").click(function() {
+			$(this).find("span").hide();
+			$(this).find("input").show();
+			$(this).find(".btn-info").hide();
+			$(this).find(".btn-success").show();
+		})
+		</script>
+
+		<div id="editSongModal" class="modal fade" role="dialog">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<form action = "projects/music/editSong.php" method="post">
+						<div class="modal-header">
+							<button type="button" class="close" data-dismiss="modal">&times;</button>
+							<h4 class="modal-title">Edit song</h4>
+						</div>
+						<div class="modal-body">
+							<div class="form-group">
+								<div class="input-group">
+									<span class="input-group-addon"><i class="glyphicon glyphicon-headphones"></i></span>
+									<input id="artist" name="artist" type="text" class="form-control" placeholder="Artist"/>
+								</div>
+							</div>
+							<div class="form-group">
+								<div class="input-group">
+									<span class="input-group-addon"><i class="glyphicon glyphicon-music"></i></span>
+									<input id="title" name="title" type="text" class="form-control" placeholder="Title"/>
+								</div>
+							</div>
+							<div class="form-group">
+								<?php
+								$playlists = getPlaylistsOf(getLogin());
+								if (count($playlists)) {
+								?>
+								<div class="panel panel-default">
+									<div class="panel-heading"><b>Playlists</b></div>
+									<div class="panel-body">
+										<?php
+										foreach($playlists as $playlist){
+											echo "<div class='checkbox'>";
+											echo "<label><input id='playlist".$playlist["id"]."' type='checkbox' name='pid[]' value='".$playlist["id"]."'/>".$playlist["name"]."</label>";
+											echo "</div>";
+										};
+										?>
+									</div>
+								</div>
+								<?php
+								}
+								?>
+							</div>
+						</div>
+						<div class="modal-footer">
+							<input id="sid" name="sid" type="hidden"/>
+							<button class="btn btn-primary" type="submit">Save</button>
+							<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+
+		<div id="removeSongModal" class="modal fade" role="dialog">
+			<div class="modal-dialog modal-sm">
+				<div class="modal-content">
+					<form action = "projects/music/removeSong.php" method="post">
+						<div class="modal-header">
+							<button type="button" class="close" data-dismiss="modal">&times;</button>
+							<h4 class="modal-title">Remove song</h4>
+						</div>
+						<div class="modal-body">
+							<p>Are you sure you want to remove this song?</p>
+						</div>
+						<div class="modal-footer">
+							<input id="sid" name="sid" type="hidden"/>
+							<button class="btn btn-primary" type="submit">Remove</button>
+							<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+
+	</body>
+</html>

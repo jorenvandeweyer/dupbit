@@ -66,4 +66,14 @@ module.exports = {
             "calendarCourseNumbers": "Database.getCalendarCourseNumbers(this.session.id, this.query.calendar)",
         },
     },
+    "/projects/music/index": {
+        title: "Dupbit - Music",
+        currentPage: "projects/music",
+        requireLogin: true,
+        requireLevel: 2,
+        pageData: {
+            "playlist": "Database.getPlaylistsOf(this.session.id)",
+            "songs": "Database.getSongsSmart(this.query.playlist, this.session.id)",
+        },
+    },
 };
