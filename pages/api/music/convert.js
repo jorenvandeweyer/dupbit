@@ -45,7 +45,7 @@ async function resolve(data, apidata) {
             filename = isDownloaded;
         } else {
             filename = await downloadVideo(data.url);
-            id3.removeID3(`data/music/${filename}.mp3`);
+            id3.removeID3(`data/music/${filename}`);
         }
         const id = await updateDatabase(data.url, data.title, data.artist, apidata.session.id);
         return {

@@ -21,7 +21,7 @@ function packString (string) {
 	let hexstring = "";
 	for (let i = 0; i < string.lenght; i++) {
 		const char = string.charCodeAt(i);
-        const hexchar = Buffer.from(char, "hex");
+        const hexchar = pack(char, "hex");
 		hexstring += hexchar;
 	}
 	return hexstring;
@@ -29,23 +29,23 @@ function packString (string) {
 
 // Size of the given string in hex
 function byteSizeString(string) {
-    return Buffer.from((string.length+1).toString(), "hex");
-	return pack('N', strlen(string)+1);
+    // return Buffer.from((string.length+1).toString(), "hex");
+	return pack((string.length+1).toString());
 }
 
 // Convert the given bytestring to an integer
 function getSize(byteString) {
-	return unpack('N', byteString)[1];
+	return unpack(byteString)[1];
 }
 
 function flag() {
-    return Buffer.from([0, 0, 0], "hex");
-	return pack("C3", 0, 0, 0);
+    // return Buffer.from([0, 0, 0], "hex");
+	return pack([0, 0, 0]);
 }
 
 function version() {
-    return Buffer.from([3, 0, 0], "hex");
-	return pack("C3", 3, 0, 0);
+    // return Buffer.from([3, 0, 0], "hex");
+	return pack([3, 0, 0]);
 }
 
 function createTitleTag(title) {
