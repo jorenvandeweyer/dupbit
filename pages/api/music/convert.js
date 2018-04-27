@@ -1,5 +1,7 @@
 const { spawn } = require('child_process');
 const fs = require("fs");
+const db = require("../../../src/util/Database");
+const id3 = require("../../../src/util/Id3");
 
 function downloadVideo(url) {
 
@@ -25,7 +27,7 @@ function downloadVideo(url) {
     });
 }
 
-async function checkFile(url) {
+function checkFile(url) {
     if (url.includes("youtube.com/watch?v=")){
         const id = url.split("watch?v=")[1].split("&list")[0];
         if (fs.existsSync(`data/music/${id}.mp3`)) {
@@ -37,23 +39,33 @@ async function checkFile(url) {
 
 async function resolve(data, apidata) {
     if (apidata.session.isLoggedIn && apidata.session.level >=2 && data.url) {
-        const isDownloaded = await checkFile(data.url);
+        const isDownloaded = checkFile(data.url);
         let filename;
         if (isDownloaded) {
             filename = isDownloaded;
         } else {
             filename = await downloadVideo(data.url);
+            id3.removeID3(`data/music/${filename}.mp3`);
         }
-        const file = fs.readFileSync(`data/music/${filename}`);
+        const id = await updateDatabase(data.url, data.title, data.artist, apidata.session.id);
         return {
             success: true,
-            download: file,
-            name: filename,
+            redirect: `api/music/downloadSong?id=${id}`,
         };
     }
     return {
         success: false,
     };
+}
+
+async function updateDatabase(url, title, artist, uid) {
+    let result;
+    if (url.includes("youtube.com/watch?v=")) {
+        result = await db.addSong(url.split("watch?v=")[1].split("&list")[0], title, artist, uid);
+    } else {
+        result = await db.addSong(url, title, artist, uid);
+    }
+    return result.insertId
 }
 
 module.exports = {

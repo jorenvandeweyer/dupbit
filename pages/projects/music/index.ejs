@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 	<head>
 		<%- include /usr/src/app/pages/components/head %>
 		<script>
@@ -18,11 +17,8 @@
 		}
 		</script>
 	</head>
-
 	<body>
-
 		<%- include /usr/src/app/pages/components/header %>
-
 		<div class="container">
 			<div class="panel panel-default">
 				<div class="panel-heading"><b>Music</b></div>
@@ -33,7 +29,6 @@
                     <% for (let playlist in playlists) { %>
                         <%- "<a class='btn btn-default' href='projects/music?playlist=" + playlists[playlist]["id"] + "'><i class='glyphicon glyphicon-music'></i>" + playlists[playlist]['name'] + "</a>"%>
                     <% } %>
-					<?php
 					<a class="btn btn-default" data-toggle="modal" data-target="#editPlaylistModal"><i class='glyphicon glyphicon-edit'></i></a>
 					</div>
 					<div class="table-responsive">
@@ -67,20 +62,6 @@
                                         <%- "<td><a class='btn btn-danger btn-xs' data-toggle='modal' data-target='#removeSongModal' onlclick='removeSong(" + songs[song]['id'] + ")'><i class='glyphicon glyphicon-trash'></i> Remove </a></td>" %>
                                     <%- "</tr>" %>
                                 <% } %>
-								<?php
-								foreach($songs as $song){
-									$playlists = getPlaylistsOfSong($song['id']);
-									$playlistIds = array();
-									$playlistNames = array();
-									foreach($playlists as $playlist){
-										array_push($playlistIds, $playlist["id"]);
-										array_push($playlistNames, $playlist["name"]);
-									};
-
-									$playListArgument = "[".join(",",$playlistIds)."]";
-									$editEvent = "editSong(".$song["id"].",\"".$song["artist"]."\",\"".$song["title"]."\",".$playListArgument.")";
-								};
-								?>
 							</tbody>
 						</table>
 					</div>
@@ -92,7 +73,7 @@
 		<script>
 		$(".playButton").click(function() {
 			var ytid = $(this).attr("data-ytid");
-			$("#audio").attr("src", "https://dupbit.com/projects/music/playSong.php?ytid="+ytid);
+			$("#audio").attr("src", "https://dupbit.com/api/music/playSong?ytid="+ytid);
 			$("#audio")[0].play();
 			$(".pauseButton").hide();
 			$(".playButton").show();
@@ -124,23 +105,20 @@
 									</tr>
 								</thead>
 								<tbody>
-								<?php
-								$playlists = getPlaylistsOf(getLogin());
-								if (count($playlists)) {
-									foreach($playlists as $playlist) {
-										echo "<tr class='playlist' id='".$playlist["id"]."'>";
-										echo "<td><span>".$playlist["name"]."</span><input type='text' style='display: none;' value='".$playlist["name"]."'/></td>";
-										echo "<td>".count(getSongsIn($playlist["id"]))." songs</td>";
-										echo "<td><a class='btn btn-info btn-xs'><i class='glyphicon glyphicon-edit'></i> Edit</a><a class='btn btn-success btn-xs' style='display: none;><i class='glyphicon glyphicon-save'></i> Save</a></td>";
-										echo "<td><a class='btn btn-danger btn-xs'><i class='glyphicon glyphicon-trash'></i> Remove</a></td>";
-										echo "<tr>";
-									}
-								}
-								?>
+                                <% if (playlists && playlists.length) { %>
+                                    <% for (let playlist of playlists) { %>
+                                        <%- `<tr class='playlist' id='${playlists[playlist]["id"]}'>` %>
+                                            <%- `<td><span>${playlists[playlist]["name"]}</span><input type='text' style='display: none;' value='${playlists[playlist]["name"]}'/></td>` %>
+                                            <%- `<td>${playlists[playlist].numberOfSongs} songs </td>`%>
+                                            <%- `<td><a class='btn btn-info btn-xs'><i class='glyphicon glyphicon-edit'></i> Edit </a><a class='btn btn-success btn-xs' style='display: none;'><i class='glyphicon glyphicon-save'></i> Save </a></td>`%>
+                                            <%- `<td><a class='btn btn-danger btn-xs'><i class='glyphicon glyphicon-trash'></i> Remove </a></td>` %>
+                                        <%- "<tr>" %>
+                                    <% } %>
+                                <% } %>
 								</tbody>
 							</table>
 						</div>
-					<form action = "projects/music/addPlaylist.php" method = "post">
+					<form action = "api/music/addPlaylist" method = "post">
 						<div class="modal-header">
 							<h4 class="modal-title">Add playlist</h4>
 						</div>
@@ -173,7 +151,7 @@
 		<div id="editSongModal" class="modal fade" role="dialog">
 			<div class="modal-dialog">
 				<div class="modal-content">
-					<form action = "projects/music/editSong.php" method="post">
+					<form action = "api/music/editSong" method="post">
 						<div class="modal-header">
 							<button type="button" class="close" data-dismiss="modal">&times;</button>
 							<h4 class="modal-title">Edit song</h4>
@@ -192,25 +170,22 @@
 								</div>
 							</div>
 							<div class="form-group">
-								<?php
-								$playlists = getPlaylistsOf(getLogin());
-								if (count($playlists)) {
-								?>
-								<div class="panel panel-default">
-									<div class="panel-heading"><b>Playlists</b></div>
-									<div class="panel-body">
-										<?php
-										foreach($playlists as $playlist){
-											echo "<div class='checkbox'>";
-											echo "<label><input id='playlist".$playlist["id"]."' type='checkbox' name='pid[]' value='".$playlist["id"]."'/>".$playlist["name"]."</label>";
-											echo "</div>";
-										};
-										?>
-									</div>
-								</div>
-								<?php
-								}
-								?>
+                                <% if (playlists && playlists.length) { %>
+                                    <%-
+                                    `<div class="panel panel-default">
+    									<div class="panel-heading"><b>Playlists</b></div>
+    									<div class="panel-body">`
+                                    %>
+                                    <% for (let playlist of playlists) { %>
+                                        <%- "<div class='checkbox'>" %>
+                                        <%- `<label><input id='${playlists[playlist]["id"]}' type='checkbox' name='pid[]' value='${playlists[playlist]["id"]}'/>${playlists[playlist]["name"]}</label>`%>
+                                        <%- "</div>" %>
+                                    <% } %>
+                                    <%-
+    									`</div>
+    								</div>`
+                                    %>
+                                <% } %>
 							</div>
 						</div>
 						<div class="modal-footer">
@@ -226,7 +201,7 @@
 		<div id="removeSongModal" class="modal fade" role="dialog">
 			<div class="modal-dialog modal-sm">
 				<div class="modal-content">
-					<form action = "projects/music/removeSong.php" method="post">
+					<form action = "api/music/removeSong" method="post">
 						<div class="modal-header">
 							<button type="button" class="close" data-dismiss="modal">&times;</button>
 							<h4 class="modal-title">Remove song</h4>

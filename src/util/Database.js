@@ -79,6 +79,7 @@ async function checkTables() {
 		title VARCHAR(255),
 		artist VARCHAR(255),
 		uid INT NOT NULL,
+        cached BOOLEAN NOT NULL DEFAULT 1,
 		PRIMARY KEY (id),
 		FOREIGN KEY (uid) REFERENCES users.users(id) ON DELETE CASCADE
     )`).then((result) => {
@@ -319,7 +320,7 @@ async function getLatestUsernameChange(id) {
 //MUST RETURN INSERT ID INSTEAD
 // Add a song with given title and artist
 async function addSong(ytid, title, artist, uid) {
-    return await query("INSERT INTO music.songs (ytid, title, artist, uid) VALUES (?, ?, ?, ?)" [ytid, title, artist, uid]);
+    return await query("INSERT INTO music.songs (ytid, title, artist, uid) VALUES (?, ?, ?, ?)", [ytid, title, artist, uid]);
 }
 
 // Remove a song with given id
@@ -432,6 +433,19 @@ async function getPlaylistsOfSong(sid) {
 // Get all songs in playlist with given id
 async function getSongsIn(pid) {
     return await query("SELECT * FROM music.songInPlaylist JOIN music.songs WHERE sid = id AND pid=? ORDER BY artist, title", [pid]);
+}
+
+async function getPlaylistsOfSmart(uid) {
+    console.log(uid);
+    console.log("UID");
+    let playlists = await getPlaylistsOf(uid);
+    console.log(playlists);
+
+    for (let i = 0; i < playlists.length; i++) {
+        const playlist = playlists[i];
+        playlist.numberOfSong = await getSongsIn(playlist.id).length;
+    }
+    return playlists;
 }
 
 async function getCalendarUrls(userId, calendarId) {
@@ -664,6 +678,7 @@ module.exports = {
     getUserOfSong,
     getSong,
     getPlaylistsOf,
+    getPlaylistsOfSmart,
     getUserOfPlaylist,
     getPlaylistsOfSong,
     getSongsIn,

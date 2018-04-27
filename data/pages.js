@@ -72,7 +72,7 @@ module.exports = {
         requireLogin: true,
         requireLevel: 2,
         pageData: {
-            "playlist": "Database.getPlaylistsOf(this.session.id)",
+            "playlists": "Database.getPlaylistsOfSmart(this.session.id)",
             "songs": "Database.getSongsSmart(this.query.playlist, this.session.id)",
         },
     },
