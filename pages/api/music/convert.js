@@ -1,7 +1,6 @@
 const { spawn } = require('child_process');
 const fs = require("fs");
 const db = require("../../../src/util/Database");
-const id3 = require("../../../src/util/Id3");
 
 function downloadVideo(url) {
 
@@ -45,7 +44,6 @@ async function resolve(data, apidata) {
             filename = isDownloaded;
         } else {
             filename = await downloadVideo(data.url);
-            id3.removeID3(`data/music/${filename}`);
         }
         const id = await updateDatabase(data.url, data.title, data.artist, apidata.session.id);
         return {
@@ -69,5 +67,6 @@ async function updateDatabase(url, title, artist, uid) {
 }
 
 module.exports = {
-    resolve
+    resolve,
+    downloadVideo,
 };

@@ -10,6 +10,7 @@ services:
       - ./data/secrets/:/usr/src/app/data/secrets/
       - ./pages/:/usr/src/app/pages/
       - ./src/:/usr/src/app/src/
+      - ./data/music/:/usr/src/app/data/music/
     depends_on:
       - mariadbdupbit
     links:

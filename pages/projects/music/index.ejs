@@ -73,7 +73,7 @@
 		<script>
 		$(".playButton").click(function() {
 			var ytid = $(this).attr("data-ytid");
-			$("#audio").attr("src", "https://dupbit.com/api/music/playSong?ytid="+ytid);
+			$("#audio").attr("src", "/api/music/playSong?ytid="+ytid);
 			$("#audio")[0].play();
 			$(".pauseButton").hide();
 			$(".playButton").show();

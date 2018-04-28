@@ -2,5 +2,6 @@ node_modules
 npm-debug.log
 config.json
 data/secrets/
+data/music/*.mp3
 src/
 pages/

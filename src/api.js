@@ -49,6 +49,14 @@ class Api {
             this.header['Content-disposition'] = `attachment; filename=${data.name}`;
             this.content = data.download;
             this.header['Content-Type'] = 'audio/mpeg';
+        } else if(data && "stream" in data) {
+            this.status = 200;
+            this.json = false;
+            this.header['Content-dispotition'] = `filname="stream.mp3"`;
+            this.header['Content-length'] = `${data.stream.length}`;
+            this.header['Cache-Control'] = "no-cache";
+            this.header['Content-Transfer-Encoding'] = "chunked";
+            this.content = data.stream;
         } else {
             this.status = 200;
             this.content = data;
