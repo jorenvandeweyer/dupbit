@@ -4,7 +4,7 @@ async function resolve(data, apidata) {
             success: true,
             custom: true,
             headers: {
-                "Access-Control-Allow-Origin": apidata.request.headers.origin,
+                "Access-Control-Allow-Origin": apidata.request.headers.origin ? apidata.request.headers.origin : `chrome-extension://${data.origin}`,
                 "Access-Control-Allow-Credentials": "true",
             },
             data: apidata.session,
@@ -14,7 +14,7 @@ async function resolve(data, apidata) {
             success: true,
             custom: true,
             headers: {
-                "Access-Control-Allow-Origin": apidata.request.headers.origin,
+                "Access-Control-Allow-Origin": apidata.request.headers.origin ? apidata.request.headers.origin : `chrome-extension://${data.origin}`,
                 "Access-Control-Allow-Credentials": "true",
             },
             data: apidata.session,

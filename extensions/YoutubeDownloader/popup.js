@@ -83,8 +83,11 @@ function hideLogin() {
 
 async function getStatus() {
     let data = await ajax_call({
-        url: "https://dupbit.com/api/loginStatus",
+        url: "https://localhost/api/loginStatus",
         type: "get",
+        data: {
+            origin: chrome.runtime.id,
+        },
         xhrFields : {
             withCredentials: true
         },
@@ -153,6 +156,7 @@ class Client {
                 username,
                 password,
                 remote: true,
+                origin: chrome.runtime.id,
             },
             xhrFields : {
                 withCredentials: true

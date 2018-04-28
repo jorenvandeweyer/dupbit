@@ -56,7 +56,7 @@ async function resolve(data, apidata) {
             id,
             redirect: data.remote ? false : `api/music/downloadSong?id=${id}`,
             headers: {
-                "Access-Control-Allow-Origin": apidata.request.headers.origin,
+                "Access-Control-Allow-Origin": apidata.request.headers.origin ? apidata.request.headers.origin : `chrome-extension://${data.origin}`,
                 "Access-Control-Allow-Credentials": "true",
             },
         };

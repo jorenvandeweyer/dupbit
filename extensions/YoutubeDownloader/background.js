@@ -15,7 +15,6 @@ function download(qid, url, title, artist) {
 			withCredentials: true
 		}
 	}).done(function(response){
-        console.log(response);
 		if (title != "" && artist != "") {
 			var name = artist + " - " + title;
 		}

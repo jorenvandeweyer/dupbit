@@ -4,7 +4,7 @@
 	"icons": {
 		"128": "images/icon.png"
 	},
-	"version": "1.2.0.1",
+	"version": "2.0.0",
 	"manifest_version": 2,
 	"background": {
 		"scripts": [ "jquery.js", "background.js" ]
@@ -14,5 +14,5 @@
 		"default_title": "Dupbit Extension",
 		"default_popup": "popup.html"
 	},
-	"permissions": [ "downloads","activeTab","https://dupbit.com/" ]
+	"permissions": [ "downloads","activeTab","webRequest","https://dupbit.com/" ]
 }
