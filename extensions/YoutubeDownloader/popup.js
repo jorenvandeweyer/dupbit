@@ -83,7 +83,7 @@ function hideLogin() {
 
 async function getStatus() {
     let data = await ajax_call({
-        url: "https://localhost/api/loginStatus",
+        url: "https://dupbit.com/api/loginStatus",
         type: "get",
         data: {
             origin: chrome.runtime.id,
