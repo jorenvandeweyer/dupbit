@@ -35,7 +35,8 @@ class Page {
         this.subPage = new Map();
         // this.status = 200;
         this.header = {
-            "Content-Type": mimeTypes[url.ext]
+            "Content-Type": mimeTypes[url.ext],
+            "Cache-Control": `max-age=86400`,
         };
     }
 
@@ -48,6 +49,7 @@ class Page {
         } else if (this.content) {
             this.status = data.status
             if(this.url.ext === ".ejs") {
+                this.header["Location"] = data.redirectHeader;
                 this.content = await ejs.render(this.content, data, {filename: this.url.fullPath});
                 // this.header["Content-Type"] = mimeTypes[data.mimeType];
             }
