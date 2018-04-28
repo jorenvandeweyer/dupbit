@@ -5,6 +5,9 @@ const User = require("./util/User");
 
 class Api {
     constructor(url, request) {
+        console.log(url);
+        console.log("\n");
+        console.log(request.headers);
         this.url = url;
         this.request = request;
         this.cookies = Cookie.parse(request.headers.cookie);
@@ -33,7 +36,13 @@ class Api {
         const api_call = require(this.url.fullPath);
         let data = await api_call.resolve(this.url.query, this);
 
-        if (data && "redirect" in data) {
+        if (data && "headers" in data) {
+            for (let header in data.headers) {
+                this.header[header] = data.headers[header];
+            }
+        }
+
+        if (data && "redirect" in data && data.redirect) {
             if (!data.redirect.includes("http")) {
                 data.redirect = "/" + data.redirect;
             }
@@ -43,13 +52,13 @@ class Api {
             } else {
                 this.status = 303;
             }
-        } else if(data && "download" in data){
+        } else if (data && "download" in data) {
             this.status = 200;
             this.json = false;
             this.header['Content-disposition'] = `attachment; filename=${data.name}`;
             this.content = data.download;
             this.header['Content-Type'] = 'audio/mpeg';
-        } else if(data && "stream" in data) {
+        } else if (data && "stream" in data) {
             this.status = 200;
             this.json = false;
             this.header['Content-dispotition'] = `filname="stream.mp3"`;
@@ -57,6 +66,9 @@ class Api {
             this.header['Cache-Control'] = "no-cache";
             this.header['Content-Transfer-Encoding'] = "chunked";
             this.content = data.stream;
+        } else if (data && "custom" in data) {
+            this.status = 200;
+            this.content = data.data;
         } else {
             this.status = 200;
             this.content = data;

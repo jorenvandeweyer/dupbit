@@ -20,7 +20,7 @@ async function resolve(data, apidata) {
                 }
                 return {
                     success: false,
-                    redirect: data.redirect
+                    redirect: data.remote ? false : data.redirect
                 };
             } else {
                 let token = Token.createToken({
@@ -41,9 +41,14 @@ async function resolve(data, apidata) {
                     success: true,
                     login: true,
                     id: id,
-                    redirect: data.redirect,
+                    redirect: data.remote ? false : data.redirect,
                     cookie: cookie,
+                    headers: {
+                        "Access-Control-Allow-Origin": apidata.request.headers.origin,
+                        "Access-Control-Allow-Credentials": "true",
+                    },
                 };
+                // return await returnData(apidata, data, cookie);
             }
 
 
@@ -57,7 +62,7 @@ async function resolve(data, apidata) {
 
             return {
                 success: false,
-                redirect: data.redirect
+                redirect: data.remote ? false : data.redirect
             };
         }
     }

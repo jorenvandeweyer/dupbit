@@ -5,7 +5,7 @@ const db = require("../../../src/util/Database");
 function downloadVideo(url) {
 
     return new Promise((resolve, reject) => {
-        const downloader = spawn('youtube-dl', [url, '--id', '-x', '--audio-format', 'mp3', '--exec', 'mv {} data/music/']);
+        const downloader = spawn('youtube-dl', [url.split("&")[0], '--id', '-x', '--audio-format', 'mp3', '--exec', 'mv {} data/music/']);
 
         let filename;
         downloader.stdout.on('data', (data) => {
@@ -28,7 +28,7 @@ function downloadVideo(url) {
 
 function checkFile(url) {
     if (url.includes("youtube.com/watch?v=")){
-        const id = url.split("watch?v=")[1].split("&list")[0];
+        const id = url.split("watch?v=")[1].split("&")[0];
         if (fs.existsSync(`data/music/${id}.mp3`)) {
             return `${id}.mp3`;
         }
@@ -46,9 +46,19 @@ async function resolve(data, apidata) {
             filename = await downloadVideo(data.url);
         }
         const id = await updateDatabase(data.url, data.title, data.artist, apidata.session.id);
+        console.log({
+            success: true,
+            id,
+            redirect: data.remote ? false : `api/music/downloadSong?id=${id}`,
+        });
         return {
             success: true,
-            redirect: `api/music/downloadSong?id=${id}`,
+            id,
+            redirect: data.remote ? false : `api/music/downloadSong?id=${id}`,
+            headers: {
+                "Access-Control-Allow-Origin": apidata.request.headers.origin,
+                "Access-Control-Allow-Credentials": "true",
+            },
         };
     }
     return {
@@ -59,7 +69,7 @@ async function resolve(data, apidata) {
 async function updateDatabase(url, title, artist, uid) {
     let result;
     if (url.includes("youtube.com/watch?v=")) {
-        result = await db.addSong(url.split("watch?v=")[1].split("&list")[0], title, artist, uid);
+        result = await db.addSong(url.split("watch?v=")[1].split("&")[0], title, artist, uid);
     } else {
         result = await db.addSong(url, title, artist, uid);
     }

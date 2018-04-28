@@ -1,0 +1,135 @@
+<html>
+	<head>
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>
+		<script src="jquery.js"></script>
+		<style>
+		body {
+			margin: 0;
+			min-width: 400px;
+		}
+		@font-face {
+			font-family: Hiragino Kaku Gothic Std;
+			src: url(fonts/custom.otf);
+		}
+		.jumbotron {
+			margin: 0;
+			color: inherit;
+			text-align: center;
+			background-image: url(images/banner.png);
+			padding-top: 12px;
+			padding-bottom: 12px;
+		}
+		.jumbotron h1 {
+			color: #E0E0E0;
+			font-family: "Hiragino Kaku Gothic Std";
+			font-size: 30px;
+			margin: 0;
+		}
+		.panel-compact {
+			margin: 0;
+		}
+		.panel-compact .panel-heading, .panel-compact .panel-body {
+			padding: 8px 12px;
+		}
+		.form-group {
+			margin-bottom: 5px;
+		}
+		form, form .form-group:last-of-type {
+			margin: 0;
+		}
+		.btn-full-width {
+			display: block;
+			width: 100%;
+		}
+		#message, #download, #queue, #login {
+			display: none;
+		}
+		.table {
+			font-size: 14px;
+			border: 0;
+			margin: 0;
+		}
+		</style>
+	</head>
+	<body>
+
+		<div id="banner" class="jumbotron">
+			<h1> Dupb<font color="white">i</font>t </h1>
+		</div>
+
+		<div id="message" class="panel panel-default panel-compact">
+			<div class="panel-heading"><b>Message</b></div>
+			<div class="panel-body">
+				<span></span>
+			</div>
+		</div>
+
+		<div id="download" class="panel panel-default panel-compact">
+			<div class="panel-heading"><b>Download</b></div>
+			<div class="panel-body">
+				<form>
+					<div class="form-group">
+						<div class="input-group">
+							<span class="input-group-addon"><i class="glyphicon glyphicon-headphones"></i></span>
+							<input id="artist" type="text" class="form-control" placeholder="Artist">
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="input-group">
+							<span class="input-group-addon"><i class="glyphicon glyphicon-music"></i></span>
+							<input id="title" type="text" class="form-control" placeholder="Title">
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="input-group">
+							<button type="submit" class="btn btn-primary btn-full-width"><i class='glyphicon glyphicon-download-alt'></i> Download</button>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+
+		<div id="queue" class="panel panel-default panel-compact">
+			<div class="panel-heading"><b>Queue</b></div>
+			<div class="panel-body">
+				<table class="table table-hover table-condensed table-responsive">
+					<thead>
+						<tr>
+							<th>Artist</th>
+							<th>Title</th>
+							<th></th>
+						</tr>
+					</thead>
+					<tbody></tbody>
+				</table>
+			</div>
+		</div>
+	</body>
+
+	<div id="login" class="panel panel-default panel-compact">
+		<div class="panel-heading"><b>Login</b></div>
+		<div class="panel-body">
+			<form>
+				<div class="form-group">
+					<div class="input-group">
+						<span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
+						<input id="username" type="text" class="form-control" placeholder="Username">
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="input-group">
+						<span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
+						<input id="password" type="password" class="form-control" placeholder="Password">
+					</div>
+				</div>
+				<div class="form-group pull-right">
+					<div class="input-group">
+						<button id="submit" type="submit" class="btn btn-primary btn-full-width">Login</button>
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
+
+	<script src="popup.js"></script>
+</html>
