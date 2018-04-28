@@ -384,8 +384,8 @@ async function getSongsSmart(pid, uid) {
     for (let i = 0; i < songs.length; i++) {
         const song = songs[i];
         song.playlists = await getPlaylistsOfSong(song.id);
-        song.playlistIds = song.playlists.filter(playlist => playlist.id);
-        song.playlistNames = song.playlists.filter(playlist => playlist.name);
+        song.playlistIds = song.playlists.map(playlist => playlist.id);
+        song.playlistNames = song.playlists.map(playlist => playlist.name);
     }
     return songs;
 }
@@ -436,14 +436,12 @@ async function getSongsIn(pid) {
 }
 
 async function getPlaylistsOfSmart(uid) {
-    console.log(uid);
-    console.log("UID");
     let playlists = await getPlaylistsOf(uid);
-    console.log(playlists);
 
     for (let i = 0; i < playlists.length; i++) {
         const playlist = playlists[i];
-        playlist.numberOfSong = await getSongsIn(playlist.id).length;
+        const songs = await getSongsIn(playlist.id);
+        playlist.numberOfSongs = songs.length;
     }
     return playlists;
 }

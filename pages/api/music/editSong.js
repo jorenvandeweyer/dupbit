@@ -18,10 +18,9 @@ async function resolve(data, apidata) {
                 for (let i = 0; i < playlists.length; i++) {
                     await db.removeSongFromPlaylist(data.sid, playlists[i].id);
                 }
-
-                if (typeof data.pid === "array") {
+                if (typeof data.pid === "object") {
                     for (let i = 0; i < data.pid.length; i++) {
-                        await db.addSongToPlaylist(data.sid, data.pid[i].id);
+                        await db.addSongToPlaylist(data.sid, data.pid[i]);
                     }
                 } else {
                     await db.addSongToPlaylist(data.sid, data.pid);

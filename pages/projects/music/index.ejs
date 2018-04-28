@@ -27,7 +27,7 @@
 					<a class='btn btn-default' href='music'><i class='glyphicon glyphicon-music'></i> All</a>
                     <% var playlists = pageData.playlists %>
                     <% for (let playlist in playlists) { %>
-                        <%- "<a class='btn btn-default' href='projects/music?playlist=" + playlists[playlist]["id"] + "'><i class='glyphicon glyphicon-music'></i>" + playlists[playlist]['name'] + "</a>"%>
+                        <%- "<a class='btn btn-default' href='/projects/music?playlist=" + playlists[playlist]["id"] + "'><i class='glyphicon glyphicon-music'></i>" + playlists[playlist]['name'] + "</a>"%>
                     <% } %>
 					<a class="btn btn-default" data-toggle="modal" data-target="#editPlaylistModal"><i class='glyphicon glyphicon-edit'></i></a>
 					</div>
@@ -59,7 +59,7 @@
                                         <%- "<td><a class='btn btn-success btn-xs' href='/api/music/downloadSong?id=" + songs[song]['id'] + "'><i class='glyphicon glyphicon-download-alt'></i> Download </td>" %>
                                         <%- "<td><a class='btn btn-link btn-xs' href='https://www.youtube.com/watch?v=" + songs[song]['ytid'] + "'><i class='fa fa-youtube-play'></i>" + songs[song]['ytid'] + "</a></td>" %>
                                         <%- "<td><a class='btn btn-info btn-xs' data-toggle='modal' data-target='#editSongModal' onclick='" + `editSong(${songs[song]['id']}, "${songs[song]['artist']}","${songs[song]['title']}",[${songs[song].playlistIds.join(",")}])` + "'><i class='glyphicon glyphicon-edit'></i> Edit </a></td>" %>
-                                        <%- "<td><a class='btn btn-danger btn-xs' data-toggle='modal' data-target='#removeSongModal' onlclick='removeSong(" + songs[song]['id'] + ")'><i class='glyphicon glyphicon-trash'></i> Remove </a></td>" %>
+                                        <%- "<td><a class='btn btn-danger btn-xs' data-toggle='modal' data-target='#removeSongModal' onclick='removeSong(" + songs[song]['id'] + ")'><i class='glyphicon glyphicon-trash'></i> Remove </a></td>" %>
                                     <%- "</tr>" %>
                                 <% } %>
 							</tbody>
@@ -106,7 +106,7 @@
 								</thead>
 								<tbody>
                                 <% if (playlists && playlists.length) { %>
-                                    <% for (let playlist of playlists) { %>
+                                    <% for (let playlist in playlists) { %>
                                         <%- `<tr class='playlist' id='${playlists[playlist]["id"]}'>` %>
                                             <%- `<td><span>${playlists[playlist]["name"]}</span><input type='text' style='display: none;' value='${playlists[playlist]["name"]}'/></td>` %>
                                             <%- `<td>${playlists[playlist].numberOfSongs} songs </td>`%>
@@ -176,9 +176,9 @@
     									<div class="panel-heading"><b>Playlists</b></div>
     									<div class="panel-body">`
                                     %>
-                                    <% for (let playlist of playlists) { %>
+                                    <% for (let playlist in playlists) { %>
                                         <%- "<div class='checkbox'>" %>
-                                        <%- `<label><input id='${playlists[playlist]["id"]}' type='checkbox' name='pid[]' value='${playlists[playlist]["id"]}'/>${playlists[playlist]["name"]}</label>`%>
+                                        <%- `<label><input id='${playlists[playlist]["id"]}' type='checkbox' name='pid' value='${playlists[playlist]["id"]}'/>${playlists[playlist]["name"]}</label>`%>
                                         <%- "</div>" %>
                                     <% } %>
                                     <%-
