@@ -115,7 +115,7 @@ class Client {
             hideDownload();
             hideQueue();
             hideMessage();
-            showLogin(tab);
+            showLogin(this.tab);
         } else {
             this.updatePopup();
         }
@@ -142,7 +142,7 @@ class Client {
             hideDownload();
             hideQueue();
             hideMessage();
-            showLogin(tab);
+            showLogin(this.tab);
         }
         var height = $("#banner").outerHeight() + $("#message:visible").outerHeight() + $("#download:visible").outerHeight() + $("#queue:visible").outerHeight();
         $("html, body").height(height);
@@ -182,7 +182,7 @@ chrome.tabs.query({active: true, currentWindow: true}, async (tabList) => {
 		$("#submit").addClass("disabled");
 		const username = $("#username").val();
 		const password = $("#password").val();
-		Client.login(tab, username, password);
+		client.login(tab, username, password);
 		return false;
 	});
 
