@@ -73,6 +73,22 @@ async function checkTables() {
         }
     });
 
+    await query(`CREATE TABLE IF NOT EXISTS users.tokens (
+        id INT NOT NULL UNIQUE AUTO_INCREMENT,
+        uid INT NOT NULL,
+        name VARCHAR(255),
+        device VARCHAR(255) NOT NULL,
+        ip CHAR(40),
+        timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (uid) REFERENCES users.users(id)
+            ON DELETE CASCADE
+    )`).then((result) => {
+        if (result.warningCount == 0) {
+            console.log("Created table \"users.tokens\".");
+        }
+    });
+
+
     await query(`CREATE TABLE IF NOT EXISTS music.songs (
 		id INT NOT NULL UNIQUE AUTO_INCREMENT,
 		ytid CHAR(11) NOT NULL,
@@ -283,6 +299,26 @@ async function getUsers() {
 // Set the level of the user with the given id to the given level
 async function setLevel(id, level) {
     return await query("UPDATE users.users SET level=? WHERE id=?", [level, id]);
+}
+
+
+// Add a token
+async function addToken(uid, name, device, ip) {
+    return await query("INSERT INTO users.tokens (uid, name, device, ip) VALUES (?, ?, ?, ?)", [uid, name, device, ip]);
+}
+
+// Get tokens
+async function getToken(object) {
+    if (object.uid) {
+        return await query("SELECT * FROM users.tokens WHERE uid=?", [object.uid]);
+    } else if (object.tid) {
+        return await query("SELECT * FROM users.toeksn WHERE id=?", [object.tid]);
+    }
+}
+
+// Remove a token
+async function removeToken(tid) {
+    return await query("DELETE FROM users.tokens WHERE id=?", [tid]);
 }
 
 // Register the client's IP and the current timestamp of login attempt with the given username
@@ -658,6 +694,9 @@ module.exports = {
     getLevelByID,
     getUsers,
     setLevel,
+    addToken,
+    getToken,
+    removeToken,
     addLoginAttempt,
     addLoginAttemptByID,
     getLoginAttempts,

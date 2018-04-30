@@ -1,16 +1,6 @@
 const WebSocket = require('ws');
 const Token = require("../util/Token");
 
-// const wss = new WebSocket.Server({ server });
-//
-// wss.on('connection', function connection(ws) {
-//   ws.on('message', function incoming(message) {
-//     console.log('received: %s', message);
-//   });
-//
-//   ws.send('something');
-// });
-
 let wss;
 
 function verifyClient(info, callback) {

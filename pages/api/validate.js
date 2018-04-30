@@ -20,7 +20,7 @@ async function resolve(data, apidata) {
             let username = await Database.getUsernameByID(id);
             let level = await Database.getLevelByID(id);
 
-            let token = Token.createToken({
+            let token = await Token.createToken({
                 isLoggedIn: true,
                 id: id,
                 username: username,

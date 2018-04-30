@@ -24,12 +24,16 @@ async function resolve(data, apidata) {
                 };
             } else {
                 const expires = data.expires ? parseInt(data.expires) : 24*60*60;
-                const token = Token.createToken({
+                const token = await Token.createToken({
                     isLoggedIn: true,
                     id: id,
                     username: data.username,
                     level: level,
-                }, expires);
+                }, expires, {
+                    remote: data.remote,
+                    name: data.name,
+                    ip,
+                });
                 const cookie = Cookie.create("sid", token, expires*1000);
                 if (data.redirect) {
                     if (data.redirect === "index") {

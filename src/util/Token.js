@@ -18,7 +18,9 @@ if (fs.existsSync("./data/secrets/private.key")) {
     console.log("[+]Keypair saved");
 }
 
-function createToken(data, expire=60*60*24) { //expire=1day
+async function createToken(data, expire=60*60*24, info) { //expire=1day
+    let result = await db.addToken(data.id, info.name, info.remote, info.ip);
+    data.tid = result.insertId;
     return jwt.sign({
         data,
         exp: Math.floor(Date.now() / 1000) + expire
@@ -27,7 +29,12 @@ function createToken(data, expire=60*60*24) { //expire=1day
 
 function verifyToken(token) {
     try {
-        return jwt.verify(token, publicKey, {algorithm: "RS256"});
+        let decoded = jwt.verify(token, publicKey, {algorithm: "RS256"});
+        console.log(decoded);
+        let tokenId = await getToken({tid: decoded.data.tid});
+        if (tokenId.length) {
+            return decoded;
+        }
     } catch(e) {
         // console.log(e);
         if(e.name === "TokenExpiredError") {
@@ -40,7 +47,12 @@ function verifyToken(token) {
     return false;
 }
 
+function removeToken(tid) {
+    db.removeToken(tid);
+}
+
 module.exports = {
     createToken,
     verifyToken,
+    removeToken,
 };
