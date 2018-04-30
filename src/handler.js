@@ -49,6 +49,7 @@ class Page {
         } else if (this.content) {
             this.status = data.status
             if(this.url.ext === ".ejs") {
+                this.header["Cache-Control"] = "no-cache";
                 this.content = await ejs.render(this.content, data, {filename: this.url.fullPath});
                 // this.header["Content-Type"] = mimeTypes[data.mimeType];
             }

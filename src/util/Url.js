@@ -9,12 +9,12 @@ class Url {
         this.original = url;
 
         const url_parsed = url2.parse(this.original, true);
-
         this.query = url_parsed.query;
         this.pathname = url_parsed.pathname;
 
         if (fs.existsSync(`${absolute}/pages${this.pathname}`)) {
             if (fs.lstatSync(`${absolute}/pages${this.pathname}`).isDirectory()) {
+                if (this.pathname === "/") this.pathname = ""; //dirtyfix should improve logic!
                 this.pathname += "/index";
             }
         }

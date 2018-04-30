@@ -1,10 +1,11 @@
 const https = require('https');
 const http = require('http');
+const fs = require("fs");
+
 const Url = require("./src/util/Url");
 const handler = require("./src/handler");
 const api = require("./src/api");
-const url2 = require("url");
-const fs = require("fs");
+const WebSocket = require("./src/websocket/index");
 
 process.on('unhandledRejection', (reason, p) => {
   console.log('Unhandled Rejection at: Promise', p, 'reason:', reason);
@@ -16,7 +17,7 @@ const options = {
   cert: fs.readFileSync('data/secrets/dupbit.com/fullchain.pem')
 };
 
-https.createServer(options, async (request, response) => {
+let server = https.createServer(options, async (request, response) => {
     if (request.url.includes("/api/") || request.method === "POST") {
         let body = "";
 
@@ -51,12 +52,16 @@ https.createServer(options, async (request, response) => {
         //response.end(content, 'utf-8');
     } else {
         console.log("ELSE???????");
+        console.log(request);
     }
 }).listen(443);
 
 http.createServer(function (req, res) {
+    console.log(req);
     res.writeHead(301, { "Location": "https://" + req.headers['host'] + req.url });
     res.end();
 }).listen(80);
+
+// WebSocket.create(server);
 
 console.log('Server running at http://127.0.0.1:443/');
