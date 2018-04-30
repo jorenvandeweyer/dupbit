@@ -62,6 +62,6 @@ http.createServer(function (req, res) {
     res.end();
 }).listen(80);
 
-// WebSocket.create(server);
+WebSocket.create(server);
 
 console.log('Server running at http://127.0.0.1:443/');

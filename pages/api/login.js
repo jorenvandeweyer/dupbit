@@ -23,13 +23,14 @@ async function resolve(data, apidata) {
                     redirect: data.remote ? false : data.redirect
                 };
             } else {
-                let token = Token.createToken({
+                const expires = data.expires ? parseInt(data.expires) : 24*60*60;
+                const token = Token.createToken({
                     isLoggedIn: true,
                     id: id,
                     username: data.username,
                     level: level,
-                });
-                let cookie = Cookie.create("sid", token);
+                }, expires);
+                const cookie = Cookie.create("sid", token, expires*1000);
                 if (data.redirect) {
                     if (data.redirect === "index") {
                         data.redirect = "welcome";
@@ -40,11 +41,12 @@ async function resolve(data, apidata) {
                 return {
                     success: true,
                     login: true,
-                    id: id,
+                    id,
                     redirect: data.remote ? false : data.redirect,
-                    cookie: cookie,
+                    token,
+                    cookie,
                     headers: {
-                        "Access-Control-Allow-Origin": apidata.request.headers.origin,
+                        "Access-Control-Allow-Origin": apidata.request.headers.origin ? apidata.request.headers.origin : "*",
                         "Access-Control-Allow-Credentials": "true",
                     },
                 };
