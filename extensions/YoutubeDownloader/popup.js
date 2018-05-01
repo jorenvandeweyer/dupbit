@@ -155,7 +155,7 @@ class Client {
             data: {
                 username,
                 password,
-                remote: true,
+                remote: "extension",
                 origin: chrome.runtime.id,
             },
             xhrFields : {
