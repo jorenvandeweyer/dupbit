@@ -24,6 +24,8 @@ async function resolve(data, apidata) {
                 };
             } else {
                 const expires = data.expires ? parseInt(data.expires) : 24*60*60;
+                if (!data.remote) data.remote = "website";
+
                 const token = await Token.createToken({
                     isLoggedIn: true,
                     id: id,
@@ -31,7 +33,11 @@ async function resolve(data, apidata) {
                     level: level,
                 }, expires, {
                     remote: data.remote,
-                    name: data.name,
+                    name: JSON.stringify({
+                        family: apidata.request.ua_os.device.family,
+                        os: apidata.request.ua_os.os.toString(),
+                        ua: apidata.request.ua_os.ua.toString(),
+                    }),
                     ip,
                 });
                 const cookie = Cookie.create("sid", token, expires*1000);
@@ -46,7 +52,7 @@ async function resolve(data, apidata) {
                     success: true,
                     login: true,
                     id,
-                    redirect: data.remote ? false : data.redirect,
+                    redirect: data.remote === "website" ? false : data.redirect,
                     token,
                     cookie,
                     headers: {

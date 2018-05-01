@@ -312,8 +312,9 @@ async function getToken(object) {
     if (object.uid) {
         return await query("SELECT * FROM users.tokens WHERE uid=?", [object.uid]);
     } else if (object.tid) {
-        return await query("SELECT * FROM users.toeksn WHERE id=?", [object.tid]);
+        return await query("SELECT * FROM users.tokens WHERE id=?", [object.tid]);
     }
+    return false;
 }
 
 // Remove a token

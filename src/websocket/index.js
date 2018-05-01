@@ -3,13 +3,13 @@ const Token = require("../util/Token");
 
 let wss;
 
-function verifyClient(info, callback) {
+async function verifyClient(info, callback) {
     const token = info.req.headers.token;
 
     if (!token) {
         callback(false, 401, "Provide a token please.");
     } else {
-        let clientInfo = Token.verifyToken(token);
+        let clientInfo = await Token.verifyToken(token);
 
         if (!clientInfo) {
             callback(false, 401, "Tokin invalid.");

@@ -5,9 +5,6 @@ const User = require("./util/User");
 
 class Api {
     constructor(url, request) {
-        console.log(url);
-        console.log("\n");
-        console.log(request.headers);
         this.url = url;
         this.request = request;
         this.cookies = Cookie.parse(request.headers.cookie);
@@ -18,7 +15,7 @@ class Api {
     }
 
     async authenticate() {
-        let decoded = Token.verifyToken(this.cookies["sid"]);
+        let decoded = await Token.verifyToken(this.cookies["sid"]);
 
         if (decoded) {
             this.session = decoded.data;

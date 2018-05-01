@@ -23,7 +23,7 @@ class Data {
     }
 
     async load() {
-        let decoded = Token.verifyToken(this.page.cookies["sid"]);
+        let decoded = await Token.verifyToken(this.page.cookies["sid"]);
 
         if (decoded) {
             this.session = decoded.data;

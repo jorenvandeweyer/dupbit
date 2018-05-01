@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken');
 const NodeRSA = require('node-rsa');
 const fs = require('fs');
+const db = require("./Database");
 
 let privateKey, publicKey;
 
@@ -27,11 +28,10 @@ async function createToken(data, expire=60*60*24, info) { //expire=1day
     }, privateKey, {algorithm: "RS256"});
 }
 
-function verifyToken(token) {
+async function verifyToken(token) {
     try {
         let decoded = jwt.verify(token, publicKey, {algorithm: "RS256"});
-        console.log(decoded);
-        let tokenId = await getToken({tid: decoded.data.tid});
+        let tokenId = await db.getToken({tid: decoded.data.tid});
         if (tokenId.length) {
             return decoded;
         }

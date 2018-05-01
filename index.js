@@ -1,6 +1,7 @@
 const https = require('https');
 const http = require('http');
 const fs = require("fs");
+const ua_parser = require('ua-parser');
 
 const Url = require("./src/util/Url");
 const handler = require("./src/handler");
@@ -18,6 +19,7 @@ const options = {
 };
 
 let server = https.createServer(options, async (request, response) => {
+    request.ua_os = ua_parser.parse(request.headers['user-agent']);
     if (request.url.includes("/api/") || request.method === "POST") {
         let body = "";
 
