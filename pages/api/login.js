@@ -33,11 +33,7 @@ async function resolve(data, apidata) {
                     level: level,
                 }, expires, {
                     remote: data.remote,
-                    name: JSON.stringify({
-                        family: apidata.request.ua_os.device.family,
-                        os: apidata.request.ua_os.os.toString(),
-                        ua: apidata.request.ua_os.ua.toString(),
-                    }),
+                    name: getInfo(apidata),
                     ip,
                 });
                 const cookie = Cookie.create("sid", token, expires*1000);
@@ -52,7 +48,7 @@ async function resolve(data, apidata) {
                     success: true,
                     login: true,
                     id,
-                    redirect: data.remote === "website" ? false : data.redirect,
+                    redirect: data.remote !== "website" ? false : data.redirect,
                     token,
                     cookie,
                     headers: {
@@ -82,6 +78,20 @@ async function resolve(data, apidata) {
     return {
         success: false
     };
+}
+
+function getInfo(apidata) {
+    let object = {
+        family: apidata.request.ua_os.device.family,
+        os: apidata.request.ua_os.os.toString(),
+        ua: apidata.request.ua_os.ua.toString(),
+    };
+    if (object.os === "Other" && object.ua === "Other" && object.family === "Other") {
+        object = {
+            ua: apidata.request.ua_os.string,
+        }
+    }
+    return JSON.stringify(object);
 }
 
 module.exports = {
