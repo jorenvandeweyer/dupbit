@@ -1,6 +1,7 @@
 const pageInfo = require("../../data/pages");
 const User = require("./User");
 const Token = require("./Token");
+const Database = require("./Database");
 
 class Data {
     constructor(page) {
