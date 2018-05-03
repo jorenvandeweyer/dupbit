@@ -1,4 +1,4 @@
-const WebSocket = require('ws');
+const WebSocket = require("ws");
 const Token = require("../util/Token");
 
 let wss;
@@ -27,7 +27,7 @@ function create(server) {
         verifyClient,
     });
 
-    wss.on('connection', (ws, req) => {
+    wss.on("connection", (ws, req) => {
         addWS(ws, req);
         ws.on("message", (message) => {
             console.log(`RECIEVED: ${message}`);
@@ -38,6 +38,7 @@ function create(server) {
         }));
 
         ws.on("close", () => {
+            Clients.get(req.user.id).delete(req.user.tid);
             console.log("CLOSED");
         });
     });

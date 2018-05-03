@@ -21,11 +21,11 @@ class Url {
 
         const path = Path.parse(this.pathname);
 
-        this.name = path.name
+        this.name = path.name;
         this.ext = path.ext || ".ejs";
 
         if (path.dir === "/") path.dir = "";
-        this.dir = `/pages${path.dir}`
+        this.dir = `/pages${path.dir}`;
 
         if (utf8.includes(this.ext)) {
             this.type = "utf8";

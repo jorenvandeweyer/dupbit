@@ -1,25 +1,26 @@
-const https = require('https');
-const http = require('http');
+const https = require("https");
+const http = require("http");
 const fs = require("fs");
-const ua_parser = require('ua-parser');
+const ua_parser = require("ua-parser");
 
 const Url = require("./src/util/Url");
 const handler = require("./src/handler");
 const api = require("./src/api");
 const WebSocket = require("./src/websocket/index");
 
-process.on('unhandledRejection', (reason, p) => {
-  console.log('Unhandled Rejection at: Promise', p, 'reason:', reason);
-  // application specific logging, throwing an error, or other logic here
+process.on("unhandledRejection", (reason, p) => {
+    /*eslint no-console: 0*/
+    console.log("Unhandled Rejection at: Promise", p, "reason:", reason);
+    // application specific logging, throwing an error, or other logic here
 });
 
 const options = {
-  key: fs.readFileSync('data/secrets/dupbit.com/privkey.pem'),
-  cert: fs.readFileSync('data/secrets/dupbit.com/fullchain.pem')
+    key: fs.readFileSync("data/secrets/dupbit.com/privkey.pem"),
+    cert: fs.readFileSync("data/secrets/dupbit.com/fullchain.pem")
 };
 
 let server = https.createServer(options, async (request, response) => {
-    request.ua_os = ua_parser.parse(request.headers['user-agent']);
+    request.ua_os = ua_parser.parse(request.headers["user-agent"]);
     if (request.url.includes("/api/") || request.method === "POST") {
         let body = "";
 
@@ -60,10 +61,10 @@ let server = https.createServer(options, async (request, response) => {
 
 http.createServer(function (req, res) {
     console.log(req);
-    res.writeHead(301, { "Location": "https://" + req.headers['host'] + req.url });
+    res.writeHead(301, { "Location": "https://" + req.headers["host"] + req.url });
     res.end();
 }).listen(80);
 
 WebSocket.create(server);
 
-console.log('Server running at http://127.0.0.1:443/');
+console.log("Server running at http://127.0.0.1:443/");

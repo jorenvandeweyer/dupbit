@@ -23,4 +23,4 @@ async function resolve(data) {
 
 module.exports = {
     resolve
-}
+};

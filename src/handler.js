@@ -1,31 +1,30 @@
 const Cache = require("./util/Cache");
 const Url = require("./util/Url");
-const ejs = require('ejs');
-const Data = require('./util/Data');
-const Database = require("./util/Database");
+const ejs = require("ejs");
+const Data = require("./util/Data");
 const Cookie = require("./util/Cookie");
 
 const cache = new Cache();
 
 const mimeTypes = {
-    '.html': 'text/html',
-    '.js': 'text/javascript',
-    '.css': 'text/css',
-    '.ics': 'text/calendar',
-    '.json': 'application/json',
-    '.png': 'image/png',
-    '.jpg': 'image/jpg',
-    '.gif': 'image/gif',
-    '.wav': 'audio/wav',
-    '.mp4': 'video/mp4',
-    '.mp3': 'audio/mpeg',
-    '.woff': 'application/font-woff',
-    '.ttf': 'application/font-ttf',
-    '.eot': 'application/vnd.ms-fontobject',
-    '.otf': 'application/font-otf',
-    '.svg': 'application/image/svg+xml',
-    '.ejs': 'text/html',
-    '.ico': 'image/x-icon',
+    ".html": "text/html",
+    ".js": "text/javascript",
+    ".css": "text/css",
+    ".ics": "text/calendar",
+    ".json": "application/json",
+    ".png": "image/png",
+    ".jpg": "image/jpg",
+    ".gif": "image/gif",
+    ".wav": "audio/wav",
+    ".mp4": "video/mp4",
+    ".mp3": "audio/mpeg",
+    ".woff": "application/font-woff",
+    ".ttf": "application/font-ttf",
+    ".eot": "application/vnd.ms-fontobject",
+    ".otf": "application/font-otf",
+    ".svg": "application/image/svg+xml",
+    ".ejs": "text/html",
+    ".ico": "image/x-icon",
 };
 
 class Page {
@@ -36,7 +35,7 @@ class Page {
         // this.status = 200;
         this.header = {
             "Content-Type": mimeTypes[url.ext],
-            "Cache-Control": `max-age=86400`,
+            "Cache-Control": "max-age=86400",
         };
     }
 
@@ -47,7 +46,7 @@ class Page {
             this.status = data.status;
             this.header["Location"] = data.redirectHeader;
         } else if (this.content) {
-            this.status = data.status
+            this.status = data.status;
             if(this.url.ext === ".ejs") {
                 this.header["Cache-Control"] = "no-cache";
                 this.content = await ejs.render(this.content, data, {filename: this.url.fullPath});

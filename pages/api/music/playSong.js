@@ -1,4 +1,3 @@
-const fs = require("fs");
 const { getSong } = require("./downloadSong");
 
 async function resolve(data, apidata) {

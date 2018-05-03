@@ -1,14 +1,14 @@
-const { spawn } = require('child_process');
+const { spawn } = require("child_process");
 const fs = require("fs");
 const db = require("../../../src/util/Database");
 
 function downloadVideo(url) {
 
     return new Promise((resolve, reject) => {
-        const downloader = spawn('youtube-dl', [url.split("&")[0], '--id', '-x', '--audio-format', 'mp3', '--exec', 'mv {} data/music/']);
+        const downloader = spawn("youtube-dl", [url.split("&")[0], "--id", "-x", "--audio-format", "mp3", "--exec", "mv {} data/music/"]);
 
         let filename;
-        downloader.stdout.on('data', (data) => {
+        downloader.stdout.on("data", (data) => {
             let raw = data.toString().split("\n").filter(line => line.includes("Destination:"));
             if (raw.length) {
                 filename = raw[raw.length-1].split("Destination: ")[1];
@@ -16,11 +16,14 @@ function downloadVideo(url) {
             // console.log(data.toString());
         });
 
-        downloader.stderr.on('data', (data) => {
+        downloader.stderr.on("data", (data) => {
+            if (data.includes("stopped")) {
+                reject(data);
+            }
             // console.log(`stderr: ${data}`);
         });
 
-        downloader.on('close', (code) => {
+        downloader.on("close", () => {
             resolve(filename);
         });
     });
@@ -39,11 +42,8 @@ function checkFile(url) {
 async function resolve(data, apidata) {
     if (apidata.session.isLoggedIn && apidata.session.level >=2 && data.url) {
         const isDownloaded = checkFile(data.url);
-        let filename;
-        if (isDownloaded) {
-            filename = isDownloaded;
-        } else {
-            filename = await downloadVideo(data.url);
+        if (!isDownloaded) {
+            await downloadVideo(data.url);
         }
         const id = await updateDatabase(data.url, data.title, data.artist, apidata.session.id);
         console.log({
@@ -73,7 +73,7 @@ async function updateDatabase(url, title, artist, uid) {
     } else {
         result = await db.addSong(url, title, artist, uid);
     }
-    return result.insertId
+    return result.insertId;
 }
 
 module.exports = {

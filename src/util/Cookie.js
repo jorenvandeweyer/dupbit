@@ -9,9 +9,9 @@ function remove(name) {
 function parse(cookies) {
     let list = {};
 
-    cookies && cookies.split(';').forEach((cookie) => {
-        let parts = cookie.split('=');
-        list[parts.shift().trim()] = JSON.parse(decodeURI(parts.join('=')));
+    cookies && cookies.split(";").forEach((cookie) => {
+        let parts = cookie.split("=");
+        list[parts.shift().trim()] = JSON.parse(decodeURI(parts.join("=")));
     });
     return list;
 }

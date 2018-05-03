@@ -3,11 +3,11 @@ const db = require("../../src/util/Database");
 async function resolve(data, apidata) {
     if (data.action && apidata.session.isLoggedIn) {
         switch (data.action) {
-            case 'deleteCalendar':
+            case "deleteCalendar":
                 if (data.id) {
-                    let result = await db.query('SELECT uid, id FROM calendar.calendars WHERE id = ?', [data.id]);
+                    let result = await db.query("SELECT uid, id FROM calendar.calendars WHERE id = ?", [data.id]);
                     if (result.length && result[0].uid === apidata.session.id) {
-                        db.query('DELETE FROM calendar.calendars WHERE id = ?', [data.id]);
+                        db.query("DELETE FROM calendar.calendars WHERE id = ?", [data.id]);
                     }
                     return {
                         success: true,
@@ -18,9 +18,9 @@ async function resolve(data, apidata) {
                     };
                 }
                 break;
-            case 'createCalendar':
+            case "createCalendar":
                 if (data.name) {
-                    let result = await db.query('INSERT INTO calendar.calendars (uid, name) VALUES (?, ?)', [apidata.session.id, data.name]);
+                    await db.query("INSERT INTO calendar.calendars (uid, name) VALUES (?, ?)", [apidata.session.id, data.name]);
                     return {
                         success: true,
                         backdirect: true,
@@ -30,7 +30,7 @@ async function resolve(data, apidata) {
                     };
                 }
                 break;
-            case 'deleteCalendarData':
+            case "deleteCalendarData":
                 if (data.sort && data.id) {
                     let result = await db.query(`SELECT uid, ${data.sort}.id as sortId FROM calendar.calendars INNER JOIN calendar.${data.sort} ON calendars.id = ${data.sort}.cid WHERE ${data.sort}.id = ?`, [data.id]);
                     if (result.length) {
@@ -49,9 +49,9 @@ async function resolve(data, apidata) {
                     }
                 }
                 break;
-            case 'createCalendarData':
+            case "createCalendarData":
                 if (data.info && data.data && data.calendar) {
-                    let result = await db.query(`SELECT uid FROM calendar.calendars WHERE id = ?`, [data.calendar]);
+                    let result = await db.query("SELECT uid FROM calendar.calendars WHERE id = ?", [data.calendar]);
                     if (result && result[0].uid ===  apidata.session.id) {
                         await db.query(`INSERT INTO calendar.${data.sort} (data, cid, name) VALUES (?, ?, ?)`, [data.data, data.calendar, data.info]);
                         return {

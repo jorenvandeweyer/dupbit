@@ -32,7 +32,7 @@ async function resolve(data, apidata) {
                 }
             } else if (user.level > 0 && user.id === id) {
                 switch (action) {
-                    case 'update':
+                    case "update":
                         if (data.username) {
                             await user.changeUsername(data.username);
                         }

@@ -2,7 +2,7 @@ const Database = require("../../src/util/Database");
 const Token = require("../../src/util/Token");
 const Cookie = require("../../src/util/Cookie");
 const IP = require("../../src/util/IP");
-const bcrypt = require('bcrypt');
+const bcrypt = require("bcrypt");
 
 async function resolve(data, apidata) {
     if (data.id && data.hash) {

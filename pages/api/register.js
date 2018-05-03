@@ -14,7 +14,7 @@ async function resolve(data) {
         } else {
             return {
                 redirect: `register?fail=${errorCode}`
-            }
+            };
         }
     }
 }

@@ -16,7 +16,7 @@ async function resolve(data, apidata) {
                 if (data.redirect) {
                     data.redirect = `login?redirect=${data.redirect}&notActivated`;
                 } else {
-                    data.redirect = "login?notActivated"
+                    data.redirect = "login?notActivated";
                 }
                 return {
                     success: false,
@@ -89,7 +89,7 @@ function getInfo(apidata) {
     if (object.os === "Other" && object.ua === "Other" && object.family === "Other") {
         object = {
             ua: apidata.request.ua_os.string,
-        }
+        };
     }
     return JSON.stringify(object);
 }

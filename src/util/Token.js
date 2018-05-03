@@ -1,6 +1,6 @@
-const jwt = require('jsonwebtoken');
-const NodeRSA = require('node-rsa');
-const fs = require('fs');
+const jwt = require("jsonwebtoken");
+const NodeRSA = require("node-rsa");
+const fs = require("fs");
 const db = require("./Database");
 
 let privateKey, publicKey;

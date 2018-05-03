@@ -3,7 +3,7 @@ const db = require("../../../src/util/Database");
 
 async function resolve(data, apidata) {
     if (apidata.session.isLoggedIn) {
-        const uid = apidata.session.id
+        const uid = apidata.session.id;
         let tokens = await db.getToken({ uid });
 
         tokens = tokens.filter(token => token.device === "desktop_app");

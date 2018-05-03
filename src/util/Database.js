@@ -1,6 +1,6 @@
 const mysql = require("mysql");
 const settings = require("../../config.json");
-const bcrypt = require('bcrypt');
+const bcrypt = require("bcrypt");
 const lang = require("../../lang/en.json");
 const Mail = require("./Mail");
 
@@ -19,17 +19,17 @@ checkTables();
 // });
 
 async function checkTables() {
-    await query('CREATE DATABASE IF NOT EXISTS users;').then((result) => {
+    await query("CREATE DATABASE IF NOT EXISTS users;").then((result) => {
         if (result.warningCount == 0) {
             console.log("Created Database \"users\".");
         }
     });
-    await query('CREATE DATABASE IF NOT EXISTS music;').then((result) => {
+    await query("CREATE DATABASE IF NOT EXISTS music;").then((result) => {
         if (result.warningCount == 0) {
             console.log("Created Database \"music\".");
         }
     });
-    await query('CREATE DATABASE IF NOT EXISTS calendar').then((result) => {
+    await query("CREATE DATABASE IF NOT EXISTS calendar").then((result) => {
         if (result.warningCOunt == 0) {
             console.log("Created Database \"calendar\".");
         }
@@ -467,11 +467,6 @@ async function getPlaylistsOfSong(sid) {
     return await query("SELECT * FROM music.songInPlaylist JOIN music.playlists WHERE pid = id AND sid=? ORDER BY name", [sid]);
 }
 
-// Get all songs in playlist with given id
-async function getSongsIn(pid) {
-    return await query("SELECT * FROM music.songInPlaylist JOIN music.songs WHERE sid = id AND pid=? ORDER BY artist, title", [pid]);
-}
-
 async function getPlaylistsOfSmart(uid) {
     let playlists = await getPlaylistsOf(uid);
 
@@ -484,7 +479,7 @@ async function getPlaylistsOfSmart(uid) {
 }
 
 async function getCalendarUrls(userId, calendarId) {
-    check_id = await checkCalendarOwner(userId, calendarId)
+    const check_id = await checkCalendarOwner(userId, calendarId);
     if (!check_id) {
         return [];
     }
@@ -493,7 +488,7 @@ async function getCalendarUrls(userId, calendarId) {
 }
 
 async function getCalendarCourseNumbers(userId, calendarId) {
-    check_id = await checkCalendarOwner(userId, calendarId)
+    const check_id = await checkCalendarOwner(userId, calendarId);
     if (!check_id) {
         return [];
     }
@@ -518,8 +513,8 @@ async function checkCalendarOwner(userId, calendarId) {
 /*********************************************/
 
 // Return string without illegal chars for filename
-function filename($string) {
-    return preg_replace('/[\\\\\/:*?"<>|]/', '', $string);
+function filename(string) {
+    return string.replace("/[\\\\/:*?\"<>|]/", "");
 }
 
 function recoverAccount(){
@@ -528,7 +523,7 @@ function recoverAccount(){
 
 // Verify if the given username, password and email make a valid user instance
 async function verifyRegistration(username, password, confirmpassword, email) {
-    errorCode = 0;
+    let errorCode = 0;
     errorCode += await verifyUsername(username);
     errorCode += verifyPassword(password);
     errorCode += verifyPasswordMatch(password, confirmpassword);
@@ -538,7 +533,7 @@ async function verifyRegistration(username, password, confirmpassword, email) {
 
 // Verify if the given username is valid for registration
 async function verifyUsername(username) {
-    errorCode = 0;
+    let errorCode = 0;
     if (await isRegistered(username)) {
         errorCode += 2 ** 0;
     }
@@ -556,7 +551,7 @@ async function verifyUsername(username) {
 
 // Verify if the given username is valid for registration
 function verifyPassword(password) {
-    errorCode = 0;
+    let errorCode = 0;
     if (password.length < 8) {
         errorCode += 2 ** 4;
     }
@@ -571,7 +566,7 @@ function verifyPassword(password) {
 
 // Check if passwords match
 function verifyPasswordMatch(password, confirmpassword) {
-    errorCode = 0;
+    let errorCode = 0;
     if (password !== confirmpassword) {
         errorCode += 2 ** 7;
     }
@@ -580,9 +575,9 @@ function verifyPasswordMatch(password, confirmpassword) {
 
 // Verify if the email is valid
 async function verifyEmail(email) {
-    errorCode = 0;
+    let errorCode = 0;
     if (await isInUse(email)) {
-      errorCode += 2 ** 8;
+        errorCode += 2 ** 8;
     }
     // if (!filter_var(email, FILTER_VALIDATE_EMAIL)) {
     //   errorCode += 2 ** 9;
@@ -598,7 +593,7 @@ function verifyUsernameChars(string) {
 
 // Verify string for valid chars
 function verifyPasswordChars(string) {
-    return !string.match(/[^A-Za-z0-9!"#$%&\'()*+,-.\/:;<=>?@[\]^_`{|}~]/);
+    return !string.match(/[^A-Za-z0-9!"#$%&'()*+,-./:;<=>?@[\]^_`{|}~]/);
     // return !preg_match('/[^A-Za-z0-9!"#$%&\'()*+,-.\/:;<=>?@[\]^_`{|}~]/', $string);
 }
 

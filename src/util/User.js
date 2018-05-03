@@ -41,4 +41,4 @@ module.exports = class User {
     async setLevel(level) {
         return await Database.setLevel(this.id, level);
     }
-}
+};

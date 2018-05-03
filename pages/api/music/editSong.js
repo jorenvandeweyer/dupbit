@@ -29,7 +29,7 @@ async function resolve(data, apidata) {
             return {
                 success: true,
                 backdirect: true,
-            }
+            };
         }
     }
     return {
