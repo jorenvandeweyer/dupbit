@@ -76,4 +76,9 @@ module.exports = {
             "songs": "Database.getSongsSmart(this.query.playlist, this.session.id)",
         },
     },
+    "/acount/index": {
+        title: "Dupbit - Account Settings",
+        currentPage: "acount",
+        requireLogin: true,
+    },
 };
