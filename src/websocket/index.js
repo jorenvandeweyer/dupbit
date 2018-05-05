@@ -30,6 +30,7 @@ function create(server) {
     wss.on("connection", (ws, req) => {
         addWS(ws, req);
         ws.on("message", (message) => {
+            handleMessage(ws, req, message);
             console.log(`RECIEVED: ${message}`);
         });
 
@@ -59,6 +60,16 @@ function findConnection(uid, tid) {
         }
     }
     return false;
+}
+
+function handleMessage(ws, req, message) {
+    message = JSON.parse(message);
+
+    if (message.action === "logout") {
+        Token.removeToken(req.user.tid);
+    } else if (message.action === "message") {
+        console.log(message.content);
+    }
 }
 
 module.exports = {
