@@ -23,7 +23,7 @@ async function resolve(data, apidata) {
                     redirect: data.remote ? false : data.redirect
                 };
             } else {
-                const expires = data.expires ? parseInt(data.expires) : 24*60*60;
+                const expires = data.expires ? parseInt(data.expires) : 365*10*24*60*60;
                 if (!data.remote) data.remote = "website";
 
                 const token = await Token.createToken({
