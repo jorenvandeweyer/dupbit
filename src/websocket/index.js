@@ -21,17 +21,20 @@ async function verifyClient(info, callback) {
     }
 }
 
+
 function create(server) {
     wss = new WebSocket.Server({
         server,
         verifyClient,
     });
 
+    setInterval(ping, 30000);
+
     wss.on("connection", (ws, req) => {
+        ws.isAlive = true;
         addWS(ws, req);
         ws.on("message", (message) => {
             handleMessage(ws, req, message);
-            console.log(`RECIEVED: ${message}`);
         });
 
         ws.send(JSON.stringify({
@@ -42,6 +45,8 @@ function create(server) {
             Clients.get(req.user.id).delete(req.user.tid);
             console.log("CLOSED");
         });
+
+        ws.on("pong", heartbeat);
     });
 }
 
@@ -69,7 +74,23 @@ function handleMessage(ws, req, message) {
         Token.removeToken(req.user.tid);
     } else if (message.action === "message") {
         console.log(message.content);
+    } else {
+        console.log(message);
     }
+}
+
+function ping() {
+    wss.clients.forEach((ws) => {
+        if (!ws.isAlive) {
+            return ws.terminate();
+        }
+        ws.isAlive = false;
+        ws.ping();
+    });
+}
+
+function heartbeat() {
+    this.isAlive = true;
 }
 
 module.exports = {
