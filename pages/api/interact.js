@@ -1,5 +1,5 @@
-const ws = require("../../../src/websocket/index");
-const db = require("../../../src/util/Database");
+const ws = require("../../src/websocket/index");
+const db = require("../../src/util/Database");
 
 async function resolve(data, apidata) {
     if (apidata.session.isLoggedIn) {
@@ -13,15 +13,14 @@ async function resolve(data, apidata) {
             if (socket) {
                 socket.send(JSON.stringify({
                     action: {
-                        name: "screen",
+                        name: data.name,
                         data: {
                             action: data.action,
+                            value: data.value,
                         },
                     },
                 }));
-                return {
-                    success: true,
-                };
+                return await waitForResponse(socket, data.name);
             }
         }
     }
@@ -33,3 +32,16 @@ async function resolve(data, apidata) {
 module.exports = {
     resolve,
 };
+
+async function waitForResponse(socket, action) {
+    return new Promise((resolve) => {
+        socket.addEventListener("message", function listener(message) {
+            console.log(message.data);
+            message = JSON.parse(message.data);
+            if (message.action === action) {
+                resolve(message);
+                socket.removeEventListener("message", listener);
+            }
+        });
+    });
+}
