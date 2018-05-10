@@ -9,11 +9,11 @@
 	<body>
 
 		<%- include /usr/src/app/pages/components/header %>
-
+        </br>
 		<div class="container">
-			<div class="panel panel-default panel-compact">
-				<div class="panel-heading"><b>Login</b></div>
-				<div class="panel-body">
+			<div class="card mx-auto" style="max-width: 400px;">
+				<div class="card-header"><b>Login</b></div>
+				<div class="card-body">
 					<% if("fail" in query) { %>
 					<div class="alert alert-danger alert-dismissable">
 						<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
@@ -49,6 +49,6 @@
 				</div>
 			</div>
 		</div>
-
+        <%- include /usr/src/app/pages/components/footer %>
 	</body>
 </html>
