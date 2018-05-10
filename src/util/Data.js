@@ -35,7 +35,10 @@ class Data {
         }
 
         if (this.pageInfo) {
-            if (this.pageInfo.requireLogin && !this.session.isLoggedIn) {
+            if (this.pageInfo.requireLogout && this.session.isLoggedIn) {
+                this.status = 303;
+                this.redirectHeader = "/welcome";
+            } else if (this.pageInfo.requireLogin && !this.session.isLoggedIn) {
                 this.status = 303;
                 this.redirectHeader = "/login?redirect=" + this.pageInfo.currentPage;
             } else if (this.pageInfo.requireLevel && this.pageInfo.requireLevel > this.session.level) {
