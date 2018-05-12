@@ -55,12 +55,12 @@ let server = https.createServer(options, async (request, response) => {
         //response.end(content, 'utf-8');
     } else {
         console.log("ELSE???????");
-        console.log(request);
+        // console.log(request);
     }
 }).listen(443);
 
 http.createServer(function (req, res) {
-    console.log(req);
+    // console.log(req);
     res.writeHead(301, { "Location": "https://" + req.headers["host"] + req.url });
     res.end();
 }).listen(80);
