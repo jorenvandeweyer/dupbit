@@ -8,6 +8,10 @@ module.exports = {
         currentPage: "welcome",
         requireLogin: true
     },
+    "/contact": {
+        title: "Dupbit - Contact",
+        currentPage: "contact",
+    },
     "/register": {
         title: "Dupbit - Register",
         currentPage: "register",

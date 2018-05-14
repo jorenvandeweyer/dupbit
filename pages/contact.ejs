@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+        <style>
+        .collapsing {
+          position: relative;
+          height: 0;
+          overflow: hidden;
+          -webkit-transition-property: height, visibility;
+          transition-property: height, visibility;
+          -webkit-transition-duration: 0.35s;
+          transition-duration: 0.35s;
+          -webkit-transition-timing-function: ease;
+          transition-timing-function: ease;
+        }
+        .collapsing.width {
+          -webkit-transition-property: width, visibility;
+          transition-property: width, visibility;
+          width: 0;
+          height: auto;
+        }
+        </style>
+        <%- include /usr/src/app/pages/components/head %>
+	</head>
+	<body>
+		<%- include /usr/src/app/pages/components/header %>
+        <br>
+		<div class="container">
+
+            <div class="row">
+
+                <div class="card" style="width:300px;">
+                  <img class="card-img-top" src="/images/joren.jpg" alt="Card image" style="width:100%;">
+                  <div class="card-body">
+                    <h4 class="card-title">Joren Vandeweyer</h4>
+                    <p class="card-text">Joren Vandeweyer is an Engineer and a programmer.</p>
+                    <a href="#" class="btn btn-primary" data-toggle="collapse" data-target="#joren">See Profile</a>
+                  </div>
+                </div>
+
+
+                <div id="joren" class="card collapse width">
+                    <div style="width:400px;">
+                        <i class="fas fa-envelope"></i></span>joren.vandeweyer@gmail.com
+                    </div>
+                </div>
+            </div>
+		</div>
+        <%- include /usr/src/app/pages/components/footer %>
+	</body>
+</html>
