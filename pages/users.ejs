@@ -33,12 +33,12 @@
 	<body>
 
 		<%- include /usr/src/app/pages/components/header %>
-
+        </br>
 		<div class="container">
-			<div class="panel panel-default">
-				<div class="panel-heading"><b>Users</b></div>
-				<div class="panel-body">
-					<table class='table table-hover .table-condensed table-responsive'>
+			<div class="card">
+				<div class="card-header"><b>Users</b></div>
+				<div class="card-body">
+					<table class='table table-hover'>
 						<thead>
 							<tr>
 								<th>ID</th>
@@ -76,6 +76,7 @@
 			<input type="hidden" name="username" id="username"/>
 			<input type="hidden" name="action" id="action"/>
 		</form>
+        <%- include /usr/src/app/pages/components/footer %>
 
 	</body>
 </html>
