@@ -30,7 +30,7 @@
                 <a class="nav-link" href="#">About</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="#">Contact</a>
+                <a class="nav-link" href="/contact">Contact</a>
             </li>
         </ul>
         <ul class="navbar-nav ml-auto">
@@ -40,26 +40,26 @@
                         <%= user.username %>
                     </a>
                     <div class="dropdown-menu dropdown-menu-right bg-dark">
-                        <a class="dropdown-item bg-dark text-white-50" href="/welcome">Welcome</a>
+                        <a class="dropdown-item bg-dark text-white-50" href="/welcome"><i class="fas fa-home"></i> Welcome</a>
                         <div class="dropdown-divider"></div>
                         <div class="dropdown-header bg-dark text-white-75">Profile actions</div>
-                        <a class="dropdown-item bg-dark text-white-50" href="/account">Account</a>
+                        <a class="dropdown-item bg-dark text-white-50" href="/account"><i class="fas fa-user-alt"></i> Account</a>
                         <% if(user.level == 3) { %>
                         <div class="dropdown-divider"></div>
                         <div class="dropdown-header bg-dark text-white-75">Admin acounts</div>
-                        <a class="dropdown-item bg-dark text-white-50" href="/users">Manage users</a>
-                        <a class="dropdown-item bg-dark text-white-50" href="/logins">Login attempts</a>
+                        <a class="dropdown-item bg-dark text-white-50" href="/users"><i class="fas fa-users"></i> Manage users</a>
+                        <a class="dropdown-item bg-dark text-white-50" href="/logins"><i class="fas fa-user-shield"></i> Login attempts</a>
                         <% } %>
                         <div class="dropdown-divider"></div>
-                        <a class="dropdown-item bg-dark text-white-50" href="/api/logout">Log out</a>
+                        <a class="dropdown-item bg-dark text-white-50" href="/api/logout"><i class="fas fa-sign-out-alt"></i> Log out</a>
                     </div>
                 </li>
             <% } else { %>
                 <li class="nav-item">
-                    <a class="nav-link" href="/register">Register</a>
+                    <a class="nav-link" href="/register"><i class="fas fa-user-alt"></i> Register</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="/login">Login</a>
+                    <a class="nav-link" href="/login"><i class="fas fa-sign-in-alt"></i> Login</a>
                 </li>
             <% } %>
         </ul>

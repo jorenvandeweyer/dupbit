@@ -29,18 +29,22 @@
 					<form action="api/login" method="post">
 						<div class="form-group">
 							<div class="input-group">
-								<span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="fas fa-user"></i></span>
+                                </div>
 								<input id="username" class="form-control" name="username" type="text" placeholder="Username">
 							</div>
 						</div>
 						<div class="form-group">
 							<div class="input-group">
-								<span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                                </div>
 								<input id="password" class="form-control" name="password" type="password" placeholder="Password">
 							</div>
 						</div>
-						<div class="form-group">
-							<div class="input-group pull-right">
+						<div class="form-group float-right">
+							<div class="input-group">
 								<input class="btn btn-primary" type="submit" value="Login"/>
 							</div>
 						</div>

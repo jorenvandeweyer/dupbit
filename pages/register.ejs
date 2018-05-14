@@ -8,47 +8,51 @@
 	<body>
 
 		<%- include /usr/src/app/pages/components/header %>
-
+        </br>
 		<div class="container">
-			<div class="panel panel-default panel-compact">
-				<div class="panel-heading"><b>Register</b></div>
-				<div class="panel-body">
+			<div class="card mx-auto" style="max-width: 500px;">
+				<div class="card-header"><b>Register</b></div>
+				<div class="card-body">
+                    <% errorMessageList.forEach((errorMessage) => { %>
+                    <div class="alert alert-danger alert-dismissable">
+                        <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                        <strong><%= query.errorMessage %></strong>
+                    </div>
+                    <% }) %>
 					<form id="register" action="api/register" method="post">
-                        <% errorMessageList.forEach((errorMessage) => { %>
-						<div class="alert alert-danger alert-dismissable">
-							<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-							<strong><%= query.errorMessage %></strong>
-						</div>
-                        <% }) %>
 						<div class="form-group" id="username">
-							<span class="help-block"><%= lang["username.help"] %></span>
+							<span class="help-block float-right"><%= lang["username.help"] %></span>
 							<div class="input-group has-feedback">
-								<span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
-								<span class="form-control-feedback glyphicon"></span>
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="fas fa-user"></i></span>
+                                </div>
 								<input type="text" class="form-control" name="username" placeholder="Username"/>
 							</div>
 						</div>
 						<div class="form-group" id="password">
-							<span class="help-block"><%= lang["password.help"] %></span>
+							<span class="help-block float-right"><%= lang["password.help"] %></span>
 							<div class="input-group has-feedback">
-								<span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
-								<span class="form-control-feedback glyphicon"></span>
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                                </div>
 								<input type="password" class="form-control" name="password" placeholder="Password"/>
 							</div>
 						</div>
 						<div class="form-group" id="confirmpassword">
-							<span class="help-block"><%= lang["password.confirmhelp"] %></span>
+							<span class="help-block float-right"><%= lang["password.confirmhelp"] %></span>
 							<div class="input-group has-feedback">
-								<span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
-								<span class="form-control-feedback glyphicon"></span>
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="fas fa-user"></i></span>
+                                </div>
 								<input type="password" class="form-control" name="confirmpassword" placeholder="Confirm password"/>
 							</div>
 						</div>
 						<div class="form-group" id="email">
-							<span class="help-block"><%= lang["email.help"] %></span>
+							<span class="help-block float-right"><%= lang["email.help"] %></span>
 							<div class="input-group has-feedback">
-								<span class="input-group-addon"><i class="glyphicon glyphicon-envelope"></i></span>
-								<span class="form-control-feedback glyphicon"></span>
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+                                </div>
 								<input type="email" class="form-control" name="email" placeholder="Email"/>
 							</div>
 						</div>
@@ -61,13 +65,13 @@
 				</div>
 			</div>
 		</div>
-
-		<script>
+        <%- include /usr/src/app/pages/components/footer %>
+        <script>
 		function validate() {
 
 			var inputList = [$("#username"), $("#password"), $("#confirmpassword"), $("#email")];
 			var labelList = ["<%= lang["username.help"] %>","<%= lang["password.help"] %>","<%= lang["password.confirmhelp"] %>","<%= lang["email.help"] %>"];
-
+            console.log(inputList);
 			postData = {
 				username: inputList[0].find("input").val(),
 				password: inputList[1].find("input").val(),
@@ -93,16 +97,14 @@
 							inputGroup.addClass("has-error");
 							feedback.addClass("glyphicon-remove");
 							helpBlock.text(error);
-						}
-						else {
+						} else {
 							inputGroup.removeClass("has-error");
 							feedback.removeClass("glyphicon-remove");
 							inputGroup.addClass("has-success");
 							feedback.addClass("glyphicon-ok");
 							helpBlock.text(label);
 						}
-					}
-					else {
+					} else {
 						inputGroup.removeClass("has-success");
 						feedback.removeClass("glyphicon-ok");
 						inputGroup.removeClass("has-error");
@@ -116,7 +118,6 @@
 		$("#register input").on("input", function() {
 			validate();
 		});
-	</script>
-
+        </script>
 	</body>
 </html>
