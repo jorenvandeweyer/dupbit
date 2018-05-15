@@ -20,6 +20,7 @@
           height: auto;
         }
         </style>
+        <script type="text/javascript" src="https://platform.linkedin.com/badges/js/profile.js" async defer></script>
         <%- include /usr/src/app/pages/components/head %>
 	</head>
 	<body>
@@ -39,13 +40,17 @@
                 </div>
 
 
-                <div id="joren" class="card collapse width">
-                    <div style="width:400px;">
-                        <i class="fas fa-envelope"></i></span>joren.vandeweyer@gmail.com
+                <div id="joren" class="card collapse width" style="height:334px;">
+                    <div style="">
+                        <div class="LI-profile-badge"  data-version="v1" data-size="medium" data-locale="nl_NL" data-type="horizontal" data-theme="dark" data-vanity="jorenvandeweyer"><a class="LI-simple-link" href='https://be.linkedin.com/in/jorenvandeweyer?trk=profile-badge' target="_blank">Joren Vandeweyer</a></div>
+                        <div class="github-card" data-github="jorenvandeweyer" data-width="280" data-height="150" data-theme="default"></div>
                     </div>
                 </div>
+
             </div>
 		</div>
+        <script src="//cdn.jsdelivr.net/github-cards/latest/widget.js"></script>
+
         <%- include /usr/src/app/pages/components/footer %>
 	</body>
 </html>
