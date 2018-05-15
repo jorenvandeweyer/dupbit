@@ -30,17 +30,17 @@
 				<button type="button" class="btn btn-primary" onclick="goBack()">Back</button>
 				</br>
 				</br>
-		        <div class="row">
-		            <div class="col-xs-6">
+		        <div class="row" style='width:100%;'>
+		            <div class="col-xs-6 mr-auto">
 		                <div class="input-group">
 		                    <input type="text" id="url" class="form-control" placeholder="Url to an existing calendar">
-	                        <span class="input-group-addon"></span>
+                            <div class="input-group-prepend">
+                                <div class="input-group-text"></div>
+                            </div>
 		                    <input type="text" id="urlTag" class="form-control" placeholder="Name for calendar">
-		                    <div class="input-group-btn">
-		                        <button onclick="addUrl()" class="btn btn-default" type="submit">
-		                            <i class="glyphicon glyphicon-ok"></i>
-		                        </button>
-		                    </div>
+                            <div class="input-group-append">
+                              <button class="btn btn-outline-secondary" type="button" onclick="addUrl()"><i class="fa fa-check"></i></button>
+                            </div>
 		                </div>
 		            	<table class='table table-hover setbackground'>
 		            		<thead>
@@ -65,13 +65,13 @@
 		            <div class="col-xs-6">
 		                <div class="input-group">
 		                    <input type="text" id="course" class="form-control" placeholder="Course number to filter">
-	                        <span class="input-group-addon"></span>
+                            <div class="input-group-prepend">
+                                <div class="input-group-text"></div>
+                            </div>
 		                    <input type="text" id="courseTag" class="form-control" placeholder="Name for course">
-		                    <div class="input-group-btn">
-		                        <button onclick="addCourse()" class="btn btn-default" type="submit">
-		                            <i class="glyphicon glyphicon-ok"></i>
-		                        </button>
-		                    </div>
+                            <div class="input-group-append">
+                              <button class="btn btn-outline-secondary" type="button" onclick="addCourse()"><i class="fa fa-check"></i></button>
+                            </div>
 		                </div>
 		            	<table class='table table-hover setbackground'>
 		            		<thead>
@@ -97,7 +97,9 @@
 		        </br>
 				<form>
 					<div class="input-group">
-	                    <span class="input-group-addon">Calendar url: </span>
+                        <div class="input-group-prepend">
+                            <div class="input-group-text">Calendar url: </div>
+                        </div>
 						<input type="text" class="form-control" value="https://dupbit.com/ics/calendar_<%= query.calendar %>.ics" placeholder="Url to ics calendar" id="copy-input">
 					</div>
 				</form>
@@ -119,7 +121,7 @@
                             <%- "<tr id= " + tables[table]['id'] + ">" %>
                                 <%- "<td>" + tables[table]['id'] + "</td>" %>
                                 <%- "<td>" + tables[table]['name'] + "</td>" %>
-                                <%- "<td><a type='button' class='btn btn-link' href='?calendar=" + tables[table]['id'] + "'>Edit</a></td>" %>
+                                <%- "<td><button type='button' class='btn btn-link'><a href='?calendar=" + tables[table]['id'] + "'>Edit</a></button></td>" %>
                                 <%- "<td><button type='button' class='btn btn-danger' onclick='deleteCalendar(" + tables[table]['id'] + ")'> Delete </button></td>" %>
                             <%- "</tr>" %>
                         <% } %>
@@ -130,11 +132,9 @@
 		            <div class="col-xs-3">
 		                <div class="input-group">
 		                    <input type="text" id="newName" onkeypress="handleKeyPress(event)" class="form-control" placeholder="Name for new calendar">
-		                    <div class="input-group-btn">
-		                        <button onclick="createCalendar()" class="btn btn-default" type="submit">
-		                            <i class="glyphicon glyphicon-ok"></i>
-		                        </button>
-		                    </div>
+                            <div class="input-group-append">
+                              <button class="btn btn-outline-secondary" type="button" onclick="createCalendar()"><i class="fa fa-check"></i></button>
+                            </div>
 		                </div>
 		            </div>
 		            <div class="col-xs-5"></div>
@@ -151,7 +151,7 @@
 			<input type="hidden" name="data" id="data">
 			<input type="hidden" name="info" id="info">
 		</form>
-        
+
         <%- include /usr/src/app/pages/components/footer %>
 		<script>
 			function handleKeyPress(e){
