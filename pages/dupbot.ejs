@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 	<head>
-
 		<%- include /usr/src/app/pages/components/head %>
 		<meta name="keywords" content="<%= pageInfo.metaKeywords %>">
 		<meta name="description" content="<%= pageInfo.metaDescription %>">
@@ -11,80 +10,97 @@
 	</head>
 	<body>
 		<%- include /usr/src/app/pages/components/header %>
-
+        </br>
 		<div class="container">
-            <div class="panel-heading">
-                <a href="https://discordbots.org/bot/382289192161640468"><img src="https://discordbots.org/api/widget/status/382289192161640468.svg" alt="Discord Bots" /></a>
-                <a href="https://discordbots.org/bot/382289192161640468"><img src="https://discordbots.org/api/widget/servers/382289192161640468.svg" alt="Discord Bots" /></a>
-                <a href="https://discordbots.org/bot/382289192161640468"><img src="https://discordbots.org/api/widget/owner/382289192161640468.svg" alt="Discord Bots" /></a>
+            <div class="card">
+                <div class="card-header">
+                    <a href="https://discordbots.org/bot/382289192161640468"><img src="https://discordbots.org/api/widget/status/382289192161640468.svg" alt="Discord Bots" /></a>
+                    <a href="https://discordbots.org/bot/382289192161640468"><img src="https://discordbots.org/api/widget/servers/382289192161640468.svg" alt="Discord Bots" /></a>
+                    <a href="https://discordbots.org/bot/382289192161640468"><img src="https://discordbots.org/api/widget/owner/382289192161640468.svg" alt="Discord Bots" /></a>
+                </div>
+
+    			<div id="embed" class="card">
+    				<div class="card-body">
+    					<button type="button" class="btn btn-success" onclick="window.open('https://discordapp.com/oauth2/authorize?permissions=2146958591&scope=bot&client_id=382289192161640468')">Invite Dupbot!</button>
+
+    					<br><br>
+    					<ul class="nav nav-tabs" role="tablist">
+                            <li class="nav-item">
+                                <a class="nav-link active" data-toggle="tab" href="#info_tab">Info</a>
+                            </li>
+    						<li class="nav-item">
+                                <a class="nav-link" data-toggle="tab" href="#remindme_tab">Remind Me</a>
+                            </li>
+    						<li class="nav-item">
+                                <a class="nav-link" data-toggle="tab" href="#moderation_tab">Moderation</a>
+                            </li>
+    						<li class="nav-item">
+                                <a class="nav-link" data-toggle="tab" href="#music_tab">Music</a>
+                            </li>
+    						<li class="nav-item">
+                                <a class="nav-link" data-toggle="tab" href="#fun_tab">Fun</a>
+                            </li>
+    						<li class="nav-item">
+                                <a class="nav-link" data-toggle="tab" href="#utility_tab">Utility</a>
+                            </li>
+    					</ul>
+    					<br>
+    					<div class="tab-content">
+    						<div id="info_tab" class="container tab-pane active">
+    							<img src="/images/dupbot.png" style="float:right;width:200px">
+    							<p>A smart RemindeMe bot! Ask Dupbot nicely to remind you or use the command to help you remind things!</p><br>
+    							<p>Lots of moderation commands, and a handy mod log for the moderators.</p><br>
+                                <p>With the <code class='inline'>!iam</code> command, members are able to self-assign roles.</p><br>
+    							<p>Talk to its AI function and watch it learn.</p><br>
+    							<p>Also includes a music bot (which can play youtube playlists) and some minigames like cards against humanity. </p><br>
+    							<p><code class='inline'>&lt;userid&gt;</code> or <code class='inline'>&lt;role&gt;</code> can just be plain text(only for roles without spaces), a mention or the id. </p><br>
+    							<button type="button" class="btn btn-success" onclick="window.open('https://discord.gg/5FcKNvk')">Dupbot Support Server</button><br>
+    							<br>
+    							<h2>Setup</h2>
+    							<p><code class='inline'>!set log</code> Inside the channel where logs will be stored. (should not be a public channel)</p>
+    							<p><code class='inline'>!set admin &lt;role&gt;</code> Set the moderator role.</p>
+    							<p><code class='inline'>!set perm &lt;command&gt; &lt;level&gt;</code> Change the permission level for a command. (Use <code class='inline'>!permissions</code> to see the current permissions for each command.)</p>
+    							<p><pre>0: Disable command<br>1: Everyone<br>2: Moderators<br>3: Server Owner (+ Administrators)</pre></p>
+
+    							<h3>Optional Setup</h3>
+    							<p><code class='inline'>!set prefix &lt;prefix&gt;</code> Set the prefix for the bot.</p>
+    							<p><code class='inline'>!set warntime &lt;hours&gt;</code> Set the warntime in hours (if a user recieves 3 warnings within this time he will be kicked).</p>
+    							<p><code class='inline'>!set deleteCommands</code> The bot will delete commands when they are invoked.</p>
+    							<p><code class='inline'>!set iamrole &lt;role&gt;</code> Add roles which users can assign themself with <code class='inline'>!iam &lt;role&gt;</code>.</p>
+    							<p><code class='inline'>!set maxiamroles</code> Set the maximum of roles that users can assign themself. (-1 for Infinite)</p>
+    							<p><code class='inline'>!set music</code> Do this command in the channel where the bot can post info about the song it's going to play.</p>
+    							<p><code class='inline'>!set voice</code> Go inside a voice channel for this command, the bot will only join this channel and no other channels from now on.</p>
+    							<p><code class='inline'>!set ai</code> Prevent the bot from messages that includes its name, it will only respond to sentences beginning with <code class='inline'>Dupbot,</code>.</p>
+
+    						</div>
+    						<div id="remindme_tab" class="container tab-pane fade">
+    							<br>
+    							There are 2 ways to set a reminder, the first way is to use the !remindme command which is described in the 'Utility' tab.<br>
+    							The second way is a bit more unique. The bot uses NLP (natural language processing) to understand what you are saying.<br>
+    							<br>
+    							For example: <code class='inline'>Dupbot, remind me to go to the store tomorrow</code> the bot will understand that you want to "go to the store", "tomorrow".<br>
+    							It will add the reminder and reminds you the next day about it.<br>
+    							<br>
+    							The same way you can ask it to show all your reminders by saying <code class='inline'>Dupbot, show my reminders please</code>, this will show all your reminders<br>
+    							for this server (or DM). It will also add in which channel you asked it to create the reminder and when he will remind you about it.<br>
+    							<br>
+    							To remove all your reminders in a server, you simply ask the bot to remove them <code class='inline'>Dupbot, remove my reminders</code>.
+    						</div>
+    						<div id="moderation_tab" class="container tab-pane fade">
+    						</div>
+    						<div id="music_tab" class="container tab-pane fade">
+    						</div>
+    						<div id="fun_tab" class="container tab-pane fade">
+    						</div>
+    						<div id="utility_tab" class="container tab-pane fade">
+    						</div>
+    					</div>
+    				</div>
+    			</div>
             </div>
-			<div id="embed" class="panel panel-default">
-				<div class="panel-body">
-					<button type="button" class="btn btn-success" onclick="window.open('https://discordapp.com/oauth2/authorize?permissions=2146958591&scope=bot&client_id=382289192161640468')">Invite Dupbot!</button>
-
-					<br><br>
-					<ul class="nav nav-tabs">
-						<li class="active"><a class="btn btn-primary" data-toggle="tab" href="#info_tab">Info</a></li>
-						<li><a class="btn btn-primary" data-toggle="tab" href="#remindme_tab">Remind Me</a></li>
-						<li><a class="btn btn-primary" data-toggle="tab" href="#moderation_tab">Moderation</a></li>
-						<li><a class="btn btn-primary" data-toggle="tab" href="#music_tab">Music</a></li>
-						<li><a class="btn btn-primary" data-toggle="tab" href="#fun_tab">Fun</a></li>
-						<li><a class="btn btn-primary" data-toggle="tab" href="#utility_tab">Utility</a></li>
-					</ul>
-					<br>
-					<div class="tab-content" style="text-align: left">
-						<div id="info_tab" class="tab-pane fade in active">
-							<img src="/images/dupbot.png" style="float:right;width:200px">
-							<p>A smart RemindeMe bot! Ask Dupbot nicely to remind you or use the command to help you remind things!</p><br>
-							<p>Lots of moderation commands, and a handy mod log for the moderators.</p><br>
-                            <p>With the <code class='inline'>!iam</code> command, members are able to self-assign roles.</p><br>
-							<p>Talk to its AI function and watch it learn.</p><br>
-							<p>Also includes a music bot (which can play youtube playlists) and some minigames like cards against humanity. </p><br>
-							<p><code class='inline'>&lt;userid&gt;</code> or <code class='inline'>&lt;role&gt;</code> can just be plain text(only for roles without spaces), a mention or the id. </p><br>
-							<button type="button" class="btn btn-success" onclick="window.open('https://discord.gg/5FcKNvk')">Dupbot Support Server</button><br>
-							<br>
-							<h2>Setup</h2>
-							<p><code class='inline'>!set log</code> Inside the channel where logs will be stored. (should not be a public channel)</p>
-							<p><code class='inline'>!set admin &lt;role&gt;</code> Set the moderator role.</p>
-							<p><code class='inline'>!set perm &lt;command&gt; &lt;level&gt;</code> Change the permission level for a command. (Use <code class='inline'>!permissions</code> to see the current permissions for each command.)</p>
-							<p><pre>0: Disable command<br>1: Everyone<br>2: Moderators<br>3: Server Owner (+ Administrators)</pre></p>
-
-							<h3>Optional Setup</h3>
-							<p><code class='inline'>!set prefix &lt;prefix&gt;</code> Set the prefix for the bot.</p>
-							<p><code class='inline'>!set warntime &lt;hours&gt;</code> Set the warntime in hours (if a user recieves 3 warnings within this time he will be kicked).</p>
-							<p><code class='inline'>!set deleteCommands</code> The bot will delete commands when they are invoked.</p>
-							<p><code class='inline'>!set iamrole &lt;role&gt;</code> Add roles which users can assign themself with <code class='inline'>!iam &lt;role&gt;</code>.</p>
-							<p><code class='inline'>!set maxiamroles</code> Set the maximum of roles that users can assign themself. (-1 for Infinite)</p>
-							<p><code class='inline'>!set music</code> Do this command in the channel where the bot can post info about the song it's going to play.</p>
-							<p><code class='inline'>!set voice</code> Go inside a voice channel for this command, the bot will only join this channel and no other channels from now on.</p>
-							<p><code class='inline'>!set ai</code> Prevent the bot from messages that includes its name, it will only respond to sentences beginning with <code class='inline'>Dupbot,</code>.</p>
-
-						</div>
-						<div id="remindme_tab" class="tab-pane fade">
-							<br>
-							There are 2 ways to set a reminder, the first way is to use the !remindme command which is described in the 'Utility' tab.<br>
-							The second way is a bit more unique. The bot uses NLP (natural language processing) to understand what you are saying.<br>
-							<br>
-							For example: <code class='inline'>Dupbot, remind me to go to the store tomorrow</code> the bot will understand that you want to "go to the store", "tomorrow".<br>
-							It will add the reminder and reminds you the next day about it.<br>
-							<br>
-							The same way you can ask it to show all your reminders by saying <code class='inline'>Dupbot, show my reminders please</code>, this will show all your reminders<br>
-							for this server (or DM). It will also add in which channel you asked it to create the reminder and when he will remind you about it.<br>
-							<br>
-							To remove all your reminders in a server, you simply ask the bot to remove them <code class='inline'>Dupbot, remove my reminders</code>.
-						</div>
-						<div id="moderation_tab" class="tab-pane fade">
-						</div>
-						<div id="music_tab" class="tab-pane fade">
-						</div>
-						<div id="fun_tab" class="tab-pane fade">
-						</div>
-						<div id="utility_tab" class="tab-pane fade">
-						</div>
-					</div>
-				</div>
-			</div>
 		</div>
+        <%- include /usr/src/app/pages/components/footer %>
+
 		<script>
 $(document).ready(function(){
     $('[data-toggle="tooltip"]').tooltip();
@@ -95,7 +111,7 @@ if(window.location.search.substring(1).includes("embed")){
     document.body.innerHTML = embed.innerHTML;
 }
 function createAccordion(tab, content){
-	return  `<div class="panel-group" id="${tab}">${content}</div>`;
+	return  `<div id="${tab}">${content}</div>`;
 }
 function createExample(command, examples){
     if (!examples || !examples.length) return "";
@@ -107,21 +123,33 @@ function createExample(command, examples){
     }).join("<br>");
 }
 function createPanel(parent, command, content){
-	return `<div id="${command}_top" class="panel panel-default nounderline">
-		<div class="panel-heading nounderline" data-toggle="collapse" data-parent="#${parent}" href="#${command}">
-			<h4 class="panel-title nounderline">
-				<a><code class='inline'>${content.title}</code></a>
-			</h4>
-		</div>
-		<div id="${command}" class="panel-collapse collapse">
-			<div class="panel-body">
-				<p><b>${content.content}</b></p>${createExample(command, content.example)}
-			</div>
-		</div>
-	</div>`;
+    return `<div id="${command}_top" class="card nounderline">
+                <div class="card-header">
+                    <a class="card-link" data-toggle="collapse" href="#collapseOne">
+                        <code class='inline'>${content.title}</code>
+                    </a>
+                </div>
+                <div id="${command}" class="collapse" data-parent="#${parent}">
+                    <div class="card-body">
+                        <p><b>${content.content}</b></p>${createExample(command, content.example)}
+                    </div>
+                </div>
+            </div>`;
+	// return `<div id="${command}_top" class="card nounderline">
+	// 	<div class="card-header nounderline" data-toggle="collapse" data-parent="#${parent}" href="#${command}">
+	// 		<h4 class="card-title nounderline">
+	// 			<a><code class='inline'>${content.title}</code></a>
+	// 		</h4>
+	// 	</div>
+	// 	<div id="${command}" class="panel-collapse collapse">
+	// 		<div class="card-body">
+	// 			<p><b>${content.content}</b></p>${createExample(command, content.example)}
+	// 		</div>
+	// 	</div>
+	// </div>`;
 }
 function tooltip(message){
-    return `<span data-toggle="tooltip" data-placement="top" title='${message}' class='glyphicon glyphicon-info-sign'></span>`;
+    return `<span data-toggle="tooltip" data-placement="top" title='${message}' class='fas fa-info-circle'></span>`;
 }
 function init(){
 	let commands = {
@@ -431,7 +459,7 @@ function init(){
                         "!play Sam Smith Too Good At Goodbyes",
                         "!play https://www.youtube.com/watch?v=J_ub7Etch2U"
                     ], [
-                        "Playlists are also supported in the following format <span data-toggle='tooltip' title='Make sure to be on the playlist overview page' class='glyphicon glyphicon-info-sign'>:",
+                        "Playlists are also supported in the following format <span data-toggle='tooltip' title='Make sure to be on the playlist overview page' class='fas fa-info-circle'>:",
                         "!play https://www.youtube.com/playlist?list=PLFgquLnL59anODTX1UCzrlrQGO3gfvg97"
                     ]
                 ]

@@ -20,16 +20,16 @@
 	<body>
 		<%- include /usr/src/app/pages/components/header %>
 		<div class="container">
-			<div class="panel panel-default">
-				<div class="panel-heading"><b>Music</b></div>
-				<div class="panel-body">
-					<div class='btn-group'>
-					<a class='btn btn-default' href='music'><i class='glyphicon glyphicon-music'></i> All</a>
-                    <% var playlists = pageData.playlists %>
-                    <% for (let playlist in playlists) { %>
-                        <%- "<a class='btn btn-default' href='/projects/music?playlist=" + playlists[playlist]["id"] + "'><i class='glyphicon glyphicon-music'></i>" + playlists[playlist]['name'] + "</a>"%>
-                    <% } %>
-					<a class="btn btn-default" data-toggle="modal" data-target="#editPlaylistModal"><i class='glyphicon glyphicon-edit'></i></a>
+			<div class="card">
+				<div class="card-header"><b>Music</b></div>
+				<div class="card-body">
+					<div class='btn-group' role="group">
+    					<a class='btn btn-light' href='music'><i class='fa fa-music'></i> All</a>
+                        <% var playlists = pageData.playlists %>
+                        <% for (let playlist in playlists) { %>
+                            <%- "<a class='btn btn-light' href='/projects/music?playlist=" + playlists[playlist]["id"] + "'><i class='fa fa-music'></i> " + playlists[playlist]['name'] + "</a>"%>
+                        <% } %>
+    	               <a class="btn btn-light" data-toggle="modal" data-target="#editPlaylistModal"><i class='fa fa-edit'></i></a>
 					</div>
 					<div class="table-responsive">
 						<table class='table table-hover table-condensed table-responsive'>
@@ -50,16 +50,16 @@
                                 <% for (let song in songs) { %>
                                     <%- "<tr>" %>
                                         <%- "<td>" %>
-                                            <%- "<a class='playButton btn btn-link btn-xs' data-ytid='" + songs[song]['ytid'] + "'><i class='glyphicon glyphicon-play'></i></a>" %>
-                                            <%- "<a class='pauseButton btn btn-link btn-xs' style='display: none;'><i class='glyphicon glyphicon-pause'></i></a>" %>
+                                            <%- "<a class='playButton btn btn-link btn-xs' data-ytid='" + songs[song]['ytid'] + "'><i class='fa fa-play'></i></a>" %>
+                                            <%- "<a class='pauseButton btn btn-link btn-xs' style='display: none;'><i class='fa fa-pause'></i></a>" %>
                                         <%- "</td>" %>
                                         <%- "<td>" + songs[song]['artist'] + "</td>" %>
                                         <%- "<td>" + songs[song]['title'] + "</td>" %>
                                         <%- "<td>" + songs[song].playlistNames.join(",") + "</td>" %>
-                                        <%- "<td><a class='btn btn-success btn-xs' href='/api/music/downloadSong?id=" + songs[song]['id'] + "'><i class='glyphicon glyphicon-download-alt'></i> Download </td>" %>
-                                        <%- "<td><a class='btn btn-link btn-xs' href='https://www.youtube.com/watch?v=" + songs[song]['ytid'] + "'><i class='fa fa-youtube-play'></i>" + songs[song]['ytid'] + "</a></td>" %>
-                                        <%- "<td><a class='btn btn-info btn-xs' data-toggle='modal' data-target='#editSongModal' onclick='" + `editSong(${songs[song]['id']}, "${songs[song]['artist']}","${songs[song]['title']}",[${songs[song].playlistIds.join(",")}])` + "'><i class='glyphicon glyphicon-edit'></i> Edit </a></td>" %>
-                                        <%- "<td><a class='btn btn-danger btn-xs' data-toggle='modal' data-target='#removeSongModal' onclick='removeSong(" + songs[song]['id'] + ")'><i class='glyphicon glyphicon-trash'></i> Remove </a></td>" %>
+                                        <%- "<td><a class='btn btn-success btn-xs' href='/api/music/downloadSong?id=" + songs[song]['id'] + "'><i class='fa fa-download'></i> Download </td>" %>
+                                        <%- "<td><a class='btn btn-link btn-xs' href='https://www.youtube.com/watch?v=" + songs[song]['ytid'] + "'><i class='fa fa-youtube-play' taget='_blank'></i>" + songs[song]['ytid'] + "</a></td>" %>
+                                        <%- "<td><a class='btn btn-info btn-xs' data-toggle='modal' data-target='#editSongModal' onclick='" + `editSong(${songs[song]['id']}, "${songs[song]['artist']}","${songs[song]['title']}",[${songs[song].playlistIds.join(",")}])` + "'><i class='fa fa-edit'></i> Edit </a></td>" %>
+                                        <%- "<td><a class='btn btn-danger btn-xs' data-toggle='modal' data-target='#removeSongModal' onclick='removeSong(" + songs[song]['id'] + ")'><i class='fa fa-trash'></i> Remove </a></td>" %>
                                     <%- "</tr>" %>
                                 <% } %>
 							</tbody>
@@ -70,29 +70,14 @@
 		</div>
 
 		<audio id="audio"></audio>
-		<script>
-		$(".playButton").click(function() {
-			var ytid = $(this).attr("data-ytid");
-			$("#audio").attr("src", "/api/music/playSong?ytid="+ytid);
-			$("#audio")[0].play();
-			$(".pauseButton").hide();
-			$(".playButton").show();
-			$(this).hide();
-			$(this).next().show();
-		});
-		$(".pauseButton").click(function() {
-			$("#audio")[0].pause();
-			$(".pauseButton").hide();
-			$(".playButton").show();
-		});
-		</script>
+
 
 		<div id="editPlaylistModal" class="modal fade" role="dialog">
 			<div class="modal-dialog">
 				<div class="modal-content">
 						<div class="modal-header">
+                            <h4 class="modal-title">Edit playlist</h4>
 							<button type="button" class="close" data-dismiss="modal">&times;</button>
-							<h4 class="modal-title">Edit playlist</h4>
 						</div>
 						<div class="modal-body">
 							<table class='table table-hover table-condensed table-responsive'>
@@ -110,8 +95,8 @@
                                         <%- `<tr class='playlist' id='${playlists[playlist]["id"]}'>` %>
                                             <%- `<td><span>${playlists[playlist]["name"]}</span><input type='text' style='display: none;' value='${playlists[playlist]["name"]}'/></td>` %>
                                             <%- `<td>${playlists[playlist].numberOfSongs} songs </td>`%>
-                                            <%- `<td><a class='btn btn-info btn-xs'><i class='glyphicon glyphicon-edit'></i> Edit </a><a class='btn btn-success btn-xs' style='display: none;'><i class='glyphicon glyphicon-save'></i> Save </a></td>`%>
-                                            <%- `<td><a class='btn btn-danger btn-xs'><i class='glyphicon glyphicon-trash'></i> Remove </a></td>` %>
+                                            <%- `<td><a class='btn btn-info btn-xs'><i class='fa fa-edit'></i> Edit </a><a class='btn btn-success btn-xs' style='display: none;'><i class='fa fa-save'></i> Save </a></td>`%>
+                                            <%- `<td><a class='btn btn-danger btn-xs'><i class='fa fa-trash'></i> Remove </a></td>` %>
                                         <%- "<tr>" %>
                                     <% } %>
                                 <% } %>
@@ -125,7 +110,9 @@
 						<div class="modal-body">
 							<div class="form-group">
 								<div class="input-group">
-									<span class="input-group-addon"><i class="glyphicon glyphicon-music"></i></span>
+                                    <div class="input-group-prepend">
+                                        <div class="input-group-text"><i class="fa fa-music"></i></div>
+                                    </div>
 									<input name="name" type="text" class="form-control" placeholder="New Playlist"/>
 								</div>
 							</div>
@@ -139,33 +126,30 @@
 			</div>
 		</div>
 
-		<script>
-		$(".playlist").click(function() {
-			$(this).find("span").hide();
-			$(this).find("input").show();
-			$(this).find(".btn-info").hide();
-			$(this).find(".btn-success").show();
-		})
-		</script>
+
 
 		<div id="editSongModal" class="modal fade" role="dialog">
 			<div class="modal-dialog">
 				<div class="modal-content">
 					<form action = "/api/music/editSong" method="post">
 						<div class="modal-header">
+                            <h4 class="modal-title">Edit song</h4>
 							<button type="button" class="close" data-dismiss="modal">&times;</button>
-							<h4 class="modal-title">Edit song</h4>
 						</div>
 						<div class="modal-body">
 							<div class="form-group">
 								<div class="input-group">
-									<span class="input-group-addon"><i class="glyphicon glyphicon-headphones"></i></span>
+                                    <div class="input-group-prepend">
+                                        <div class="input-group-text"><i class="fa fa-headphones"></i></div>
+                                    </div>
 									<input id="artist" name="artist" type="text" class="form-control" placeholder="Artist"/>
 								</div>
 							</div>
 							<div class="form-group">
 								<div class="input-group">
-									<span class="input-group-addon"><i class="glyphicon glyphicon-music"></i></span>
+                                    <div class="input-group-prepend">
+                                        <div class="input-group-text"><i class="fa fa-music"></i></div>
+                                    </div>
 									<input id="title" name="title" type="text" class="form-control" placeholder="Title"/>
 								</div>
 							</div>
@@ -203,8 +187,8 @@
 				<div class="modal-content">
 					<form action = "/api/music/removeSong" method="post">
 						<div class="modal-header">
+                            <h4 class="modal-title">Remove song</h4>
 							<button type="button" class="close" data-dismiss="modal">&times;</button>
-							<h4 class="modal-title">Remove song</h4>
 						</div>
 						<div class="modal-body">
 							<p>Are you sure you want to remove this song?</p>
@@ -218,6 +202,30 @@
 				</div>
 			</div>
 		</div>
-
+        <%- include /usr/src/app/pages/components/footer %>
+        <script>
+        $(".playlist").click(function() {
+            $(this).find("span").hide();
+            $(this).find("input").show();
+            $(this).find(".btn-info").hide();
+            $(this).find(".btn-success").show();
+        })
+        </script>
+        <script>
+        $(".playButton").click(function() {
+            var ytid = $(this).attr("data-ytid");
+            $("#audio").attr("src", "/api/music/playSong?ytid="+ytid);
+            $("#audio")[0].play();
+            $(".pauseButton").hide();
+            $(".playButton").show();
+            $(this).hide();
+            $(this).next().show();
+        });
+        $(".pauseButton").click(function() {
+            $("#audio")[0].pause();
+            $(".pauseButton").hide();
+            $(".playButton").show();
+        });
+        </script>
 	</body>
 </html>

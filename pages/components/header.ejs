@@ -1,56 +1,68 @@
 <!-- BANNER -->
-<div class="jumbotron">
+<div class="jumbotron jumbotron-fluid">
 	<h1>Dupb<font color="white">i</font>t</h1>
 </div>
 <!-- BANNER -->
 <!-- NAVIGATOR -->
-<nav class="navbar navbar-inverse">
-	<div class="container-fluid">
-		<div class="navbar-header">
-			<a class="navbar-brand" href="/">Dupbit.com</a>
-			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navMain" aria-expanded="false" aria-controls="navMain"> <span class="sr-only"></span> <span class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span> </button>
-		</div>
-		<div id="navMain" class="navbar-collapse collapse">
-			<ul class="nav navbar-nav">
-				<li><a href="/">Home</a></li>
-				<li class="dropdown">
-					<a class="dropdown-toggle" data-toggle="dropdown" href="#">Projects <span class="caret"></span></a>
-					<ul class="dropdown-menu">
-						<li><a href="/dupbot">Dupbot for Discord</a></li>
-						<li><a href="/projects/calendar">Calendars</a></li>
-						<% if(user.level >= 2) { %>
-						<li><a href="/projects/music">Music</a></li>
-						<% } %>
-					</ul>
-				</li>
-				<li><a href="#">About</a></li>
-				<li><a href="#">Contact</a></li>
-			</ul>
-			<ul class="nav navbar-nav navbar-right">
-				<% if(session.isLoggedIn) { %>
-					<li class="dropdown">
-						<a class="dropdown-toggle" data-toggle="dropdown" href="#"><%= user.username %> <span class="caret"></span></a>
-						<ul class="dropdown-menu">
-							<li><a href="/welcome">Welcome</a></li>
-							<li class="divider"></li>
-							<li class="dropdown-header">Profile actions</li>
-							<li><a href="/account">Account</a></li>
-							<% if(user.level == 3) { %>
-							<li class="divider"></li>
-							<li class="dropdown-header">Admin actions</li>
-							<li><a href="/users">Manage users</a></li>
-							<li><a href="/logins">Login attempts</a></li>
-							<% } %>
-							<li class="divider"></li>
-							<li><a href="/api/logout">Log out</a></li>
-						</ul>
-					</li>
-				<% } else { %>
-					<li><a href="/register"><span class="glyphicon glyphicon-user"></span> Register</a></li>
-					<li><a href="/login?redirect=<%= pageInfo.currentPage %>"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
-				<% } %>
-			</ul>
-		</div>
-	</div>
+<nav class="navbar navbar-expand-sm bg-dark navbar-dark">
+    <a class="navbar-brand" href="/">Dupbit.com</a>
+    <button type="button" class="navbar-toggler collapsed" data-toggle="collapse" data-target="#navMain" aria-expanded="false" aria-controls="navMain">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navMain">
+        <ul class="navbar-nav">
+            <li class="nav-item">
+                <a class="nav-link" href="/">Home</a>
+            </li>
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbardrop" data-toggle="dropdown">
+                    Projects
+                </a>
+                <div class="dropdown-menu bg-dark">
+                    <a class="dropdown-item bg-dark text-white-50" href="/dupbot">Dupbot for Discord</a>
+                    <a class="dropdown-item bg-dark text-white-50" href="projects/calendar">Calendars</a>
+                    <% if(user.level >= 2) { %>
+                    <a class="dropdown-item bg-dark text-white-50" href="/projects/music">Music</a>
+                    <% } %>
+                </div>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">About</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/contact">Contact</a>
+            </li>
+        </ul>
+        <ul class="navbar-nav ml-auto">
+            <% if(session.isLoggedIn) { %>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbardrop" data-toggle="dropdown">
+                        <%= user.username %>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-right bg-dark">
+                        <a class="dropdown-item bg-dark text-white-50" href="/welcome"><i class="fas fa-home"></i> Welcome</a>
+                        <div class="dropdown-divider"></div>
+                        <div class="dropdown-header bg-dark text-white-75">Profile actions</div>
+                        <a class="dropdown-item bg-dark text-white-50" href="/account"><i class="fas fa-user-alt"></i> Account</a>
+                        <% if(user.level == 3) { %>
+                        <div class="dropdown-divider"></div>
+                        <div class="dropdown-header bg-dark text-white-75">Admin acounts</div>
+                        <a class="dropdown-item bg-dark text-white-50" href="/users"><i class="fas fa-users"></i> Manage users</a>
+                        <a class="dropdown-item bg-dark text-white-50" href="/logins"><i class="fas fa-user-shield"></i> Login attempts</a>
+                        <% } %>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item bg-dark text-white-50" href="/api/logout"><i class="fas fa-sign-out-alt"></i> Log out</a>
+                    </div>
+                </li>
+            <% } else { %>
+                <li class="nav-item">
+                    <a class="nav-link" href="/register"><i class="fas fa-user-alt"></i> Register</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/login"><i class="fas fa-sign-in-alt"></i> Login</a>
+                </li>
+            <% } %>
+        </ul>
+    </div>
 </nav>
 <!-- NAVIGATOR -->
