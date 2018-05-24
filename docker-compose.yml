@@ -25,3 +25,8 @@ services:
     volumes:
       - .db/:/var/lib/mysql
     restart: always
+    networks:
+      - prime
+networks:
+  prime:
+    driver: bridge
