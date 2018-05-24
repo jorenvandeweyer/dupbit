@@ -12,11 +12,11 @@ services:
       - ./src/:/usr/src/app/src/
       - ./data/music/:/usr/src/app/data/music/
     depends_on:
-      - mariadbdupbit
-    links:
-      - "mariadbdupbit:database"
+      - database
     restart: always
-  mariadbdupbit:
+    networks:
+      - prime
+  database:
     image: mariadb:10.3.5
     environment:
       - MYSQL_ALLOW_EMPTY_PASSWORD=1
