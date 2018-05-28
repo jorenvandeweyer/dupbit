@@ -123,18 +123,32 @@ function createExample(command, examples){
     }).join("<br>");
 }
 function createPanel(parent, command, content){
-    return `<div id="${command}_top" class="card nounderline">
-                <div class="card-header">
-                    <a class="card-link" data-toggle="collapse" href="#collapseOne">
-                        <code class='inline'>${content.title}</code>
-                    </a>
-                </div>
-                <div id="${command}" class="collapse" data-parent="#${parent}">
-                    <div class="card-body">
-                        <p><b>${content.content}</b></p>${createExample(command, content.example)}
-                    </div>
-                </div>
-            </div>`;
+    return `  <div class="card">
+          <div class="card-header" id="${command}_top">
+              <button class="btn btn-link" style="text-decoration: none;" data-toggle="collapse" data-target="#${command}" aria-expanded="false" aria-controls="${command}">
+                  <code class="inline">${content.title}</code>
+              </button>
+          </div>
+
+          <div id="${command}" class="collapse" aria-labelledby="${command}_top" data-parent="#${parent}">
+              <div class="card-body">
+                  <p><b>${content.content}</b></p>${createExample(command, content.example)}
+              </div>
+          </div>
+      </div>`;
+    // return `<div class="card nounderline">
+    //             <div id="${command}_top" class="card-header">
+    //                 <a class="card-link" data-toggle="collapse" href="#collapseOne">
+    //                     <code class='inline'>${content.title}</code>
+    //                 </a>
+    //             </div>
+    //             <div id="${command}" class="collapse" data-parent="#${parent}">
+    //                 <div class="card-body">
+    //                     <p><b>${content.content}</b></p>${createExample(command, content.example)}
+    //                 </div>
+    //             </div>
+    //         </div>`;
+
 	// return `<div id="${command}_top" class="card nounderline">
 	// 	<div class="card-header nounderline" data-toggle="collapse" data-parent="#${parent}" href="#${command}">
 	// 		<h4 class="card-title nounderline">
@@ -152,7 +166,7 @@ function tooltip(message){
     return `<span data-toggle="tooltip" data-placement="top" title='${message}' class='fas fa-info-circle'></span>`;
 }
 function init(){
-	let commands = {
+	const commands = {
 		fun: {
 			cat: {
 				title: "!cat",
