@@ -136,31 +136,6 @@ function createPanel(parent, command, content){
               </div>
           </div>
       </div>`;
-    // return `<div class="card nounderline">
-    //             <div id="${command}_top" class="card-header">
-    //                 <a class="card-link" data-toggle="collapse" href="#collapseOne">
-    //                     <code class='inline'>${content.title}</code>
-    //                 </a>
-    //             </div>
-    //             <div id="${command}" class="collapse" data-parent="#${parent}">
-    //                 <div class="card-body">
-    //                     <p><b>${content.content}</b></p>${createExample(command, content.example)}
-    //                 </div>
-    //             </div>
-    //         </div>`;
-
-	// return `<div id="${command}_top" class="card nounderline">
-	// 	<div class="card-header nounderline" data-toggle="collapse" data-parent="#${parent}" href="#${command}">
-	// 		<h4 class="card-title nounderline">
-	// 			<a><code class='inline'>${content.title}</code></a>
-	// 		</h4>
-	// 	</div>
-	// 	<div id="${command}" class="panel-collapse collapse">
-	// 		<div class="card-body">
-	// 			<p><b>${content.content}</b></p>${createExample(command, content.example)}
-	// 		</div>
-	// 	</div>
-	// </div>`;
 }
 function tooltip(message){
     return `<span data-toggle="tooltip" data-placement="top" title='${message}' class='fas fa-info-circle'></span>`;
