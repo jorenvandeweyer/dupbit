@@ -56,15 +56,25 @@
         function createDevice(token) {
             const status = token.online ? "device-online" : "device-offline";
             const color_background = token.online ? "#67e570" : "#e83535";
+            const disabled = token.online ? "" : "disabled";
             return `<div class="col"><div id=${token.id} class="card device ${status}">
                 <img class="card-img-top" src="/images/connect/${token.info.os_parsed}.png" alt="Card image cap">
                 <div class="card-header" style="background-color:${color_background};">
-                <div class="btn btn-info" onclick="action(${token.id})">
-                Options
-                </div>
                 <b style="color:black;">${token.info.name}</b>
-                </div></div></div>`
+                <div class="dropdown">
+                    <button class="btn btn-info dropdown-toggle ${disabled}" type="button" id="dropdownMenuButton_${token.id}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Options
+                    </button>
+                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton_${token.id}">
+                        <a class="dropdown-item" href="#"><i class="fas fa-power-off"></i> Power Off Machine</a>
+                        <a class="dropdown-item" href="#" onclick="action(${token.id})"><i class="fas fa-desktop"></i> Power Off Screen</a>
+                        <a class="dropdown-item" href="#"><i class="fas fa-volume-up"></i> Change Volume</a>
+                    </div>
+                </div>
+                </div></div></div>`;
         };
+
+
 
         function action(token_id) {
             console.log(token_id);
@@ -75,4 +85,5 @@
 
         main();
     </script>
+
 </html>

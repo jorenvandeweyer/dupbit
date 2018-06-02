@@ -6,9 +6,7 @@ async function resolve(data, apidata) {
         const uid = apidata.session.id;
         const token = await getToken(uid, data.tid);
         if (token) {
-            console.log(token);
             const socket = ws.findConnection(uid, token.id);
-            console.log(socket);
             if (socket) {
                 socket.send(JSON.stringify({
                     action: {
