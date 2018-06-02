@@ -83,7 +83,6 @@ function handleMessage(ws, req, message) {
         console.log(message.content);
     } else {
         console.log("websocket action not specified");
-        // console.log(message);
     }
 }
 
