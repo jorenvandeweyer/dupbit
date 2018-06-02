@@ -2,6 +2,7 @@ const pageInfo = require("../../data/pages");
 const User = require("./User");
 const Token = require("./Token");
 const Database = require("./Database");
+const ws = require("../websocket/index");
 
 class Data {
     constructor(page) {

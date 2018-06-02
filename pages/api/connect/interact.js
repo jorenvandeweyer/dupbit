@@ -1,15 +1,14 @@
-const ws = require("../../src/websocket/index");
-const db = require("../../src/util/Database");
+const ws = require("../../../src/websocket/index");
+const db = require("../../../src/util/Database");
 
 async function resolve(data, apidata) {
-    if (apidata.session.isLoggedIn) {
+    if (apidata.session.isLoggedIn && data.tid) {
         const uid = apidata.session.id;
-        let tokens = await db.getToken({ uid });
-
-        tokens = tokens.filter(token => token.device === "desktop_app");
-
-        if (tokens.length === 1) {
-            const socket = ws.findConnection(uid, tokens[0].id);
+        const token = await getToken(uid, data.tid);
+        if (token) {
+            console.log(token);
+            const socket = ws.findConnection(uid, token.id);
+            console.log(socket);
             if (socket) {
                 socket.send(JSON.stringify({
                     action: {
@@ -22,16 +21,30 @@ async function resolve(data, apidata) {
                 }));
                 return await waitForResponse(socket, data.name);
             }
+        } else {
+            return {
+                success: false,
+                reason: "not a token.",
+            };
         }
+    } else {
+        return {
+            success: false,
+            reason: "log in and use a proper token id.",
+        };
     }
-    return {
-        success: false,
-    };
+
 }
 
 module.exports = {
     resolve,
 };
+
+async function getToken(uid, tid) {
+    let tokens = await db.getToken({ uid });
+    const token = tokens.filter(token => token.device === "desktop_app" && token.id === parseInt(tid));
+    return token.length ? token[0] : null;
+}
 
 async function waitForResponse(socket, action) {
     return new Promise((resolve) => {

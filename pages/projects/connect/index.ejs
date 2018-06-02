@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<%- include /usr/src/app/pages/components/head %>
+	</head>
+	<body>
+		<%- include /usr/src/app/pages/components/header %>
+        <br>
+		<div class="container" id="devices">
+
+		</div>
+        <%- include /usr/src/app/pages/components/footer %>
+	</body>
+    <script>
+        async function fetchDevices() {
+            return new Promise((resolve, reject) => {
+                $.get("/api/connect/devices", (data) => {
+                    if (data.success) {
+                        resolve(data.data);
+                    } else {
+                        reject("error fetching devices");
+                    }
+                });
+            });
+        }
+
+        async function main() {
+            console.log("RUNNING MAIN");
+            const devices = await fetchDevices();
+
+            const sessions = devices.website;
+            const desktop_app = devices.desktop_app;
+
+            const html_devices = createHTMLDevices(desktop_app);
+            const html_sessions = createHTMLSessions(sessions);
+
+            document.getElementById("devices").innerHTML = html_devices;
+        }
+
+        function createHTMLDevices(devices) {
+            devices_arr = [];
+
+            for(let app in devices) {
+                const token = devices[app];
+                const html = createDevice(token);
+                devices_arr.push(html);
+            }
+
+            return `<div class="row">${devices_arr.join("</br>")}</div>`;
+        }
+
+        function createHTMLSessions(sessions) {
+
+        }
+
+        function createDevice(token) {
+            const status = token.online ? "device-online" : "device-offline";
+            const color_background = token.online ? "#67e570" : "#e83535";
+            return `<div class="col"><div id=${token.id} class="card device ${status}">
+                <img class="card-img-top" src="/images/connect/${token.info.os_parsed}.png" alt="Card image cap">
+                <div class="card-header" style="background-color:${color_background};">
+                <div class="btn btn-info" onclick="action(${token.id})">
+                Options
+                </div>
+                <b style="color:black;">${token.info.name}</b>
+                </div></div></div>`
+        };
+
+        function action(token_id) {
+            console.log(token_id);
+            $.get(`/api/connect/interact?name=screen&action=displaysleep&tid=${token_id}`, (data) => {
+                console.log(data);
+            });
+        }
+
+        main();
+    </script>
+</html>

@@ -67,6 +67,13 @@ function findConnection(uid, tid) {
     return false;
 }
 
+function getClient(uid) {
+    if (Clients.has(uid)) {
+        return Clients.get(uid);
+    }
+    return false;
+}
+
 function handleMessage(ws, req, message) {
     message = JSON.parse(message);
 
@@ -97,4 +104,5 @@ function heartbeat() {
 module.exports = {
     create,
     findConnection,
+    getClient,
 };

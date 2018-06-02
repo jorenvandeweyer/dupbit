@@ -80,6 +80,11 @@ module.exports = {
             "songs": "Database.getSongsSmart(this.query.playlist, this.session.id)",
         },
     },
+    "/projects/connect/index": {
+        title: "Dupbit - Connect",
+        currentPage: "projects/connect",
+        requireLogin: true,
+    },
     "/acount/index": {
         title: "Dupbit - Account Settings",
         currentPage: "acount",

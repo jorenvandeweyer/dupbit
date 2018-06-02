@@ -33,7 +33,7 @@ async function resolve(data, apidata) {
                     level: level,
                 }, expires, {
                     remote: data.remote,
-                    name: getInfo(apidata),
+                    name: getInfo(apidata, data),
                     ip,
                 });
                 const cookie = Cookie.create("sid", token, expires*1000);
@@ -80,7 +80,13 @@ async function resolve(data, apidata) {
     };
 }
 
-function getInfo(apidata) {
+function getInfo(apidata, data) {
+    if (data.ua_overwrite) {
+        return JSON.stringify({
+            os: data.ua_os,
+            name: data.ua_name,
+        });
+    }
     let object = {
         family: apidata.request.ua_os.device.family,
         os: apidata.request.ua_os.os.toString(),
