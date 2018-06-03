@@ -1,6 +1,7 @@
 const Cookie = require("./util/Cookie");
 const Token = require("./util/Token");
 const User = require("./util/User");
+const fs = require("fs");
 
 class Api {
     constructor(url, request) {
@@ -29,8 +30,18 @@ class Api {
 
     async load() {
         await this.authenticate();
-        const api_call = require(this.url.fullPath);
-        let data = await api_call.resolve(this.url.query, this);
+
+        let data;
+
+        if (fs.existsSync(this.url.fullPath)) {
+            const api_call = require(this.url.fullPath);
+            data = await api_call.resolve(this.url.query, this);
+        } else {
+            data = {
+                success: false,
+                reason: "Non existing api path",
+            };
+        }
 
         if (data && "headers" in data) {
             for (let header in data.headers) {
