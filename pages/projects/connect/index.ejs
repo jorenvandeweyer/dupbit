@@ -36,11 +36,14 @@
 	</head>
 	<body>
 		<%- include ../../components/header %>
-        <br>
+		<br>
+		<div class="container" id="youtube">
+
+		</div>
 		<div class="container" id="devices">
 
 		</div>
-        <%- include ../../components/footer %>
+    <%- include ../../components/footer %>
 	</body>
 
     <script>
@@ -66,12 +69,42 @@
 
             console.log(extension);
 
+						const html_youtube = createHTMLYoutube({141: {hoi:"hoi"}});
             const html_devices = createHTMLDevices(desktop_app);
             const html_sessions = createHTMLSessions(sessions);
 
-            document.getElementById("devices").innerHTML = html_devices;
+            document.getElementById("youtube").innerHTML = html_youtube;
+						document.getElementById("devices").innerHTML = html_devices;
 
             addSlider(desktop_app);
+        }
+
+				function createHTMLYoutube(extension) {
+					youtube_arr = [];
+
+					for(let tid in extension) {
+							const html = createYoutube(tid);
+							youtube_arr.push(html);
+					}
+				  return youtube_arr.join("");
+
+				}
+
+				function createYoutube(token_id) {
+					return `<div class="btn-group btn-group">
+					  <button class="btn btn-danger"><i class="fab fa-youtube"></i> <b>Youtube</b></button>
+					  <button type="button" class="btn btn-danger"><i class="fas fa-step-backward"></i></button>
+					  <button type="button" class="btn btn-danger"><i class="fas fa-play"></i></button>
+					  <button type="button" class="btn btn-danger" onclick="nextVideo(${token_id})"><i class="fas fa-step-forward"></i></button>
+					  <button type="button" class="btn btn-danger"><input type="text"></input></button>
+					  <button type="button" class="btn btn-danger"><i class="fas fa-search"></i></button>
+					</div>`
+				}
+
+				function nextVideo(token_id) {
+					$.get(`/api/connect/interact?name=youtube&action=nextVideo&tid=${token_id}`, (data) => {
+							console.log(data);
+					});
         }
 
         function createHTMLDevices(devices) {
