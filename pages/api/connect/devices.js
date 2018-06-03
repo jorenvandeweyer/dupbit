@@ -28,18 +28,12 @@ async function resolve(data, apidata) {
 
             token.info = JSON.parse(token.name);
 
-            switch (token.info.os) {
-                case "Darwin":
-                    token.info.os_parsed = "apple";
-                    break;
-                case "Windows":
-                    token.info.os_parsed = "windows";
-                    break;
-                case "Linux":
-                    token.info.os_parsed = "linux";
-                    break;
-                default:
-
+            if (token.info.os.toLowerCase().includes("darwin")) {
+                token.info.os_parsed = "apple";
+            } else if (token.info.os.toLowerCase().includes("windows")) {
+                token.info.os_parsed = "windows";
+            } else if (token.info.os.toLowerCase().includes("linux")) {
+                token.info.os_parsed = "linux";
             }
         }
 
