@@ -1,11 +1,21 @@
 const WebSocket = require("ws");
 const Token = require("../util/Token");
+const Cookie = require("../util/Cookie");
 
 let wss;
 const Clients = new Map();
 
 async function verifyClient(info, callback) {
-    const token = info.req.headers.token;
+    let token;
+
+    if (info.req.headers.token) {
+        token = info.req.headers.token;
+    } else {
+        const cookies = Cookie.parse(info.req.headers.cookie);
+        if ("sid" in cookies) {
+            token = cookies.sid;
+        }
+    }
 
     if (!token) {
         callback(false, 401, "Provide a token please.");
@@ -76,13 +86,12 @@ function getClient(uid) {
 
 function handleMessage(ws, req, message) {
     message = JSON.parse(message);
-
     if (message.action === "logout") {
         Token.removeToken(req.user.tid);
     } else if (message.action === "message") {
         console.log(message.content);
     } else {
-        console.log("websocket action not specified");
+        // console.log("websocket action not specified");
     }
 }
 

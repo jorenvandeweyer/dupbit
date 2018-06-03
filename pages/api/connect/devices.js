@@ -8,13 +8,19 @@ async function resolve(data, apidata) {
 
         const obj = {
             website: {},
-            desktop_app: {}
+            desktop_app: {},
+            extension: {},
         };
 
         for (let i = 0; i < tokens.length; i++) {
             const token = tokens[i];
             if (token.device === "website") {
-                obj.website[token.id] = token;
+                token.online = clients && clients.has(token.id);
+                if (token.online) {
+                    obj.extension[token.id] = token;
+                } else {
+                    obj.website[token.id] = token;
+                }
             } else if (token.device === "desktop_app") {
                 token.online = clients && clients.has(token.id);
                 obj.desktop_app[token.id] = token;

@@ -40,7 +40,7 @@ module.exports = {
 
 async function getToken(uid, tid) {
     let tokens = await db.getToken({ uid });
-    const token = tokens.filter(token => token.device === "desktop_app" && token.id === parseInt(tid));
+    const token = tokens.filter(token => token.id === parseInt(tid));
     return token.length ? token[0] : null;
 }
 
