@@ -105,13 +105,13 @@
 				}
 
 				function muteVideo(token_id) {
-					$.get(`/api/connect/interact?name=youtube&actionsetVolume&value=0&tid=${token_id}`, (data) => {
+					$.get(`/api/connect/interact?name=youtube&action=setVolume&value=0&tid=${token_id}`, (data) => {
 							console.log(data);
 					});
         }
 
 				function unmuteVideo(token_id) {
-					$.get(`/api/connect/interact?name=youtube&actionsetVolume&value=100&tid=${token_id}`, (data) => {
+					$.get(`/api/connect/interact?name=youtube&action=setVolume&value=100&tid=${token_id}`, (data) => {
 							console.log(data);
 					});
 				}
