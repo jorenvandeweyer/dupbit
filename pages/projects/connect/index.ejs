@@ -93,12 +93,25 @@
 				function createYoutube(token_id) {
 					return `<div class="btn-group btn-group">
 					  <button class="btn btn-danger"><i class="fab fa-youtube"></i> <b>Youtube</b></button>
-					  <button type="button" class="btn btn-danger"><i class="fas fa-step-backward"></i></button>
-					  <button type="button" class="btn btn-danger"><i class="fas fa-play"></i></button>
+					  <button type="button" class="btn btn-danger" onclick="previousVideo(${token_id})"><i class="fas fa-step-backward"></i></button>
+					  <button type="button" class="btn btn-danger" onclick="playVideo(${token_id})"><i class="fas fa-play"></i></button>
+						<button type="button" class="btn btn-danger" onclick="pauseVideo(${token_id})"><i class="fas fa-pause"></i></button>
 					  <button type="button" class="btn btn-danger" onclick="nextVideo(${token_id})"><i class="fas fa-step-forward"></i></button>
 					  <button type="button" class="btn btn-danger"><input type="text"></input></button>
 					  <button type="button" class="btn btn-danger"><i class="fas fa-search"></i></button>
 					</div>`
+				}
+
+				function pauseVideo(token_id) {
+					$.get(`/api/connect/interact?name=youtube&action=pauseVideo&tid=${token_id}`, (data) => {
+							console.log(data);
+					});
+        }
+
+				function playVideo(token_id) {
+					$.get(`/api/connect/interact?name=youtube&action=playVideo&tid=${token_id}`, (data) => {
+							console.log(data);
+					});
 				}
 
 				function nextVideo(token_id) {
@@ -106,6 +119,12 @@
 							console.log(data);
 					});
         }
+
+				function previousVideo(token_id) {
+					$.get(`/api/connect/interact?name=youtube&action=previousVideo&tid=${token_id}`, (data) => {
+							console.log(data);
+					});
+				}
 
         function createHTMLDevices(devices) {
             devices_arr = [];
