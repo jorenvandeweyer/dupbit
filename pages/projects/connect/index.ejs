@@ -97,9 +97,23 @@
 					  <button type="button" class="btn btn-danger" onclick="playVideo(${token_id})"><i class="fas fa-play"></i></button>
 						<button type="button" class="btn btn-danger" onclick="pauseVideo(${token_id})"><i class="fas fa-pause"></i></button>
 					  <button type="button" class="btn btn-danger" onclick="nextVideo(${token_id})"><i class="fas fa-step-forward"></i></button>
+						<button type="button" class="btn btn-danger" onclick="muteVideo(${token_id})"><i class="fas fa-volume-up"></i></button>
+						<button type="button" class="btn btn-danger" onclick="unmuteVideo(${token_id})"><i class="fas fa-volume-off"></i></button>
 					  <button type="button" class="btn btn-danger"><input type="text"></input></button>
 					  <button type="button" class="btn btn-danger"><i class="fas fa-search"></i></button>
 					</div>`
+				}
+
+				function muteVideo(token_id) {
+					$.get(`/api/connect/interact?name=youtube&actionsetVolume&value=0&tid=${token_id}`, (data) => {
+							console.log(data);
+					});
+        }
+
+				function unmuteVideo(token_id) {
+					$.get(`/api/connect/interact?name=youtube&actionsetVolume&value=100&tid=${token_id}`, (data) => {
+							console.log(data);
+					});
 				}
 
 				function pauseVideo(token_id) {
