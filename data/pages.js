@@ -84,6 +84,7 @@ module.exports = {
         title: "Dupbit - Connect",
         currentPage: "projects/connect",
         requireLogin: true,
+        requireLevel: 2,
     },
     "/acount/index": {
         title: "Dupbit - Account Settings",

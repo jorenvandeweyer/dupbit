@@ -22,7 +22,7 @@ const mimeTypes = {
     ".ttf": "application/font-ttf",
     ".eot": "application/vnd.ms-fontobject",
     ".otf": "application/font-otf",
-    ".svg": "application/image/svg+xml",
+    ".svg": "image/svg+xml",
     ".ejs": "text/html",
     ".ico": "image/x-icon",
 };
