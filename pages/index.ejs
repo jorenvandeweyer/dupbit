@@ -2,9 +2,41 @@
 <html lang="en">
 	<head>
 		<%- include ./components/head %>
+        <style>
+        .carousel-inner img {
+            width: 100%;
+            height: 100%;
+        }
+        </style>
 	</head>
 	<body>
 		<%- include ./components/header %>
+        <div id="carousel_index" class="carousel slide tile_bg" data-ride="carousel">
+            <ul class="carousel-indicators">
+                <li data-target="#carousel_index" data-slide-to="0" class="active"></li>
+                <li data-target="#carousel_index" data-slide-to="1"></li>
+            </ul>
+            <div class="carousel-inner">
+                <div class="carousel-item active">
+                    <img src="/images/slide_1.png" alt="slide_1" >
+                    <div class="carousel-caption">
+                        <h1 style="font-size:128px;"><b>Dupbit</b></h1>
+                    </div>
+                </div>
+                <div class="carousel-item">
+                    <img src="/images/slide_2.png" alt="slide_2" width="1100" height="500">
+                    <div class="carousel-caption">
+                    </div>
+                </div>
+            </div>
+            <a class="carousel-control-prev" href="#carousel_index" data-slide="prev">
+                <span class="carousel-control-prev-icon"></span>
+            </a>
+            <a class="carousel-control-next" href="#carousel_index" data-slide="next">
+                <span class="carousel-control-next-icon"></span>
+            </a>
+        </div>
+
         <br>
 		<div class="container">
 			<div class="card">
