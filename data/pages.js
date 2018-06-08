@@ -3,6 +3,10 @@ module.exports = {
         title: "Dupbit - Home",
         currentPage: "index"
     },
+    "/beta": {
+        title: "Dupbit - Beta",
+        currentPage: "beta"
+    },
     "/welcome": {
         title: "Dupbit - Welcome",
         currentPage: "welcome",
