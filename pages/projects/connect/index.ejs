@@ -43,6 +43,13 @@
         <div class="container" id="devices">
 
         </div>
+        </br>
+        <div class="container">
+            <a class="btn btn-primary" href="/account/tokens">
+                Manage tokens
+            </a>
+        </div>
+
         <%- include ../../components/footer %>
     </body>
 
@@ -51,7 +58,7 @@
         return new Promise((resolve, reject) => {
             $.get("/api/connect/devices", (data) => {
                 if (data.success) {
-                    resolve(data.data);
+                    resolve([data.data, data.tokens]);
                 } else {
                     reject("error fetching devices");
                 }
@@ -60,14 +67,11 @@
     }
 
     async function main() {
-        console.log("RUNNING MAIN");
-        const devices = await fetchDevices();
+        const [devices, tokens] = await fetchDevices()
 
         const sessions = devices.website;
         const desktop_app = devices.desktop_app;
         const extension = devices.extension;
-
-        console.log(extension);
 
         const html_youtube = createHTMLYoutube(extension);
         const html_devices = createHTMLDevices(desktop_app);
@@ -79,29 +83,30 @@
         addSlider(desktop_app);
     }
 
-    function createHTMLYoutube(extension) {
-		youtube_arr = [];
 
-		for(let tid in extension) {
-             const html = createYoutube(tid);
-			youtube_arr.push(html);
-		}
+    function createHTMLYoutube(extension) {
+        const youtube_arr = [];
+
+        for(let tid in extension) {
+            const html = createYoutube(tid);
+            youtube_arr.push(html);
+        }
 
         return youtube_arr.join("");
-	}
+    }
 
     function createYoutube(token_id) {
-    return `<div class="btn-group btn-group">
-      <button class="btn btn-danger"><i class="fab fa-youtube"></i> <b>Youtube</b></button>
-      <button type="button" class="btn btn-danger" onclick="previousVideo(${token_id})"><i class="fas fa-step-backward"></i></button>
-      <button type="button" class="btn btn-danger" onclick="playVideo(${token_id})"><i class="fas fa-play"></i></button>
-      <button type="button" class="btn btn-danger" onclick="pauseVideo(${token_id})"><i class="fas fa-pause"></i></button>
-      <button type="button" class="btn btn-danger" onclick="nextVideo(${token_id})"><i class="fas fa-step-forward"></i></button>
-      <button type="button" class="btn btn-danger" onclick="muteVideo(${token_id})"><i class="fas fa-volume-up"></i></button>
-      <button type="button" class="btn btn-danger" onclick="unmuteVideo(${token_id})"><i class="fas fa-volume-off"></i></button>
-      <button type="button" class="btn btn-danger"><input type="text"></input></button>
-      <button type="button" class="btn btn-danger"><i class="fas fa-search"></i></button>
-    </div>`;
+        return `<div class="btn-group btn-group">
+          <button class="btn btn-danger"><i class="fab fa-youtube"></i> <b>Youtube</b></button>
+          <button type="button" class="btn btn-danger" onclick="previousVideo(${token_id})"><i class="fas fa-step-backward"></i></button>
+          <button type="button" class="btn btn-danger" onclick="playVideo(${token_id})"><i class="fas fa-play"></i></button>
+          <button type="button" class="btn btn-danger" onclick="pauseVideo(${token_id})"><i class="fas fa-pause"></i></button>
+          <button type="button" class="btn btn-danger" onclick="nextVideo(${token_id})"><i class="fas fa-step-forward"></i></button>
+          <button type="button" class="btn btn-danger" onclick="muteVideo(${token_id})"><i class="fas fa-volume-up"></i></button>
+          <button type="button" class="btn btn-danger" onclick="unmuteVideo(${token_id})"><i class="fas fa-volume-off"></i></button>
+          <button type="button" class="btn btn-danger"><input type="text"></input></button>
+          <button type="button" class="btn btn-danger"><i class="fas fa-search"></i></button>
+        </div>`;
     }
 
     function muteVideo(token_id) {

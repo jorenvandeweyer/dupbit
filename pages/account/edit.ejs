@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+
+	<head>
+		<%- include /usr/src/app/pages/components/head %>
+	</head>
+
+	<body>
+
+		<%- include /usr/src/app/pages/components/header %>
+        </br>
+		<div class="container">
+			<div class="card mx-auto" style="max-width:500px;">
+				<div class="card-header"><b>Change Password</b></div>
+				<div class="card-body">
+					<form action="" method="post">
+						<div class="form-group">
+							<div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                                </div>
+								<input id="oldPassword" type="password" class="form-control" name="oldPassword" placeholder="Old password" style="margin-bottom:0px;">
+							</div>
+						</div>
+						<div class="form-group">
+							<div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                                </div>
+								<input id="password" type="password" class="form-control" name="password" placeholder="New password">
+							</div>
+						</div>
+						<div class="form-group">
+							<div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                                </div>
+								<input id="confirmpassword" type="password" class="form-control" name="confirmpassword" placeholder="Confirm new password">
+							</div>
+						</div>
+						<div class="form-group float-right" style="margin-bottom: 0px;">
+							<div class="input-group">
+								<input type="submit" class="btn btn-primary" value="Confirm"/>
+							</div>
+						</div>
+					</form>
+				</div>
+			</div>
+            </br>
+			<div class="card mx-auto" style="max-width:500px;">
+				<div class="card-header"><b>Change Email</b></div>
+				<div class="card-body">
+					<form action="" method="post">
+						<div class="form-group">
+							<span>Current email: <%= user.email %></span>
+						</div>
+						<div class="form-group">
+							<div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+                                </div>
+								<input id="email" type="text" class="form-control" name="username" placeholder="Email">
+							</div>
+						</div>
+						<div class="form-group float-right" style="margin-bottom: 0px;">
+							<div class="input-group">
+								<input type="submit" class="btn btn-primary" value="Confirm"/>
+							</div>
+						</div>
+					</form>
+				</div>
+			</div>
+            </br>
+			<div class="card mx-auto" style="max-width:500px;">
+				<div class="card-header"><b>Change Username</b></div>
+				<div class="card-body">
+					<form action="" method="post">
+						<div class="form-group">
+							<span>Current username: <%= user.username %></span>
+						</div>
+						<div class="form-group">
+							<div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="fas fa-user"></i></span>
+                                </div>
+								<input id="username" type="text" class="form-control" name="username" placeholder="New username">
+							</div>
+						</div>
+						<div class="form-group float-right" style="margin-bottom: 0px;">
+							<div class="input-group">
+								<input type="submit" class="btn btn-primary" value="Confirm"/>
+							</div>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+        </br>
+        <%- include /usr/src/app/pages/components/footer %>
+
+	</body>
+</html>

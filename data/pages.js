@@ -90,9 +90,19 @@ module.exports = {
         requireLogin: true,
         requireLevel: 2,
     },
-    "/acount/index": {
+    "/account/index": {
         title: "Dupbit - Account Settings",
-        currentPage: "acount",
+        currentPage: "account",
+        requireLogin: true,
+    },
+    "/account/edit": {
+        title: "Dupbit - Account Settings",
+        currentPage: "account/edit",
+        requireLogin: true,
+    },
+    "/account/tokens": {
+        title: "Dupbit - Account Settings",
+        currentPage: "account/tokens",
         requireLogin: true,
     },
 };

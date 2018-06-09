@@ -16,10 +16,9 @@ async function resolve(data, apidata) {
             const token = tokens[i];
             if (token.device === "website") {
                 token.online = clients && clients.has(token.id);
+                obj.website[token.id] = token;
                 if (token.online) {
                     obj.extension[token.id] = token;
-                } else {
-                    obj.website[token.id] = token;
                 }
             } else if (token.device === "desktop_app") {
                 token.online = clients && clients.has(token.id);
@@ -40,6 +39,7 @@ async function resolve(data, apidata) {
         return {
             success: true,
             data: obj,
+            tokens
         };
     }
     return {

@@ -23,7 +23,7 @@ async function resolve(data, apidata) {
             let token = await Token.createToken({
                 isLoggedIn: true,
                 id: id,
-                username: username,
+                name: username,
                 level: level,
             });
             let cookie = Cookie.create("sid", token);
