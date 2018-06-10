@@ -9,7 +9,7 @@ function remove(name) {
 }
 
 function parse(cookies) {
-    return cookie.parse(cookies);
+    cookies ? cookie.parse(cookies) : {};
 }
 
 module.exports = {
