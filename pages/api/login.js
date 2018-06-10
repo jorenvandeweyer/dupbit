@@ -83,8 +83,8 @@ async function resolve(data, apidata) {
 function getInfo(apidata, data) {
     if (data.ua_overwrite) {
         return JSON.stringify({
-            os: data.ua_os,
-            name: data.ua_name,
+            os: data.ua_os ? data.ua_os : "Other",
+            name: data.ua_name ? data.ua_name : "Other",
         });
     }
     let object = {
