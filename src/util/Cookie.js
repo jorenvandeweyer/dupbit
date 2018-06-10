@@ -1,3 +1,5 @@
+const cookie = require('cookie');
+
 function create(name, content, expires = 1000*60*60*24) {
     return `${name}=${JSON.stringify(content)}; expires=${new Date(Date.now() + expires).toUTCString()}; path=/`;
 }
@@ -7,13 +9,7 @@ function remove(name) {
 }
 
 function parse(cookies) {
-    let list = {};
-
-    cookies && cookies.split(";").forEach((cookie) => {
-        let parts = cookie.split("=");
-        list[parts.shift().trim()] = JSON.parse(decodeURI(parts.join("=")));
-    });
-    return list;
+    return cookie.parse(cookies);
 }
 
 module.exports = {
