@@ -202,11 +202,24 @@ function query(query, options) {
 
 // Register a user with the given username, password, email and level
 async function register(username, password, email, level=0) {
-    let hash = bcrypt.hashSync(password, 10);
-    let emailhash = bcrypt.hashSync(hash, 10);
+    const hash = bcrypt.hashSync(password, 10);
+    const emailhash = bcrypt.hashSync(hash, 10);
 
-    let q = await query("INSERT INTO users.users (username, password, email, level) VALUES (?, ?, ?, ?)", [username, hash, email, level]);
-    await Mail.register(email, await getIDByUsername(username), username, emailhash);
+    const q = await query("INSERT INTO users.users (username, password, email, level) VALUES (?, ?, ?, ?)", [username, hash, email, level]);
+
+    const id = await getIDByUsername(username);
+
+    await Mail.sendTemplate({
+        subject: `Welcome to Dupbit! Confirm your email ${username}!`,
+        sender: "noreply@dupbit.com",
+        receiver: email,
+        title: `Welcome to Dupbit! Confirm your email ${username}!`,
+        message_title: "Thanks for registering at Dupbit!",
+        message_content: "To complete your registration click the button below. If you did not register to Dupbit, you can just ignore this email.",
+        button_title: "Confirm Email",
+        button_url: `https://dupbit.com/api/validate?id=${id}&hash=${emailhash}`,
+
+    });
     return q;
 }
 

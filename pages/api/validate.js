@@ -3,6 +3,7 @@ const Token = require("../../src/util/Token");
 const Cookie = require("../../src/util/Cookie");
 const IP = require("../../src/util/IP");
 const bcrypt = require("bcrypt");
+const { getInfo } = require("./login");
 
 async function resolve(data, apidata) {
     if (data.id && data.hash) {
@@ -23,8 +24,12 @@ async function resolve(data, apidata) {
             let token = await Token.createToken({
                 isLoggedIn: true,
                 id: id,
-                name: username,
+                username: username,
                 level: level,
+            },365*10*24*60*60 ,{
+                remote: "website",
+                name: getInfo(apidata, data),
+                ip,
             });
             let cookie = Cookie.create("sid", token);
             if ("redirect" in data) {

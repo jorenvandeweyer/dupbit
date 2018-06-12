@@ -101,5 +101,6 @@ function getInfo(apidata, data) {
 }
 
 module.exports = {
-    resolve
+    resolve,
+    getInfo,
 };

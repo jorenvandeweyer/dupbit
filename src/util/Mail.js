@@ -1,19 +1,8 @@
 const MailComposer = require("nodemailer/lib/mail-composer");
+const templates = require("./mail_templates/template.js");
 const { mailgun_api_key } = require("../../config.json");
 const domain = "dupbit.com";
-
 const mailgun = require("mailgun-js")({apiKey: mailgun_api_key, domain: domain});
-
-// var data = {
-//     from: 'noreply <noreply@dupbit.com>',
-//     to: 'jorenvandeweyer@gmail.com',
-//     subject: 'Hello',
-//     text: 'Testing some Mailgun awesomeness!'
-// };
-
-// mailgun.messages().send(data, function (error, body) {
-//     console.log(body);
-// });
 
 async function send(from, to, subject, html) {
     let data = {
@@ -41,22 +30,12 @@ async function send(from, to, subject, html) {
     });
 }
 
-async function register(email, id, username, hash) {
-    return await send("noreply@dupbit.com", email, `Welcome to Dupbit! Confirm your email ${username}!`, `
-<!DOCTYPE html>
-<html lang="en"
-<html>
-<head>
-<title>Confirm Email</title>
-</head>
-<body>
-<a href=https://dupbit.com/api/validate?id=${id}&hash=${hash}>Activate account</a>
-</body>
-</html>
-    `);
+
+async function sendTemplate(obj) {
+    return await send(obj.sender, obj.receiver, obj.subject, templates.create(obj));
 }
 
 module.exports = {
     send,
-    register
+    sendTemplate,
 };
