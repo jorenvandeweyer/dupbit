@@ -1,224 +1,24 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-    <%- include ../../components/head %>
-        <style>
-        .slider {
-            -webkit-appearance: none;
-            width: 100%;
-            height: 15px;
-            border-radius: 5px;
-            background: #d3d3d3;
-            outline: none;
-            opacity: 0.7;
-            -webkit-transition: .2s;
-            transition: opacity .2s;
-        }
 
-        .slider::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 25px;
-            height: 25px;
-            border-radius: 50%;
-            background: #4CAF50;
-            cursor: pointer;
-        }
+	<head>
+		<%- include /usr/src/app/pages/components/head %>
+	</head>
 
-        .slider::-moz-range-thumb {
-            width: 25px;
-            height: 25px;
-            border-radius: 50%;
-            background: #4CAF50;
-            cursor: pointer;
-        }
-       </style>
-    </head>
-    <body>
-        <%- include ../../components/header %>
-        <br>
-        <div class="container" id="youtube">
-
-        </div>
-        <div class="container" id="devices">
-
-        </div>
+	<body>
+		<%- include /usr/src/app/pages/components/header %>
         </br>
-        <div class="container">
-            <a class="btn btn-primary" href="/account/tokens">
-                Manage tokens
-            </a>
-        </div>
-
-        <%- include ../../components/footer %>
-    </body>
-
-    <script>
-    async function fetchDevices() {
-        return new Promise((resolve, reject) => {
-            $.get("/api/connect/devices", (data) => {
-                if (data.success) {
-                    resolve([data.data, data.tokens]);
-                } else {
-                    reject("error fetching devices");
-                }
-            });
-        });
-    }
-
-    async function main() {
-        const [devices, tokens] = await fetchDevices()
-
-        const sessions = devices.website;
-        const desktop_app = devices.desktop_app;
-        const extension = devices.extension;
-
-        const html_youtube = createHTMLYoutube(extension);
-        const html_devices = createHTMLDevices(desktop_app);
-        const html_sessions = createHTMLSessions(sessions);
-
-        document.getElementById("youtube").innerHTML = html_youtube;
-        document.getElementById("devices").innerHTML = html_devices;
-
-        addSlider(desktop_app);
-    }
-
-
-    function createHTMLYoutube(extension) {
-        const youtube_arr = [];
-
-        for(let tid in extension) {
-            const html = createYoutube(tid);
-            youtube_arr.push(html);
-        }
-
-        return youtube_arr.join("");
-    }
-
-    function createYoutube(token_id) {
-        return `<div class="btn-group btn-group">
-          <button class="btn btn-danger"><i class="fab fa-youtube"></i> <b>Youtube</b></button>
-          <button type="button" class="btn btn-danger" onclick="previousVideo(${token_id})"><i class="fas fa-step-backward"></i></button>
-          <button type="button" class="btn btn-danger" onclick="playVideo(${token_id})"><i class="fas fa-play"></i></button>
-          <button type="button" class="btn btn-danger" onclick="pauseVideo(${token_id})"><i class="fas fa-pause"></i></button>
-          <button type="button" class="btn btn-danger" onclick="nextVideo(${token_id})"><i class="fas fa-step-forward"></i></button>
-          <button type="button" class="btn btn-danger" onclick="muteVideo(${token_id})"><i class="fas fa-volume-up"></i></button>
-          <button type="button" class="btn btn-danger" onclick="unmuteVideo(${token_id})"><i class="fas fa-volume-off"></i></button>
-          <button type="button" class="btn btn-danger"><input type="text"></input></button>
-          <button type="button" class="btn btn-danger"><i class="fas fa-search"></i></button>
-        </div>`;
-    }
-
-    function muteVideo(token_id) {
-    	$.get(`/api/connect/interact?name=youtube&action=setVolume&value=0&tid=${token_id}`, (data) => {
-             console.log(data);
-    	});
-    }
-
-    function unmuteVideo(token_id) {
-        $.get(`/api/connect/interact?name=youtube&action=setVolume&value=100&tid=${token_id}`, (data) => {
-            console.log(data);
-        });
-    }
-
-    function pauseVideo(token_id) {
-        $.get(`/api/connect/interact?name=youtube&action=pauseVideo&tid=${token_id}`, (data) => {
-            console.log(data);
-        });
-    }
-
-    function playVideo(token_id) {
-        $.get(`/api/connect/interact?name=youtube&action=playVideo&tid=${token_id}`, (data) => {
-            console.log(data);
-        });
-    }
-
-    function nextVideo(token_id) {
-        $.get(`/api/connect/interact?name=youtube&action=nextVideo&tid=${token_id}`, (data) => {
-    		console.log(data);
-        });
-    }
-
-    function previousVideo(token_id) {
-        $.get(`/api/connect/interact?name=youtube&action=previousVideo&tid=${token_id}`, (data) => {
-            console.log(data);
-        });
-    }
-
-    function createHTMLDevices(devices) {
-        devices_arr = [];
-
-        for(let app in devices) {
-            const token = devices[app];
-            const html = createDevice(token);
-            devices_arr.push(html);
-        }
-
-        return `<div class="row">${devices_arr.join("</br>")}</div>`;
-    }
-
-    function createHTMLSessions(sessions) {
-
-    }
-
-    function createDevice(token) {
-        const status = token.online ? "device-online" : "device-offline";
-        const color_background = token.online ? "#67e570" : "#e83535";
-        const disabled = token.online ? "" : "disabled";
-        return `<div class="col"><div id=${token.id} class="card device ${status}">
-            <img class="card-img-top" src="/images/connect/${token.info.os_parsed}.png" alt="Card image cap">
-            <div class="card-header" style="background-color:${color_background};">
-            <b style="color:black;">${token.info.name}</b>
-            <div class="dropdown">
-                <button class="btn btn-info dropdown-toggle ${disabled}" type="button" id="dropdownMenuButton_${token.id}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    Options
-                </button>
-                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton_${token.id}">
-                    <a class="dropdown-item" href="#"><i class="fas fa-power-off"></i> Power Off Machine</a>
-                    <a class="dropdown-item" href="#" onclick="action(${token.id})"><i class="fas fa-desktop"></i> Power Off Screen</a>
-                    <div class="dropdown-item"><div class="slidecontainer">
-                        <i class="fas fa-volume-up"></i> <input type="range" min="0" max="20" value="10" class="slider" id="myRange_${token.id}">
-                    </div></div>
+		<div class="container">
+            <div class="card">
+                <div class="card-header">
+                    <h3> Hold on. </h3>
                 </div>
+                <div class="card-body">
+                    <p> This page is under construction. </p>
+                    <a href="/projects/connect/control"> Click here for control panel </a>
                 </div>
-            </div></div></div>`;
-    }
-
-    function addSlider(devices) {
-        for (let app in devices) {
-            const token = devices[app];
-            const slider = document.getElementById("myRange_"+token.id);
-            slider.oldValue = slider.value;
-            slider.oninput = function() {
-                changeVolume(this.value*5, token.id);
-            }
-        }
-    }
-
-    function action(token_id) {
-        $.get(`/api/connect/interact?name=screen&action=displaysleep&tid=${token_id}`, (data) => {
-            console.log(data);
-        });
-    }
-
-    let fire = false;
-    let last = "";
-
-    setInterval(() => {
-        if (fire) {
-            $.get(last, (data) => {
-                console.log(data);
-            });
-            fire = false;
-        }
-    }, 200);
-
-    function changeVolume(value, tid) {
-        last = `/api/connect/interact?name=volume&action=set&value=${value}&tid=${tid}`;
-        fire = true;
-    }
-
-    main();
-    </script>
-
+            </div>
+		</div>
+        <%- include /usr/src/app/pages/components/footer %>
+	</body>
 </html>
