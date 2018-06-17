@@ -1,6 +1,4 @@
-const https = require("https");
 const http = require("http");
-const fs = require("fs");
 const ua_parser = require("ua-parser");
 
 const Url = require("./src/util/Url");
@@ -14,12 +12,7 @@ process.on("unhandledRejection", (reason, p) => {
     // application specific logging, throwing an error, or other logic here
 });
 
-const options = {
-    key: fs.readFileSync("data/secrets/dupbit.com/privkey.pem"),
-    cert: fs.readFileSync("data/secrets/dupbit.com/fullchain.pem")
-};
-
-let server = https.createServer(options, async (request, response) => {
+let server = http.createServer(async (request, response) => {
     request.ua_os = ua_parser.parse(request.headers["user-agent"]);
     if (request.url.includes("/api/") || request.method === "POST") {
         let body = "";
@@ -57,14 +50,6 @@ let server = https.createServer(options, async (request, response) => {
         console.log("ELSE???????");
         // console.log(request);
     }
-}).listen(443);
-
-http.createServer(function (req, res) {
-    // console.log(req);
-    res.writeHead(301, { "Location": "https://" + req.headers["host"] + req.url });
-    res.end();
-}).listen(80);
+}).listen(8080);
 
 WebSocket.create(server);
-
-console.log("Server running at http://127.0.0.1:443/");

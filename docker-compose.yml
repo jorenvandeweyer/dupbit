@@ -1,32 +1,42 @@
 version: "3"
 services:
-  web:
-    build: .
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ./config.json:/usr/src/app/config.json
-      - ./data/secrets/:/usr/src/app/data/secrets/
-      - ./pages/:/usr/src/app/pages/
-      - ./src/:/usr/src/app/src/
-      - ./data/music/:/usr/src/app/data/music/
-    depends_on:
-      - database
-    restart: always
-    networks:
-      - prime
-  database:
-    image: mariadb:10.3.5
-    environment:
-      - MYSQL_ALLOW_EMPTY_PASSWORD=1
-    ports:
-      - "3306:3306"
-    volumes:
-      - .db/:/var/lib/mysql
-    restart: always
-    networks:
-      - prime
+    nginx:
+        build: ./nginx
+        volumes:
+            - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+            - ./secrets/:/etc/secrets/
+        depends_on:
+            - web
+        restart: always
+        ports:
+            - "80:80"
+            - "443:443"
+        networks:
+            - prime
+    web:
+        build: ./node
+        volumes:
+            - ./node/config.json:/usr/src/app/config.json
+            - ./node/pages/:/usr/src/app/pages/
+            - ./node/src/:/usr/src/app/src/
+            - ./node/data/music/:/usr/src/app/data/music/
+            - ./node/data/secrets/:/usr/src/app/data/secrets/
+        depends_on:
+            - database
+        restart: always
+        networks:
+            - prime
+    database:
+        image: mariadb:10.3.5
+        environment:
+            - MYSQL_RANDOM_ROOT_PASSWORD=1
+        ports:
+            - "3306:3306"
+        volumes:
+            - ./.database/:/var/lib/mysql
+        restart: always
+        networks:
+            - prime
 networks:
-  prime:
-    driver: bridge
+    prime:
+        driver: bridge
