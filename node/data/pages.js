@@ -90,7 +90,7 @@ module.exports = {
     },
     "/projects/connect/control": {
         title: "Dupbit - Connect Panel",
-        currentPage: "projecs/connect/control",
+        currentPage: "projects/connect/control",
         requireLogin: true,
         requireLevel: 2,
     },
