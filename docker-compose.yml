@@ -27,6 +27,12 @@ services:
         restart: always
         networks:
             - prime
+    youtube-dl:
+        build: ./youtube-dl
+        volumes:
+          - ./files/:/usr/src/app/files/
+        networks:
+          - prime
     database:
         image: mariadb:10.3.5
         environment:

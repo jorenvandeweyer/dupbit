@@ -1,9 +1,9 @@
 const { spawn } = require("child_process");
 const fs = require("fs");
 const db = require("../../../src/util/Database");
+const Url = require("url");
 
 function downloadVideo(url) {
-
     return new Promise((resolve, reject) => {
         const downloader = spawn("youtube-dl", [url.split("&")[0], "--id", "-x", "--audio-format", "mp3", "--exec", "mv {} data/music/"]);
 
@@ -67,12 +67,15 @@ async function resolve(data, apidata) {
 }
 
 async function updateDatabase(url, title, artist, uid) {
-    let result;
-    if (url.includes("youtube.com/watch?v=")) {
-        result = await db.addSong(url.split("watch?v=")[1].split("&")[0], title, artist, uid);
-    } else {
-        result = await db.addSong(url, title, artist, uid);
+    let id = url;
+    if (url.includes("youtube.com/watch")) {
+        const url = new Url(url);
+        if (url.searchParams.has("v")) {
+            id = url.searchParams.get("v");
+        }
     }
+
+    const result = await db.addSong(id, title, artist, uid);
     return result.insertId;
 }
 
