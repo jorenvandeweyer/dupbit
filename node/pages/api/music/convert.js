@@ -1,30 +1,59 @@
-const { spawn } = require("child_process");
 const fs = require("fs");
-const db = require("../../../src/util/Database");
+const RawIPC = require("node-ipc").IPC;
+const EventEmitter = require("events");
 const Url = require("url");
+const db = require("../../../src/util/Database");
 
-function downloadVideo(url) {
+class YouTubeDownloader extends EventEmitter {
+    constructor(url) {
+        super();
+        this.ipc = new RawIPC;
+        this.ipc.config.id = "client";
+        this.ipc.config.retry = 1500;
+        this.ipc.config.silent = true;
+
+        this.ipc.connectToNet("youtube-dl-api", "youtube-dl", 8000, () => { this.connect(url); });
+    }
+
+    connect(url) {
+        this.ipc.of["youtube-dl-api"].on("connect", () => {
+            this.ipc.of["youtube-dl-api"].emit("download", url);
+            this.emit("open");
+        });
+
+        this.ipc.of["youtube-dl-api"].on("disconnect", () => {
+            this.emit("close");
+        });
+
+        this.ipc.of["youtube-dl-api"].on("state-change", (data) => {
+            this.emit("state-change", data);
+        });
+
+        this.ipc.of["youtube-dl-api"].on("open", (data) => {
+            this.emit("started", data);
+        });
+
+        this.ipc.of["youtube-dl-api"].on("close", (data) => {
+            this.emit("finished", data);
+            this.ipc.disconnect("youtube-dl-api");
+        });
+
+        this.ipc.of["youtube-dl-api"].on("error", () => {
+            this.ipc.disconnect("youtube-dl-api");
+        });
+    }
+}
+
+async function downloadVideo(url) {
     return new Promise((resolve, reject) => {
-        const downloader = spawn("youtube-dl", [url.split("&")[0], "--id", "-x", "--audio-format", "mp3", "--exec", "mv {} data/music/"]);
+        const downloader = new YouTubeDownloader(url);
 
-        let filename;
-        downloader.stdout.on("data", (data) => {
-            let raw = data.toString().split("\n").filter(line => line.includes("Destination:"));
-            if (raw.length) {
-                filename = raw[raw.length-1].split("Destination: ")[1];
-            }
-            // console.log(data.toString());
+        downloader.on("finished", (data) => {
+            resolve(data);
         });
 
-        downloader.stderr.on("data", (data) => {
-            if (data.includes("stopped")) {
-                reject(data);
-            }
-            // console.log(`stderr: ${data}`);
-        });
-
-        downloader.on("close", () => {
-            resolve(filename);
+        downloader.on("error", (data) => {
+            reject(data);
         });
     });
 }
@@ -46,11 +75,6 @@ async function resolve(data, apidata) {
             await downloadVideo(data.url);
         }
         const id = await updateDatabase(data.url, data.title, data.artist, apidata.session.id);
-        console.log({
-            success: true,
-            id,
-            redirect: data.remote ? false : `api/music/downloadSong?id=${id}`,
-        });
         return {
             success: true,
             id,
@@ -69,9 +93,9 @@ async function resolve(data, apidata) {
 async function updateDatabase(url, title, artist, uid) {
     let id = url;
     if (url.includes("youtube.com/watch")) {
-        const url = new Url(url);
-        if (url.searchParams.has("v")) {
-            id = url.searchParams.get("v");
+        const url_parsed = Url.parse(url, true);
+        if ("v" in url_parsed.query) {
+            id = url_parsed.query["v"];
         }
     }
 

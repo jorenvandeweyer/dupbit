@@ -20,7 +20,7 @@ services:
             - ./node/config.json:/usr/src/app/config.json
             - ./node/pages/:/usr/src/app/pages/
             - ./node/src/:/usr/src/app/src/
-            - ./node/data/music/:/usr/src/app/data/music/
+            - ./files/youtube-dl/:/usr/src/app/data/music/
             - ./node/data/secrets/:/usr/src/app/data/secrets/
         depends_on:
             - database
@@ -30,7 +30,7 @@ services:
     youtube-dl:
         build: ./youtube-dl
         volumes:
-          - ./files/:/usr/src/app/files/
+          - ./files/youtube-dl/:/usr/src/app/files/
         networks:
           - prime
     database:
