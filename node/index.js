@@ -26,7 +26,7 @@ let server = http.createServer(async (request, response) => {
             if (request.method === "GET" && request.url.includes("?")) {
                 url = new Url(request.url.replace("?", ".js?"));
             } else {
-                url = new Url(`${request.url}.js?${body}`);
+                url = new Url(`${request.url.replace("?", "")}.js?${body}`);
             }
             let answer = await api.get(url, request);
             response.writeHead(answer.status, answer.header);
