@@ -69,25 +69,50 @@ function checkFile(url) {
 }
 
 async function resolve(data, apidata) {
-    if (apidata.session.isLoggedIn && apidata.session.level >=2 && data.url) {
-        const isDownloaded = checkFile(data.url);
-        if (!isDownloaded) {
-            await downloadVideo(data.url);
+    if (apidata.session.isLoggedIn && data.url) {
+        if (apidata.session.level >=2) {
+            const isDownloaded = checkFile(data.url);
+            if (!isDownloaded) {
+                await downloadVideo(data.url);
+            }
+            const id = await updateDatabase(data.url, data.title, data.artist, apidata.session.id);
+            return {
+                success: true,
+                id,
+                downloadUrl: `https://dupbit.com/api/music/downloadSong?id=${id}`,
+                filename: createFilename(data.title, data.artist, data.url),
+                redirect: data.remote ? false : `api/music/downloadSong?id=${id}`,
+                headers: {
+                    "Access-Control-Allow-Origin": apidata.request.headers.origin ? apidata.request.headers.origin : `chrome-extension://${data.origin}`,
+                    "Access-Control-Allow-Credentials": "true",
+                },
+            };
+        } else {
+            const id = data.url.split("watch?v=")[1].split("&")[0];
+            return {
+                success: true,
+                id,
+                downloadUrl: `https://dupbit.com/api/music/downloadMetaData?id=${id}`,
+                filename: createFilename(data.title, data.artist, data.url),
+                redirect: data.remote ? false : `api/music/downloadMetaData?id=${id}`,
+                headers: {
+                    "Access-Control-Allow-Origin": apidata.request.headers.origin ? apidata.request.headers.origin : `chrome-extension://${data.origin}`,
+                    "Access-Control-Allow-Credentials": "true",
+                },
+            };
         }
-        const id = await updateDatabase(data.url, data.title, data.artist, apidata.session.id);
-        return {
-            success: true,
-            id,
-            redirect: data.remote ? false : `api/music/downloadSong?id=${id}`,
-            headers: {
-                "Access-Control-Allow-Origin": apidata.request.headers.origin ? apidata.request.headers.origin : `chrome-extension://${data.origin}`,
-                "Access-Control-Allow-Credentials": "true",
-            },
-        };
     }
     return {
         success: false,
+        reason: "authenticate",
     };
+}
+
+function createFilename(title, artist, url) {
+    if (title !== "" && artist !==  "") return `${artist} - ${title}`;
+    if (title !== "") return title;
+    if (artist !== "") return artist;
+    return url.split("watch?v=")[1].split("&")[0];
 }
 
 async function updateDatabase(url, title, artist, uid) {
