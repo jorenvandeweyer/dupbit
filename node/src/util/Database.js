@@ -595,6 +595,10 @@ async function verifyEmail(email) {
     // if (!filter_var(email, FILTER_VALIDATE_EMAIL)) {
     //   errorCode += 2 ** 9;
     // }
+    var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    if(!re.test(email)) {
+        errorCode += 2 ** 9;
+    }
     return errorCode;
 }
 
