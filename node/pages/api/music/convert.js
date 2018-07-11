@@ -80,7 +80,7 @@ async function resolve(data, apidata) {
                 success: true,
                 id,
                 downloadUrl: `https://dupbit.com/api/music/downloadSong?id=${id}`,
-                filename: createFilename(data.title, data.artist, data.url),
+                filename: createFilename(data.title, data.artist, data.url)+".mp3",
                 redirect: data.remote ? false : `api/music/downloadSong?id=${id}`,
                 headers: {
                     "Access-Control-Allow-Origin": apidata.request.headers.origin ? apidata.request.headers.origin : `chrome-extension://${data.origin}`,
@@ -93,7 +93,7 @@ async function resolve(data, apidata) {
                 success: true,
                 id,
                 downloadUrl: `https://dupbit.com/api/music/downloadMetaData?id=${id}`,
-                filename: createFilename(data.title, data.artist, data.url),
+                filename: createFilename(data.title, data.artist, data.url)+".txt",
                 redirect: data.remote ? false : `api/music/downloadMetaData?id=${id}`,
                 headers: {
                     "Access-Control-Allow-Origin": apidata.request.headers.origin ? apidata.request.headers.origin : `chrome-extension://${data.origin}`,
