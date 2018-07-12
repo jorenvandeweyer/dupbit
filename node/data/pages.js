@@ -59,6 +59,7 @@ module.exports = {
         title: "Dupbit - Logins",
         currentPage: "logins",
         requireLogin: true,
+        requireLogout: false,
         requireLevel: 3,
         pageData: {
             "attempts": "Database.getLoginAttempts()",
