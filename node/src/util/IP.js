@@ -1,5 +1,6 @@
 function extract (req) {
-    return req.headers["x-forwarded-for"] ||
+    return req.headers["X-Real-IP"] ||
+        req.headers["x-forwarded-for"] ||
         req.connection.remoteAddress ||
         req.socket.remoteAddress ||
         (req.connection.socket ? req.connection.socket.remoteAddress : null);

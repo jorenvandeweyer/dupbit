@@ -44,7 +44,7 @@ class Data {
                 this.redirectHeader = "/login?redirect=" + this.pageInfo.currentPage;
             } else if (this.pageInfo.requireLevel && this.pageInfo.requireLevel > this.session.level) {
                 this.status = 303;
-                this.redirectHeader = "/kak";
+                this.redirectHeader = "/notfound";
             } else {
                 this.status = 200;
             }
