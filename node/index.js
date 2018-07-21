@@ -1,10 +1,10 @@
-const http = require("http");
+const express = require("express");
 const ua_parser = require("ua-parser");
-
-const Url = require("./src/util/Url");
-const handler = require("./src/handler");
+const Cookie = require("./src/util/Cookie");
+// const WebSocket = require("./src/websocket/index");
+const auth = require("./src/auth");
 const api = require("./src/api");
-const WebSocket = require("./src/websocket/index");
+const html = require("./src/html");
 
 process.on("unhandledRejection", (reason, p) => {
     /*eslint no-console: 0*/
@@ -12,44 +12,21 @@ process.on("unhandledRejection", (reason, p) => {
     // application specific logging, throwing an error, or other logic here
 });
 
-let server = http.createServer(async (request, response) => {
-    request.ua_os = ua_parser.parse(request.headers["user-agent"]);
-    if (request.url.includes("/api/") || request.method === "POST") {
-        let body = "";
+const app = express();
 
-        request.on("data", (data) => {
-            body += data;
-        });
+app.use((req, res, next) => {
+    if (!req.locals) req.locals = {};
 
-        request.on("end", async () => {
-            let url;
-            if (request.method === "GET" && request.url.includes("?")) {
-                url = new Url(request.url.replace("?", ".js?"));
-            } else {
-                url = new Url(`${request.url.replace("?", "")}.js?${body}`);
-            }
-            let answer = await api.get(url, request);
-            response.writeHead(answer.status, answer.header);
+    req.ua_os = ua_parser.parse(req.headers["user-agent"]);
+    req.cookies = Cookie.parse(req.headers.cookie);
+    next();
+});
 
-            if (answer.json) {
-                response.end(JSON.stringify(answer.content));
-            } else {
-                response.end(answer.content, "binary");
-            }
-        });
-    } else if (request.method === "GET") {
-        const url = new Url(request.url);
-        let page = await handler.get(url, request);
+app.use("*", auth);
+app.use("/api", api);
+app.use("*", html);
 
-        response.writeHead(page.status, page.header);
+app.listen(8080, () => console.log(8080));
 
-        response.write(page.content);
-        response.end();
-        //response.end(content, 'utf-8');
-    } else {
-        console.log("ELSE???????");
-        // console.log(request);
-    }
-}).listen(8080);
 
-WebSocket.create(server);
+// WebSocket.create(app);
