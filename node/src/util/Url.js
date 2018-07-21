@@ -5,7 +5,7 @@ const absolute = Path.dirname(process.mainModule.filename);
 const utf8 = [".ejs", ".js"];
 
 class Url {
-    constructor(url) {
+    constructor(url, suggestedExt = ".ejs") {
         this.original = url;
 
         const url_parsed = url2.parse(this.original, true);
@@ -22,7 +22,7 @@ class Url {
         const path = Path.parse(this.pathname);
 
         this.name = path.name;
-        this.ext = path.ext || ".ejs";
+        this.ext = path.ext || suggestedExt;
 
         if (path.dir === "/") path.dir = "";
         this.dir = `/pages${path.dir}`;
@@ -37,7 +37,7 @@ class Url {
     }
 
     get shortPath() {
-        return `${this.dir}/${this.fullFilname}`;
+        return `${this.dir}/${this.fullFileName}`;
     }
 
     get fullPath() {
@@ -48,7 +48,7 @@ class Url {
         return this.name;
     }
 
-    get fullFilname() {
+    get fullFileName() {
         return `${this.filename}${this.ext}`;
     }
 
@@ -57,7 +57,7 @@ class Url {
     }
 
     queryGet(param) {
-        if (!(param in this.query)) return null;
+        if (!this.queryHas(param)) return null;
         return this.query[param];
     }
 
