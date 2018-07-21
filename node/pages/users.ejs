@@ -2,7 +2,7 @@
 <html lang="en">
 
 	<head>
-		<%- include /usr/src/app/pages/components/head %>
+		<%- include ./components/head %>
 		<script>
 		function editUser(id){
 			var level = $("#" + id + " td:eq(3)").text();
@@ -32,7 +32,7 @@
 
 	<body>
 
-		<%- include /usr/src/app/pages/components/header %>
+		<%- include ./components/header %>
         </br>
 		<div class="container">
 			<div class="card">
@@ -76,7 +76,7 @@
 			<input type="hidden" name="username" id="username"/>
 			<input type="hidden" name="action" id="action"/>
 		</form>
-        <%- include /usr/src/app/pages/components/footer %>
+        <%- include ./components/footer %>
 
 	</body>
 </html>
