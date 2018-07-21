@@ -2,6 +2,7 @@ const Url = require("./util/Url");
 const Cache = require("./util/Cache");
 const PageInfo = require("../data/pages");
 const ejs = require("ejs");
+const lang = require("../lang/en.json");
 
 const mimeTypes = {
     ".html": "text/html",
@@ -42,7 +43,8 @@ module.exports = async (req, res) => {
     req.locals.pageInfo = pageInfo;
     req.locals.session = req.auth;
     req.locals.query = url.query;
-
+    req.locals.lang = lang;
+    
     if (pageInfo.requireLogout && req.auth.isLoggedIn) {
         return res.redirect(303, "/welcome");
     } else if (pageInfo.requireLogin && !req.auth.isLoggedIn) {

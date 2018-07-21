@@ -1,6 +1,8 @@
-const Database = require("../../src/util/Database");
+const Database = require("../../../src/util/Database");
 
-async function resolve(data) {
+module.exports = async (req, res) => {
+    const data = req.body;
+
     if ("username" in data && "password" in data && "confirmpassword" in data && "email" in data) {
         let usernameErrorCode = await Database.verifyUsername(data.username);
         let passwordErrorCode = Database.verifyPassword(data.password);
@@ -11,16 +13,12 @@ async function resolve(data) {
         let passwordError = Database.decodeErrorCode(passwordErrorCode).join(" ");
         let confirmPasswordError = Database.decodeErrorCode(confirmPasswordErrorCode).join(" ");
         let emailError = Database.decodeErrorCode(emailErrorCode).join(" ");
-        let errors = {
-            "username": usernameError,
-            "password": passwordError,
-            "confirmpassword": confirmPasswordError,
-            "email": emailError
-        };
-        return errors;
-    }
-}
 
-module.exports = {
-    resolve
+        res.json({
+            username: usernameError,
+            password: passwordError,
+            confirmpassword: confirmPasswordError,
+            email: emailError
+        });
+    }
 };

@@ -3,7 +3,8 @@ const Url = require("./util/Url");
 
 module.exports = async (req, res) => {
     const url = new Url(req.originalUrl, ".js");
-
+    req.url = url;
+    
     if (fs.existsSync(url.fullPath)) {
         require(url.fullPath)(req, res);
     } else {

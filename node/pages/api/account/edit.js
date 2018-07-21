@@ -1,12 +1,14 @@
-const Database = require("../../src/util/Database");
+const Database = require("../../../src/util/Database");
 
-async function resolve(data, apidata) {
+module.exports = async (req, res) => {
+    const data = req.query;
+
     if (data.id && data.action) {
-        let id = data.id;
-        let action = data.action;
+        const id = data.id;
+        const action = data.action;
 
-        if (apidata.session.isLoggedIn) {
-            let user = apidata.user;
+        if (req.auth.isLoggedIn) {
+            const user = req.locals.user;
 
             if (user.level === 3) {
                 switch (action) {
@@ -46,12 +48,5 @@ async function resolve(data, apidata) {
             }
         }
     }
-
-    return {
-        backdirect: true,
-    };
-}
-
-module.exports = {
-    resolve,
+    res.redirect("back");
 };

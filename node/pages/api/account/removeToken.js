@@ -1,28 +1,26 @@
 const db = require("../../../src/util/Database");
 
-async function resolve(data, apidata) {
-    if (apidata.session.isLoggedIn && data.tid) {
+module.exports = async (req, res) => {
+    const data = req.query;
+    if (req.auth.isLoggedIn && data.tid) {
         const result = await db.getToken({tid: data.tid});
         if (result.length) {
             const token = result[0];
-            if (token.uid === apidata.session.id) {
+            if (token.uid === req.auth.id) {
                 await db.removeToken(token.id);
-                return {
-                    success: true,
-                    reason: "deleted token",
-                };
+                return res.json({
+                    success: true
+                });
             }
         }
-        return {
+        res.json({
             success: false,
-            reason: "Not a token",
-        };
+            reason: "not a token",
+        });
+    } else {
+        res.json({
+            success: false,
+            reason: "invalid params",
+        });
     }
-    return {
-        success: false,
-    };
-}
-
-module.exports = {
-    resolve
 };

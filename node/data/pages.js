@@ -1,31 +1,31 @@
 module.exports = {
     "/index": {
         title: "Dupbit - Home",
-        currentPage: "index"
+        currentPage: "/index"
     },
     "/beta": {
         title: "Dupbit - Beta",
-        currentPage: "beta"
+        currentPage: "/beta"
     },
     "/welcome": {
         title: "Dupbit - Welcome",
-        currentPage: "welcome",
+        currentPage: "/welcome",
         requireLogin: true
     },
     "/contact": {
         title: "Dupbit - Contact",
-        currentPage: "contact",
+        currentPage: "/contact",
     },
     "/register": {
         title: "Dupbit - Register",
-        currentPage: "register",
+        currentPage: "/register",
         requireLogout: true,
         //errorCode = GET["fail"] ? GET["fail"] : 0
         //errorMessageList = decodeErrorCude(errorCode)
     },
     "/login": {
         title: "Dupbit - Login",
-        currentPage: "login",
+        currentPage: "/login",
         requireLogout: true,
         // redirect: "welcome"
         //$redirect = isset($_GET["redirect"]) ? $_GET["redirect"] : "welcome";
@@ -34,7 +34,7 @@ module.exports = {
     },
     "/users": {
         title: "Dupbit - Users",
-        currentPage: "users",
+        currentPage: "/users",
         requireLogin: true,
         requireLevel: 3,
         pageData: {
@@ -43,21 +43,21 @@ module.exports = {
     },
     "/dupbot": {
         title: "Dupbit - Dupbot",
-        currentPage: "dupbot",
+        currentPage: "/dupbot",
         metaKeywords: "Dupbot, Discord, Bot, Discordbot",
         metaDescription: "Dupbot the bot for you Discord server.",
     },
     "/notfound": {
         title: "Dupbit - Not Found",
-        currentPage: "notfound",
+        currentPage: "/notfound",
     },
-    "/not_authorized": {
+    "/notauthorized": {
         title: "Dupbit - Not Authorized",
-        currentPage: "not_authorized",
+        currentPage: "/notauthorized",
     },
     "/logins": {
         title: "Dupbit - Logins",
-        currentPage: "logins",
+        currentPage: "/logins",
         requireLogin: true,
         requireLogout: false,
         requireLevel: 3,
@@ -67,7 +67,7 @@ module.exports = {
     },
     "/projects/calendar/index": {
         title: "Dupbit - Calendar",
-        currentPage: "projects/calendar",
+        currentPage: "/projects/calendar",
         requireLogin: true,
         pageData: {
             "calendarTable": "Database.getCalendarTable(this.session.id)",
@@ -77,7 +77,7 @@ module.exports = {
     },
     "/projects/music/index": {
         title: "Dupbit - Music",
-        currentPage: "projects/music",
+        currentPage: "/projects/music",
         requireLogin: true,
         requireLevel: 2,
         pageData: {
@@ -87,27 +87,27 @@ module.exports = {
     },
     "/projects/connect/index": {
         title: "Dupbit - Connect",
-        currentPage: "projects/connect",
+        currentPage: "/projects/connect",
     },
     "/projects/connect/control": {
         title: "Dupbit - Connect Panel",
-        currentPage: "projects/connect/control",
+        currentPage: "/projects/connect/control",
         requireLogin: true,
         requireLevel: 2,
     },
     "/account/index": {
         title: "Dupbit - Account Settings",
-        currentPage: "account",
+        currentPage: "/account",
         requireLogin: true,
     },
     "/account/edit": {
         title: "Dupbit - Account Settings",
-        currentPage: "account/edit",
+        currentPage: "/account/edit",
         requireLogin: true,
     },
     "/account/tokens": {
         title: "Dupbit - Account Settings",
-        currentPage: "account/tokens",
+        currentPage: "/account/tokens",
         requireLogin: true,
     },
 };

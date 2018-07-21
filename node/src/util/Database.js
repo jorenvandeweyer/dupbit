@@ -217,7 +217,7 @@ async function register(username, password, email, level=0) {
         message_title: "Thanks for registering at Dupbit!",
         message_content: "To complete your registration click the button below. If you did not register to Dupbit, you can just ignore this email.",
         button_title: "Confirm Email",
-        button_url: `https://dupbit.com/api/validate?id=${id}&hash=${emailhash}`,
+        button_url: `https://dupbit.com/api/account/validate?id=${id}&hash=${emailhash}`,
 
     });
     return q;
