@@ -1,10 +1,10 @@
 const db = require("../../../src/util/Database");
 const ws = require("../../../src/websocket/index");
 
-async function resolve(data, apidata) {
-    if (apidata.session.isLoggedIn) {
-        const tokens = await db.getToken({uid: apidata.session.id});
-        const clients = await ws.getClient(apidata.session.id);
+module.exports = async (req, res) => {
+    if (req.auth.isLoggedIn) {
+        const tokens = await db.getToken({uid: req.auth.id});
+        const clients = await ws.getClient(req.auth.id);
 
         const obj = {
             website: {},
@@ -35,18 +35,15 @@ async function resolve(data, apidata) {
                 token.info.os_parsed = "linux";
             }
         }
-
-        return {
+        res.json({
             success: true,
             data: obj,
-            tokens
-        };
+            tokens,
+        });
+    } else {
+        res.status(401).json({
+            success: false,
+            reason: "Authentication required",
+        });
     }
-    return {
-        success: false,
-    };
-}
-
-module.exports = {
-    resolve,
 };

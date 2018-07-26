@@ -1,16 +1,17 @@
 const ws = require("../../../src/websocket/index");
 const db = require("../../../src/util/Database");
 
-async function resolve(data, apidata) {
-    if (apidata.session.isLoggedIn && data.tid) {
-        const uid = apidata.session.id;
+module.exports = async (req, res) => {
+    const data = req.body;
+    if (req.auth.isLoggedIn && data.tid) {
+        const uid = req.auth.id;
         const token = await getToken(uid, data.tid);
+
         if (token) {
-            const socket = ws.findConnection(uid, token.id);
+            const socket = await ws.findConnection(uid, token.id);
             if (socket) {
                 socket.send(JSON.stringify({
                     action: {
-                        name: data.name,
                         data: {
                             action: data.action,
                             value: data.value,
@@ -20,22 +21,17 @@ async function resolve(data, apidata) {
                 return await waitForResponse(socket, data.name);
             }
         } else {
-            return {
+            res.status(401).json({
                 success: false,
-                reason: "not a token.",
-            };
+                reason: "Not a token",
+            });
         }
     } else {
-        return {
+        res.status(404).json({
             success: false,
-            reason: "log in and use a proper token id.",
-        };
+            reason: "need to be authenticated and using a proper tid",
+        });
     }
-
-}
-
-module.exports = {
-    resolve,
 };
 
 async function getToken(uid, tid) {
