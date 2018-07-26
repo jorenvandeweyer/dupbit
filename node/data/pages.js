@@ -69,11 +69,6 @@ module.exports = {
         title: "Dupbit - Calendar",
         currentPage: "/projects/calendar",
         requireLogin: true,
-        pageData: {
-            "calendarTable": "Database.getCalendarTable(this.session.id)",
-            "calendarUrls": "Database.getCalendarUrls(this.session.id, this.query.calendar)",
-            "calendarCourseNumbers": "Database.getCalendarCourseNumbers(this.session.id, this.query.calendar)",
-        },
     },
     "/projects/music/index": {
         title: "Dupbit - Music",
