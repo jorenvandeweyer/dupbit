@@ -1,8 +1,9 @@
 const express = require("express");
+const db = require("../../../src/util/Database");
 
 module.exports = express.Router()
     .all("*", (req, res, next) => {
-        if (req.auth.isLoggedIn && req.auth.level >= 3) {
+        if (req.auth.isLoggedIn && req.auth.level >= 2) {
             next();
         } else {
             res.status(401).json({
@@ -11,15 +12,96 @@ module.exports = express.Router()
             });
         }
     })
-    .get("*", (req, res) => {
+    .get("*", async (req, res) => {
 
     })
-    .post("*", (req, res) => {
+    .post("*", async (req, res) => {
+        const data = req.body;
 
+        if (data.sid) {
+            const uid = await db.getUserOfSong(data.sid);
+            if (uid === req.auth.id) {
+                if (data.artist) {
+                    await db.setArtist(data.sid, data.artist);
+                }
+
+                if (data.title) {
+                    await db.setTitle(data.sid, data.title);
+                }
+
+                if (data.pid) {
+                    const playlists = await db.getPlaylistsOf(req.auth.id);
+
+                    for (let i = 0; i < playlists.length; i++) {
+                        await db.removeSongFromPlaylist(data.sid, playlists[i].id);
+                    }
+                    if (typeof data.pid === "object") {
+                        for (let i = 0; i < data.pid.length; i++) {
+                            await db.addSongToPlaylist(data.sid, data.pid[i]);
+                        }
+                    } else {
+                        await db.addSongToPlaylist(data.sid, data.pid);
+                    }
+
+                }
+                res.json({
+                    success: true,
+                    data: {
+                        sid: data.sid,
+                        artist: data.artist,
+                        title: data.title,
+                        pid: data.pid,
+                    },
+                });
+            }
+
+        }
+
+        res.status(405).json({
+            success: false
+        });
     })
-    .put("*", (req, res) => {
+    .put("*", async (req, res) => {
+        const data = req.body;
 
+        if (data.url && data.title && data.artist) {
+            let result;
+
+            if (data.url.includes("youtube.com/watch?v=")) {
+                result = await db.addSong(data.url.split("watch?v=")[1].split("&list")[0], data.title, data.artist, data.uid);
+            } else {
+                result = await db.addSong(data.url, data.title, data.artist, data.uid);
+            }
+
+            return res.json({
+                success: true,
+                data: {
+                    id: result.insertId,
+                    url: data.url,
+                    title: data.title,
+                    artist: data.artist,
+                },
+            });
+        }
+
+        res.status(405).json({
+            success: false
+        });
     })
-    .delete("*", (req, res) => {
+    .delete("*", async (req, res) => {
+        const data = req.body;
 
+        if (data.sid) {
+            const uid = await db.getUserOfSong(data.sid);
+            if (uid === req.auth.id) {
+                await db.removeSong(data.sid);
+                return res.json({
+                    success: true,
+                });
+            }
+        }
+
+        res.status(405).json({
+            success: false
+        });
     });

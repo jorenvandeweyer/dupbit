@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 	<head>
-		<%- include /usr/src/app/pages/components/head %>
+		<%- include ../../components/head %>
 		<script>
 		function editSong(sid, artist, title, pidList) {
 			$("#editSongModal #sid").val(sid);
@@ -18,7 +18,7 @@
 		</script>
 	</head>
 	<body>
-		<%- include /usr/src/app/pages/components/header %>
+		<%- include ../../components/header %>
 		<div class="container">
 			<div class="card">
 				<div class="card-header"><b>Music</b></div>
@@ -202,7 +202,7 @@
 				</div>
 			</div>
 		</div>
-        <%- include /usr/src/app/pages/components/footer %>
+        <%- include ../../components/footer %>
         <script>
         $(".playlist").click(function() {
             $(this).find("span").hide();
