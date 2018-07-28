@@ -111,6 +111,18 @@ class Request {
         }).catch(() => null);
     }
 
+    static put(url, data={}) {
+        return new Promise((resolve, reject) => {
+            const xhr = new XMLHttpRequest();
+            xhr.open("PUT", url, true);
+            xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+            xhr.withCredentials = true;
+            xhr.onload = () => resolve(checkResponse(xhr));
+            xhr.onerror = () => reject(xhr.statusText);
+            xhr.send(encodeData(data));
+        }).catch(() => null);
+    }
+
     static delete(url, data={}) {
         console.log(data);
         return new Promise((resolve, reject) => {
@@ -126,6 +138,7 @@ class Request {
 }
 Request.GET = Request.get;
 Request.POST = Request.post;
+Request.PUT = Request.put;
 Request.DELETE = Request.delete;
 
 function getParameterByName(name, url) {
