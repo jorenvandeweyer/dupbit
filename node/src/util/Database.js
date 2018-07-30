@@ -90,17 +90,31 @@ async function checkTables() {
 
 
     await query(`CREATE TABLE IF NOT EXISTS music.songs (
-		id INT NOT NULL UNIQUE AUTO_INCREMENT,
-		ytid CHAR(11) NOT NULL,
-		title VARCHAR(255),
-		artist VARCHAR(255),
-		uid INT NOT NULL,
-        cached BOOLEAN NOT NULL DEFAULT 1,
-		PRIMARY KEY (id),
-		FOREIGN KEY (uid) REFERENCES users.users(id) ON DELETE CASCADE
+        id INT NOT NULL UNIQUE AUTO_INCREMENT,
+        filename VARCHAR(255) NOT NULL,
+        url VARCHAR(255) NOT NULL,
+        provider VARCHAR(255) NOT NULL DEFAULT('UNKNOWN'),
+        cached BOOLEAN NOT NULL DEFAULT 0,
+        downloads INT NOT NULL DEFAULT 0,
+        PRIMARY KEY (id)
     )`).then((result) => {
         if (result.warningCount == 0) {
             console.log("Created table \"music.songs\".");
+        }
+    });
+
+    await query(`CREATE TABLE IF NOT EXISTS music.converts (
+        id INT NOT NULL UNIQUE AUTO_INCREMENT,
+        sid INT NOT NULL,
+        uid INT NOT NULL,
+        title VARCHAR(255),
+        artist VARCHAR(255),
+        PRIMARY KEY (id),
+        FOREIGN KEY (sid) REFERENCES music.songs(id) ON DELETE CASCADE,
+        FOREIGN KEY (uid) REFERENCES users.users(id) ON DELETE CASCADE
+    )`).then((result) => {
+        if (result.warningCount == 0) {
+            console.log("Created table \"music.converts\".");
         }
     });
 
@@ -367,33 +381,52 @@ async function getLatestUsernameChange(id) {
     return await query("SELECT * FROM users.usernameChanges WHERE uid=? ORDER BY Timestamp DESC LIMIT 1", [id]);
 }
 
-//MUST RETURN INSERT ID INSTEAD
-// Add a song with given title and artist
-async function addSong(ytid, title, artist, uid) {
-    return await query("INSERT INTO music.songs (ytid, title, artist, uid) VALUES (?, ?, ?, ?)", [ytid, title, artist, uid]);
+//add pointer to certain song not related to a user
+async function addSong(filename, url, provider, cached=false) {
+    return await query("INSERT INTO music.songs (filename, url, provider, cached) VALUES (?, ?, ?, ?)", [filename, url, provider, cached]);
 }
 
-// Remove a song with given id
-async function removeSong(id) {
-    return await query("DELETE FROM music.songs WHERE id=?", [id]);
+async function getSongByName(filename) {
+    const result = await query("SELECT * FROM music.songs WHERE filename=?", [filename]);
+    if (result.length) {
+        return result[0];
+    } else {
+        return null;
+    }
+}
+// Get song
+async function getSong(sid) {
+    let result = await query("SELECT * FROM music.songs WHERE id=?", [sid]);
+    if (result.length) {
+        return result[0];
+    } else {
+        return null;
+    }
+}
+
+//add convert from user pointing to song
+async function addConvert(sid, uid, title, artist) {
+    return await query("INSERT INTO music.converts (sid, uid, title, artist) VALUES (?, ?, ?, ?)", [sid, uid, title, artist]);
+}
+
+// Remove a convert with given id
+async function removeConvert(id) {
+    return await query("DELETE FROM music.converts WHERE id=?", [id]);
 }
 
 // Set the title of the song with given id to the given title
 async function setTitle(id, title) {
-    return await query("UPDATE music.songs SET title=? WHERE id=?", [title, id]);
+    return await query("UPDATE music.converts SET title=? WHERE id=?", [title, id]);
 }
 
 // Set the title of the song with given id to the given title
 async function setArtist(id, artist) {
-    return await query("UPDATE music.songs SET artist=? WHERE id=?", [artist, id]);
+    return await query("UPDATE music.converts SET artist=? WHERE id=?", [artist, id]);
 }
 
 //MUST RETURN INSERT ID INSTEAD
 // Add a playlist with given name for the given user
-async function addPlaylist(name, uid) {
-    if (name === null) {
-        name = "New Playlist";
-    }
+async function addPlaylist(uid, name="New Playlist") {
     return await query("INSERT INTO music.playlists (name, uid) VALUES (?, ?)", [name, uid]);
 }
 
@@ -445,16 +478,6 @@ async function getUserOfSong(sid) {
     let result = await query("SELECT uid FROM music.songs WHERE id=?", [sid]);
     if (result.length) {
         return result[0].uid;
-    } else {
-        return null;
-    }
-}
-
-// Get song
-async function getSong(sid) {
-    let result = await query("SELECT * FROM music.songs WHERE id=?", [sid]);
-    if (result.length) {
-        return result[0];
     } else {
         return null;
     }
@@ -717,7 +740,10 @@ module.exports = {
     getUsernameChangeHistory,
     getLatestUsernameChange,
     addSong,
-    removeSong,
+    getSong,
+    getSongByName,
+    addConvert,
+    removeConvert,
     setTitle,
     setArtist,
     addPlaylist,
@@ -726,7 +752,6 @@ module.exports = {
     removeSongFromPlaylist,
     getSongsOf,
     getUserOfSong,
-    getSong,
     getPlaylistsOf,
     getPlaylistsOfSmart,
     getUserOfPlaylist,
