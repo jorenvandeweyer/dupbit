@@ -1,8 +1,9 @@
 const fs = require("fs");
+const NodeID3 = require("node-id3");
 const db = require("../util/Database");
 const downloader = require("./downloader");
 
-async function download(url, hash) {
+async function downloadFromUrl(url, hash) {
     const download = await downloader(url);
     fs.renameSync(`data/music/${download.info}`, `data/music/${hash}.mp3`);
 }
@@ -21,7 +22,7 @@ async function convert(uid, provider, url, title, artist) {
     let result = await db.getSongByName(data.hash);
 
     if (!result) {
-        download(data.url, data.hash);
+        downloadFromUrl(data.url, data.hash);
         await db.addSong(data.hash, url, provider, true);
         result = await db.getSongByName(data.hash);
     }
@@ -33,9 +34,33 @@ async function convert(uid, provider, url, title, artist) {
 
 async function stream(song) {
     if (!fs.existsSync(`data/music/${song.filename}.mp3`)) {
-        await download(song.url, song.filename);
+        await downloadFromUrl(song.url, song.filename);
     }
     return fs.readFileSync(`data/music/${song.filename}.mp3`);
+}
+
+async function download(song) {
+    const file = await stream(song);
+    const name = createFilename(song.title, song.artist, song.url);
+    const image = await requestAlbumCover(song);
+    const tags = {
+        title: song.title,
+        artist: song.artist,
+        image: {
+            mime: "jpeg",
+            type: {
+                id: 3,
+                name: "front cover"
+            },
+            description: "thumbnail",
+            imageBuffer: image,
+        },
+    };
+
+    return {
+        name,
+        file: NodeID3.update(tags, file),
+    };
 }
 
 function createFilename(title, artist, url) {
@@ -46,8 +71,21 @@ function createFilename(title, artist, url) {
     return url;
 }
 
+function requestAlbumCover(song) {
+    let cover;
+
+    if (fs.existsSync(`${__dirname}/cover/${song.provider.toLowerCase()}.js`)) {
+        cover = require(`./cover/${song.provider.toLowerCase()}`);
+    } else {
+        cover = require("./cover/unknown");
+    }
+
+    return cover(song);
+}
+
 module.exports = {
     convert,
     stream,
+    download,
     createFilename,
 };
