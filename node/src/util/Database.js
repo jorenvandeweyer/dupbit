@@ -409,6 +409,15 @@ async function addConvert(sid, uid, title, artist) {
     return await query("INSERT INTO music.converts (sid, uid, title, artist) VALUES (?, ?, ?, ?)", [sid, uid, title, artist]);
 }
 
+async function getConvert(id) {
+    const result = await query("SELECT converts.id, songs.id AS sid, songs.filename, songs.url, songs.provider, converts.title, converts.artist, converts.uid FROM music.converts INNER JOIN music.songs where converts.sid = songs.id AND converts.id = ?", [id]);
+    if (result.length) {
+        return result[0];
+    } else {
+        return null;
+    }
+}
+
 // Remove a convert with given id
 async function removeConvert(id) {
     return await query("DELETE FROM music.converts WHERE id=?", [id]);
@@ -743,6 +752,7 @@ module.exports = {
     getSong,
     getSongByName,
     addConvert,
+    getConvert,
     removeConvert,
     setTitle,
     setArtist,
