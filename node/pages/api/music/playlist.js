@@ -15,8 +15,8 @@ module.exports = express.Router()
     .get("*", async (req, res) => {
         const data = req.query;
 
-        if (data.playlist) {
-            const songs = await db.getSongsSmart(data.playlist, req.auth.id);
+        if (data.id) {
+            const songs = await db.getSongsSmart(data.id, req.auth.id);
 
             res.json({
                 success: true,
@@ -32,13 +32,27 @@ module.exports = express.Router()
 
     })
     .post("*", async (req, res) => {
+        const data = req.body;
 
+        if (data.id && data.name) {
+            const uid = await db.getUserOfPlaylist(data.id);
+            if (uid === req.auth.id) {
+                await db.setNamePlaylist(data.id, data.name);
+                return res.json({
+                    success: true,
+                });
+            }
+        }
+
+        res.status(405).json({
+            success: false,
+        });
     })
     .put("*", async (req, res) => {
         const data = req.body;
 
         if (data.name) {
-            const result = await db.addPlaylist(data.name, req.auth.id);
+            const result = await db.addPlaylist(req.auth.id, data.name);
             return res.json({
                 success: true,
                 data: {
@@ -55,10 +69,10 @@ module.exports = express.Router()
     .delete("*", async (req, res) => {
         const data = req.body;
 
-        if (data.pid) {
-            const uid = await db.getUserOfPlaylist(data.pid);
+        if (data.id) {
+            const uid = await db.getUserOfPlaylist(data.id);
             if (uid === req.auth.id) {
-                await db.removePlaylist(data.pid);
+                await db.removePlaylist(data.id);
                 return res.json({
                     success: true,
                 });

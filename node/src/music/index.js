@@ -19,15 +19,15 @@ async function convert(uid, provider, url, title, artist) {
 
     const data = extractor(url);
 
-    let result = await db.getSongByName(data.hash);
+    let result = await db.getSongRawByName(data.hash);
 
     if (!result) {
         downloadFromUrl(data.url, data.hash);
-        await db.addSong(data.hash, url, provider, true);
-        result = await db.getSongByName(data.hash);
+        await db.addSongRaw(data.hash, url, provider, true);
+        result = await db.getSongRawByName(data.hash);
     }
 
-    const convert = await db.addConvert(result.id, uid, title, artist);
+    const convert = await db.addSong(result.id, uid, title, artist);
 
     return convert.insertId;
 }

@@ -17,7 +17,7 @@ module.exports = express.Router()
         const data = req.query;
 
         if (data.id) {
-            const song = await db.getConvert(data.id);
+            const song = await db.getSong(data.id);
             if (song.uid === req.auth.id) {
                 if ("download" in data) {
                     const download = await Music.download(song);
@@ -37,10 +37,12 @@ module.exports = express.Router()
                 });
             }
         } else {
-            const songs = await db.getSongsSmart(null, req.auth.id);
+            const songs = await db.getSongsOf(req.auth.id);
+            const playlistInfo = await db.getSongsInPlaylistsOf(req.auth.id);
             res.json({
                 success: true,
                 songs,
+                playlistInfo,
             });
         }
     })
@@ -91,30 +93,9 @@ module.exports = express.Router()
         });
     })
     .put("*", async (req, res) => {
-        const data = req.body;
-
-        if (data.url && data.title && data.artist) {
-            let result;
-
-            if (data.url.includes("youtube.com/watch?v=")) {
-                result = await db.addSong(data.url.split("watch?v=")[1].split("&list")[0], data.title, data.artist, data.uid);
-            } else {
-                result = await db.addSong(data.url, data.title, data.artist, data.uid);
-            }
-
-            return res.json({
-                success: true,
-                data: {
-                    id: result.insertId,
-                    url: data.url,
-                    title: data.title,
-                    artist: data.artist,
-                },
-            });
-        }
-
         res.status(405).json({
-            success: false
+            success: false,
+            reason: "use /api/music/convert end point",
         });
     })
     .delete("*", async (req, res) => {

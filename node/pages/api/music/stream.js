@@ -6,7 +6,7 @@ module.exports = async (req, res) => {
 
     if (req.auth.isLoggedIn && req.auth.level >= 2) {
         if (data.id) {
-            const song = await db.getConvert(data.id);
+            const song = await db.getSong(data.id);
             if (song && song.uid === req.auth.id) {
                 const stream = await Music.stream(song);
                 res.set("Content-dispotition", "filename=\"stream.mp3\"");

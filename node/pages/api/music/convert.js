@@ -1,7 +1,7 @@
 const { convert, createFilename } = require("../../../src/music/index");
 
 module.exports = async (req, res) => {
-    const data = req.body;
+    const data = req.query;
 
     if (req.auth.isLoggedIn && data.url) {
 

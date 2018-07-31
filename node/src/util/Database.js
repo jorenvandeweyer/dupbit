@@ -89,7 +89,7 @@ async function checkTables() {
     });
 
 
-    await query(`CREATE TABLE IF NOT EXISTS music.songs (
+    await query(`CREATE TABLE IF NOT EXISTS music.songs_raw (
         id INT NOT NULL UNIQUE AUTO_INCREMENT,
         filename VARCHAR(255) NOT NULL,
         url VARCHAR(255) NOT NULL,
@@ -99,22 +99,22 @@ async function checkTables() {
         PRIMARY KEY (id)
     )`).then((result) => {
         if (result.warningCount == 0) {
-            console.log("Created table \"music.songs\".");
+            console.log("Created table \"music.songs_raw\".");
         }
     });
 
-    await query(`CREATE TABLE IF NOT EXISTS music.converts (
+    await query(`CREATE TABLE IF NOT EXISTS music.songs (
         id INT NOT NULL UNIQUE AUTO_INCREMENT,
-        sid INT NOT NULL,
+        srid INT NOT NULL,
         uid INT NOT NULL,
         title VARCHAR(255),
         artist VARCHAR(255),
         PRIMARY KEY (id),
-        FOREIGN KEY (sid) REFERENCES music.songs(id) ON DELETE CASCADE,
+        FOREIGN KEY (srid) REFERENCES music.songs_raw(id) ON DELETE CASCADE,
         FOREIGN KEY (uid) REFERENCES users.users(id) ON DELETE CASCADE
     )`).then((result) => {
         if (result.warningCount == 0) {
-            console.log("Created table \"music.converts\".");
+            console.log("Created table \"music.songs\".");
         }
     });
 
@@ -133,8 +133,8 @@ async function checkTables() {
     await query(`CREATE TABLE IF NOT EXISTS music.songInPlaylist (
 		sid INT NOT NULL,
 		pid INT NOT NULL,
-		FOREIGN KEY (sid) REFERENCES music.converts(ID) ON DELETE CASCADE,
-		FOREIGN KEY (pid) REFERENCES music.playlists(ID) ON DELETE CASCADE
+		FOREIGN KEY (sid) REFERENCES music.songs(id) ON DELETE CASCADE,
+		FOREIGN KEY (pid) REFERENCES music.playlists(id) ON DELETE CASCADE
     )`).then((result) => {
         if (result.warningCount == 0) {
             console.log("Created table \"music.songInPlaylist\".");
@@ -382,12 +382,12 @@ async function getLatestUsernameChange(id) {
 }
 
 //add pointer to certain song not related to a user
-async function addSong(filename, url, provider, cached=false) {
-    return await query("INSERT INTO music.songs (filename, url, provider, cached) VALUES (?, ?, ?, ?)", [filename, url, provider, cached]);
+async function addSongRaw(filename, url, provider, cached=false) {
+    return await query("INSERT INTO music.songs_raw (filename, url, provider, cached) VALUES (?, ?, ?, ?)", [filename, url, provider, cached]);
 }
 
-async function getSongByName(filename) {
-    const result = await query("SELECT * FROM music.songs WHERE filename=?", [filename]);
+async function getSongRawByName(filename) {
+    const result = await query("SELECT * FROM music.songs_raw WHERE filename=?", [filename]);
     if (result.length) {
         return result[0];
     } else {
@@ -395,8 +395,8 @@ async function getSongByName(filename) {
     }
 }
 // Get song
-async function getSong(sid) {
-    let result = await query("SELECT * FROM music.songs WHERE id=?", [sid]);
+async function getSongRaw(srid) {
+    let result = await query("SELECT * FROM music.songs_raw WHERE id=?", [srid]);
     if (result.length) {
         return result[0];
     } else {
@@ -405,12 +405,12 @@ async function getSong(sid) {
 }
 
 //add convert from user pointing to song
-async function addConvert(sid, uid, title, artist) {
-    return await query("INSERT INTO music.converts (sid, uid, title, artist) VALUES (?, ?, ?, ?)", [sid, uid, title, artist]);
+async function addSong(srid, uid, title, artist) {
+    return await query("INSERT INTO music.songs (srid, uid, title, artist) VALUES (?, ?, ?, ?)", [srid, uid, title, artist]);
 }
 
-async function getConvert(id) {
-    const result = await query("SELECT converts.id, songs.id AS sid, songs.filename, songs.url, songs.provider, converts.title, converts.artist, converts.uid FROM music.converts INNER JOIN music.songs where converts.sid = songs.id AND converts.id = ?", [id]);
+async function getSong(id) {
+    const result = await query("SELECT songs.id, songs_raw.id AS srid, songs_raw.filename, songs_raw.url, songs_raw.provider, songs.title, songs.artist, songs.uid FROM music.songs INNER JOIN music.songs_raw where songs.srid = songs_raw.id AND songs.id = ?", [id]);
     if (result.length) {
         return result[0];
     } else {
@@ -419,18 +419,18 @@ async function getConvert(id) {
 }
 
 // Remove a convert with given id
-async function removeConvert(id) {
-    return await query("DELETE FROM music.converts WHERE id=?", [id]);
+async function removeSong(id) {
+    return await query("DELETE FROM music.songs WHERE id=?", [id]);
 }
 
 // Set the title of the song with given id to the given title
 async function setTitle(id, title) {
-    return await query("UPDATE music.converts SET title=? WHERE id=?", [title, id]);
+    return await query("UPDATE music.songs SET title=? WHERE id=?", [title, id]);
 }
 
 // Set the title of the song with given id to the given title
 async function setArtist(id, artist) {
-    return await query("UPDATE music.converts SET artist=? WHERE id=?", [artist, id]);
+    return await query("UPDATE music.songs SET artist=? WHERE id=?", [artist, id]);
 }
 
 //MUST RETURN INSERT ID INSTEAD
@@ -439,6 +439,9 @@ async function addPlaylist(uid, name="New Playlist") {
     return await query("INSERT INTO music.playlists (name, uid) VALUES (?, ?)", [name, uid]);
 }
 
+async function setNamePlaylist(id, name) {
+    return await query("UPDATE music.playlists SET name=? WHERE id=?", [name, id]);
+}
 // Remove a playlist with given id
 async function removePlaylist(id) {
     return await query("DELETE FROM music.playlists WHERE id=?", [id]);
@@ -456,16 +459,16 @@ async function removeSongFromPlaylist(sid, pid) {
 
 // Get all songs of user with given id
 async function getSongsOf(uid) {
-    return await query("SELECT converts.id, songs.id AS sid, converts.uid, songs.url, songs.filename, converts.artist, converts.title, songs.cached, songs.provider FROM music.converts INNER JOIN music.songs WHERE converts.sid = songs.id AND uid=? ORDER BY artist, title", [uid]);
+    return await query("SELECT songs.id, songs_raw.id AS srid, songs.uid, songs_raw.url, songs_raw.filename, songs.artist, songs.title, songs_raw.cached, songs_raw.provider FROM music.songs INNER JOIN music.songs_raw WHERE songs.srid = songs_raw.id AND uid=?", [uid]);
 }
 
 // Get all songs in playlist with given id
 async function getSongsIn(pid) {
-    return await query("SELECT * FROM music.songInPlaylist INNER JOIN music.converts WHERE songInPlaylist.sid = converts.id AND songInPlaylist.pid=? ORDER BY artist, title", [pid]);
+    return await query("SELECT * FROM music.songInPlaylist INNER JOIN music.songs WHERE songInPlaylist.sid = songs.id AND songInPlaylist.pid=? ORDER BY artist, title", [pid]);
 }
 
 async function getSongsInPlaylistsOf(uid) {
-    return await query("SELECT converts.id, playlists.id AS playlist FROM music.converts INNER JOIN music.playlists, music.songInPlaylist WHERE songInPlaylist.pid = playlists.id AND songInPlaylist.sid = converts.id AND converts.uid = ?", [uid]);
+    return await query("SELECT songs.id AS sid, playlists.id AS pid, playlists.name FROM music.songs INNER JOIN music.playlists, music.songInPlaylist WHERE songInPlaylist.pid = playlists.id AND songInPlaylist.sid = songs.id AND songs.uid = ?", [uid]);
 }
 
 // Get all songs decided by playlist and userid
@@ -503,7 +506,7 @@ async function getPlaylistsOf(uid) {
 
 // Get owner of the playlist with given id
 async function getUserOfPlaylist(pid) {
-    let result = await query("SELECT uid FROM music.playlist WHERE id=?", [pid]);
+    let result = await query("SELECT uid FROM music.playlists WHERE id=?", [pid]);
     if (result.length) {
         return result[0].uid;
     } else {
@@ -752,15 +755,16 @@ module.exports = {
     addUsernameChange,
     getUsernameChangeHistory,
     getLatestUsernameChange,
+    addSongRaw,
+    getSongRaw,
+    getSongRawByName,
     addSong,
     getSong,
-    getSongByName,
-    addConvert,
-    getConvert,
-    removeConvert,
+    removeSong,
     setTitle,
     setArtist,
     addPlaylist,
+    setNamePlaylist,
     removePlaylist,
     addSongToPlaylist,
     removeSongFromPlaylist,
