@@ -2,20 +2,6 @@
 <html lang="en">
 	<head>
 		<%- include ../../components/head %>
-		<script>
-		function editSong(sid, artist, title, pidList) {
-			$("#editSongModal #sid").val(sid);
-			$("#editSongModal #artist").val(artist);
-			$("#editSongModal #title").val(title);
-			$("#editSongModal input[type=checkbox]").prop('checked', false);
-			for (pid of pidList) {
-				$("#editSongModal #playlist"+pid).prop('checked', true);
-			}
-		}
-		function removeSong(sid) {
-			$("#removeSongModal #sid").val(sid);
-		}
-		</script>
 	</head>
 	<body>
 		<%- include ../../components/header %>
@@ -23,13 +9,9 @@
 			<div class="card">
 				<div class="card-header"><b>Music</b></div>
 				<div class="card-body">
-					<div class='btn-group' role="group">
-    					<a class='btn btn-light' href='music'><i class='fa fa-music'></i> All</a>
-                        <% var playlists = pageData.playlists %>
-                        <% for (let playlist in playlists) { %>
-                            <%- "<a class='btn btn-light' href='/projects/music?playlist=" + playlists[playlist]["id"] + "'><i class='fa fa-music'></i> " + playlists[playlist]['name'] + "</a>"%>
-                        <% } %>
-    	               <a class="btn btn-light" data-toggle="modal" data-target="#editPlaylistModal"><i class='fa fa-edit'></i></a>
+					<div id="playlist_buttons" class='btn-group' role="group">
+                        <a class='btn btn-light' href='music'><i class='fa fa-music'></i> All</a>
+                        <a class="btn btn-light" data-toggle="modal" data-target="#editPlaylistModal"><i class='fa fa-edit'></i></a>
 					</div>
 					<div class="table-responsive">
 						<table class='table table-hover table-condensed table-responsive'>
@@ -45,23 +27,7 @@
 									<th>Remove</th>
 								</tr>
 							</thead>
-							<tbody>
-                                <% var songs = pageData.songs %>
-                                <% for (let song in songs) { %>
-                                    <%- "<tr>" %>
-                                        <%- "<td>" %>
-                                            <%- "<a class='playButton btn btn-link btn-xs' data-ytid='" + songs[song]['ytid'] + "'><i class='fa fa-play'></i></a>" %>
-                                            <%- "<a class='pauseButton btn btn-link btn-xs' style='display: none;'><i class='fa fa-pause'></i></a>" %>
-                                        <%- "</td>" %>
-                                        <%- "<td>" + songs[song]['artist'] + "</td>" %>
-                                        <%- "<td>" + songs[song]['title'] + "</td>" %>
-                                        <%- "<td>" + songs[song].playlistNames.join(",") + "</td>" %>
-                                        <%- "<td><a class='btn btn-success btn-xs' href='/api/music/downloadSong?id=" + songs[song]['id'] + "'><i class='fa fa-download'></i> Download </td>" %>
-                                        <%- "<td><a class='btn btn-link btn-xs' href='https://www.youtube.com/watch?v=" + songs[song]['ytid'] + "'><i class='fa fa-youtube-play' taget='_blank'></i>" + songs[song]['ytid'] + "</a></td>" %>
-                                        <%- "<td><a class='btn btn-info btn-xs' data-toggle='modal' data-target='#editSongModal' onclick='" + `editSong(${songs[song]['id']}, "${songs[song]['artist']}","${songs[song]['title']}",[${songs[song].playlistIds.join(",")}])` + "'><i class='fa fa-edit'></i> Edit </a></td>" %>
-                                        <%- "<td><a class='btn btn-danger btn-xs' data-toggle='modal' data-target='#removeSongModal' onclick='removeSong(" + songs[song]['id'] + ")'><i class='fa fa-trash'></i> Remove </a></td>" %>
-                                    <%- "</tr>" %>
-                                <% } %>
+							<tbody id="allSongs">
 							</tbody>
 						</table>
 					</div>
@@ -89,17 +55,7 @@
 										<th>Remove</th>
 									</tr>
 								</thead>
-								<tbody>
-                                <% if (playlists && playlists.length) { %>
-                                    <% for (let playlist in playlists) { %>
-                                        <%- `<tr class='playlist' id='${playlists[playlist]["id"]}'>` %>
-                                            <%- `<td><span>${playlists[playlist]["name"]}</span><input type='text' style='display: none;' value='${playlists[playlist]["name"]}'/></td>` %>
-                                            <%- `<td>${playlists[playlist].numberOfSongs} songs </td>`%>
-                                            <%- `<td><a class='btn btn-info btn-xs'><i class='fa fa-edit'></i> Edit </a><a class='btn btn-success btn-xs' style='display: none;'><i class='fa fa-save'></i> Save </a></td>`%>
-                                            <%- `<td><a class='btn btn-danger btn-xs'><i class='fa fa-trash'></i> Remove </a></td>` %>
-                                        <%- "<tr>" %>
-                                    <% } %>
-                                <% } %>
+								<tbody id="editPlaylistModal">
 								</tbody>
 							</table>
 						</div>
@@ -127,7 +83,6 @@
 		</div>
 
 
-
 		<div id="editSongModal" class="modal fade" role="dialog">
 			<div class="modal-dialog">
 				<div class="modal-content">
@@ -153,23 +108,7 @@
 									<input id="title" name="title" type="text" class="form-control" placeholder="Title"/>
 								</div>
 							</div>
-							<div class="form-group">
-                                <% if (playlists && playlists.length) { %>
-                                    <%-
-                                    `<div class="panel panel-default">
-    									<div class="panel-heading"><b>Playlists</b></div>
-    									<div class="panel-body">`
-                                    %>
-                                    <% for (let playlist in playlists) { %>
-                                        <%- "<div class='checkbox'>" %>
-                                        <%- `<label><input id='${playlists[playlist]["id"]}' type='checkbox' name='pid' value='${playlists[playlist]["id"]}'/>${playlists[playlist]["name"]}</label>`%>
-                                        <%- "</div>" %>
-                                    <% } %>
-                                    <%-
-    									`</div>
-    								</div>`
-                                    %>
-                                <% } %>
+							<div id="editSongModalContent" class="form-group">
 							</div>
 						</div>
 						<div class="modal-footer">
@@ -204,28 +143,102 @@
 		</div>
         <%- include ../../components/footer %>
         <script>
-        $(".playlist").click(function() {
-            $(this).find("span").hide();
-            $(this).find("input").show();
-            $(this).find(".btn-info").hide();
-            $(this).find(".btn-success").show();
-        })
-        </script>
-        <script>
-        $(".playButton").click(function() {
-            var ytid = $(this).attr("data-ytid");
-            $("#audio").attr("src", "/api/music/playSong?ytid="+ytid);
-            $("#audio")[0].play();
-            $(".pauseButton").hide();
-            $(".playButton").show();
-            $(this).hide();
-            $(this).next().show();
-        });
-        $(".pauseButton").click(function() {
-            $("#audio")[0].pause();
-            $(".pauseButton").hide();
-            $(".playButton").show();
-        });
+
+        async function init() {
+            const playlists = await Request.GET("/api/music/playlist").then(data => data.playlists);
+            const songs = await Request.GET("/api/music/song").then(data => data.songs);
+
+            if (playlists && playlists.length) {
+                document.getElementById("editSongModalContent").innerHTML += `<div class="panel panel-default">
+                    <div class="panel-heading"><b>Playlists</b></div>
+                    <div class="panel-body">`;
+            }
+
+            for (let i = 0; i < playlists.length; i++) {
+                const playlist = playlists[i];
+                document.getElementById("playlist_buttons").innerHTML += createPlaylistButton(playlist);
+                document.getElementById("editPlaylistModal").innerHTML += createEditPlaylists(playlist);
+                document.getElementById("editSongModalContent").innerHTML += createEditSongModal(playlist);
+            }
+
+            for (let i = 0; i < songs.length; i++) {
+                const song = songs[i];
+                document.getElementById("allSongs").innerHTML += createSongEntry(song);
+            }
+
+            $(".playlist").click(function() {
+                $(this).find("span").hide();
+                $(this).find("input").show();
+                $(this).find(".btn-info").hide();
+                $(this).find(".btn-success").show();
+            })
+
+            $(".playButton").click(function() {
+                const id = $(this).attr("data-id");
+                console.log(id);
+                $("#audio").attr("src", "/api/music/stream?id="+id);
+                $("#audio")[0].play();
+                $(".pauseButton").hide();
+                $(".playButton").show();
+                $(this).hide();
+                $(this).next().show();
+            });
+            $(".pauseButton").click(function() {
+                $("#audio")[0].pause();
+                $(".pauseButton").hide();
+                $(".playButton").show();
+            });
+        }
+
+        function createPlaylistButton(playlist) {
+            return `<a class='btn btn-light' onclick='openPlaylist(${playlist.id})'><i class='fa fa-music'></i> ${playlist.name} </a>`;
+        }
+
+        function createSongEntry(song) {
+            return `<tr id="sid_${song.id}">
+                <td>
+                    <a class='playButton btn btn-link btn-xs' data-id='${song.id}'><i class='fa fa-play'></i></a>
+                    <a class='pauseButton btn btn-link btn-xs' style='display: none;'><i class='fa fa-pause'></i></a>
+                </td>
+                <td>${song.artist}</td>
+                <td>${song.title}</td>
+                <td>${song.playlistNames.join(", ")}</td>
+                <td><a class='btn btn-success btn-xs' href="/api/music/song?id=${song.id}&download"><i class='fa fa-download'></i> Download </a></td>
+                <td><a class='btn btn-link btn-xs' href='${song.url}' taget='_blank'><i class='fab fa-youtube' taget='_blank'></i>${song.filename}</a></td>
+                <td><a class='btn btn-info btn-xs' data-toggle='modal' data-target='#editSongModal' onclick='editSong(${song.id}, "${song.artist}", "${song.title}", [${song.playlistIds.join(",")}])'><i class='fa fa-edit'></i> Edit </a></td>
+                <td><a class='btn btn-danger btn-xs' data-toggle='modal' data-target='#removeSongModal' onclick='removeSong(${song.id})'><i class='fa fa-trash'></i> Remove </a></td>
+            </tr>`;
+        }
+
+        function createEditPlaylists(playlist) {
+            return `<tr class='playlist' id='pid_${playlist.id}'>
+                <td><span>${playlist.name}</span><input type='text' style='display:none;' value='${playlist.name}'/></td>
+                <td>${playlist.numberOfSongs} songs </td>
+                <td><a class='btn btn-info btn-xs'><i class='fa fa-edit'></i> Edit </a><a class='btn btn-success btn-xs' style='display: none;'><i class='fa fa-save'></i> Save </a></td>
+                <td><a class='btn btn-danger btn-xs'><i class='fa fa-trash'></i> Remove </a></td>
+            </tr>`;
+        }
+
+        function createEditSongModal(playlist) {
+            return `<div class='checkbox'>
+                <label><input id='pid_${playlist.id}' type='checkbox' name='pid' value='${playlist.id}'/>${playlist.name}</label>
+            </div>`;
+        }
+
+        init();
+
+        function editSong(sid, artist, title, pidList) {
+			$("#editSongModal #sid").val(sid);
+			$("#editSongModal #artist").val(artist);
+			$("#editSongModal #title").val(title);
+			$("#editSongModal input[type=checkbox]").prop('checked', false);
+			for (pid of pidList) {
+				$(`#editSongModal #pid_${pid}`).prop('checked', true);
+			}
+		}
+		function removeSong(sid) {
+			$("#removeSongModal #sid").val(sid);
+		}
         </script>
 	</body>
 </html>

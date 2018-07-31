@@ -20,22 +20,18 @@ module.exports = express.Router()
 
             res.json({
                 success: true,
-                data: {
-                    songs,
-                },
+                songs,
             });
         } else {
             const playlists = await db.getPlaylistsOfSmart(req.auth.id);
             res.json({
                 success: true,
-                data: {
-                    playlists,
-                },
+                playlists,
             });
         }
 
     })
-    .post("*", ascyn (req, res) => {
+    .post("*", async (req, res) => {
 
     })
     .put("*", async (req, res) => {

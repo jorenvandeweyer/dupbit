@@ -133,7 +133,7 @@ async function checkTables() {
     await query(`CREATE TABLE IF NOT EXISTS music.songInPlaylist (
 		sid INT NOT NULL,
 		pid INT NOT NULL,
-		FOREIGN KEY (sid) REFERENCES music.songs(ID) ON DELETE CASCADE,
+		FOREIGN KEY (sid) REFERENCES music.converts(ID) ON DELETE CASCADE,
 		FOREIGN KEY (pid) REFERENCES music.playlists(ID) ON DELETE CASCADE
     )`).then((result) => {
         if (result.warningCount == 0) {
@@ -456,12 +456,16 @@ async function removeSongFromPlaylist(sid, pid) {
 
 // Get all songs of user with given id
 async function getSongsOf(uid) {
-    return await query("SELECT * FROM music.songs WHERE uid=? ORDER BY artist, title", [uid]);
+    return await query("SELECT converts.id, songs.id AS sid, converts.uid, songs.url, songs.filename, converts.artist, converts.title, songs.cached, songs.provider FROM music.converts INNER JOIN music.songs WHERE converts.sid = songs.id AND uid=? ORDER BY artist, title", [uid]);
 }
 
 // Get all songs in playlist with given id
 async function getSongsIn(pid) {
-    return await query("SELECT * FROM music.songInPlaylist JOIN music.songs WHERE sid = id AND pid=? ORDER BY artist, title", [pid]);
+    return await query("SELECT * FROM music.songInPlaylist INNER JOIN music.converts WHERE songInPlaylist.sid = converts.id AND songInPlaylist.pid=? ORDER BY artist, title", [pid]);
+}
+
+async function getSongsInPlaylistsOf(uid) {
+    return await query("SELECT converts.id, playlists.id AS playlist FROM music.converts INNER JOIN music.playlists, music.songInPlaylist WHERE songInPlaylist.pid = playlists.id AND songInPlaylist.sid = converts.id AND converts.uid = ?", [uid]);
 }
 
 // Get all songs decided by playlist and userid
@@ -767,6 +771,7 @@ module.exports = {
     getUserOfPlaylist,
     getPlaylistsOfSong,
     getSongsIn,
+    getSongsInPlaylistsOf,
     getSongsSmart,
     filename,
     recoverAccount,

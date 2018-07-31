@@ -75,10 +75,6 @@ module.exports = {
         currentPage: "/projects/music",
         requireLogin: true,
         requireLevel: 2,
-        pageData: {
-            "playlists": "Database.getPlaylistsOfSmart(this.session.id)",
-            "songs": "Database.getSongsSmart(this.query.playlist, this.session.id)",
-        },
     },
     "/projects/connect/index": {
         title: "Dupbit - Connect",

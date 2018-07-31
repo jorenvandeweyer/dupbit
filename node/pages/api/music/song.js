@@ -16,16 +16,31 @@ module.exports = express.Router()
     .get("*", async (req, res) => {
         const data = req.query;
 
-        const song = await db.getConvert(data.id);
-        if (song.uid === req.auth.id) {
-            const download = await Music.download(song);
-            res.set("Content-disposition", `attachment; filename=${download.name}.mp3`);
-            res.set("Content-Type", "audio/mpeg");
-            res.send(download.file);
+        if (data.id) {
+            const song = await db.getConvert(data.id);
+            if (song.uid === req.auth.id) {
+                if ("download" in data) {
+                    const download = await Music.download(song);
+                    res.set("Content-disposition", `attachment; filename=${download.name}.mp3`);
+                    res.set("Content-Type", "audio/mpeg");
+                    res.send(download.file);
+                } else {
+                    res.json({
+                        success: true,
+                        song,
+                    });
+                }
+            } else {
+                res.status(405).json({
+                    success: false,
+                    reason: "song does not exists",
+                });
+            }
         } else {
-            res.status(405).json({
-                success: false,
-                reason: "song does not exists",
+            const songs = await db.getSongsSmart(null, req.auth.id);
+            res.json({
+                success: true,
+                songs,
             });
         }
     })
