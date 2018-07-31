@@ -261,6 +261,8 @@
                     name,
                 });
                 this.playlists[id].edit(name);
+                songs.playlistInfo.filter(entry => entry.pid === id).map(entry => entry.name = name);
+                songs.updatePlaylistNames();
             }
 
             toggleEdit(id) {
@@ -358,11 +360,12 @@
                     delete: function() {
                         this.element.remove();
                     },
-                    edit: function(artist, title, playlists) {
-                        this.element.children[1].innerText = artist;
-                        this.element.children[2].innerText = title;
-                        this.element.children[3].innerText = playlists.join(", ");
-                    }
+                    update: function() {
+                        this.playlists = songs.playlistInfo.filter(info => info.sid === song.id);
+                        this.element.children[1].innerText = this.artist;
+                        this.element.children[2].innerText = this.title;
+                        this.element.children[3].innerText = this.playlists.map(info => info.name).join(", ");
+                    },
                 }
             }
 
@@ -431,21 +434,33 @@
             }
 
             saveEdit(id) {
-                const artist = document.querySelector("#editSongModal #artist").value;
-                const title = document.querySelector("#editSongModal #title").value;
-                const playlists = [];
+                const song = this.songs[id];
+                song.artist = document.querySelector("#editSongModal #artist").value;
+                song.title = document.querySelector("#editSongModal #title").value;
 
+                const playlist_ids = [];
                 const checkboxes = document.querySelectorAll("#editSongModal input[type=checkbox]");
+                this.playlistInfo = this.playlistInfo.filter(entry => entry.sid !== id);
 
                 for (let i = 1; i < checkboxes.length; i++) {
                     const checkbox = checkboxes[i];
-                    if (checkbox.checked) playlists.push(checkbox.value);
+                    if (checkbox.checked) {
+                        playlist_ids.push(checkbox.value);
+                        this.playlistInfo.push({
+                            sid: id,
+                            pid: parseInt(checkbox.value),
+                            name: playlists.playlists[checkbox.value].name,
+                        });
+                    }
                 }
 
-                console.log({
-                    artist,
-                    title,
-                    playlists,
+                song.update();
+
+                Request.POST(this.apiEndpoint, {
+                    sid: id,
+                    artist: song.artist,
+                    title: song.title,
+                    pids: playlist_ids,
                 });
             }
 
@@ -453,6 +468,12 @@
                 confirmRemoval("Remove Song", `Are you sure you want to remove the song "${this.songs[id].artist} - ${this.songs[id].title}"?`, () => {
                     this.delete(id);
                 });
+            }
+
+            updatePlaylistNames() {
+                for (let key in this.songs) {
+                    this.songs[key].update();
+                }
             }
 
             _createSongEntry(song) {

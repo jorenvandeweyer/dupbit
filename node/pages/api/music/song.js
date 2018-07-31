@@ -52,38 +52,30 @@ module.exports = express.Router()
         if (data.sid) {
             const uid = await db.getUserOfSong(data.sid);
             if (uid === req.auth.id) {
-                if (data.artist) {
+                if (data.sid && data.artist && data.title && data.pids) {
                     await db.setArtist(data.sid, data.artist);
-                }
-
-                if (data.title) {
                     await db.setTitle(data.sid, data.title);
-                }
 
-                if (data.pid) {
                     const playlists = await db.getPlaylistsOf(req.auth.id);
 
                     for (let i = 0; i < playlists.length; i++) {
                         await db.removeSongFromPlaylist(data.sid, playlists[i].id);
                     }
-                    if (typeof data.pid === "object") {
-                        for (let i = 0; i < data.pid.length; i++) {
-                            await db.addSongToPlaylist(data.sid, data.pid[i]);
-                        }
-                    } else {
-                        await db.addSongToPlaylist(data.sid, data.pid);
+
+                    for (let i = 0; i < data.pids.length; i++) {
+                        await db.addSongToPlaylist(data.sid, data.pids[i]);
                     }
 
+                    return res.json({
+                        success: true,
+                        data: {
+                            sid: data.sid,
+                            artist: data.artist,
+                            title: data.title,
+                            pid: data.pid,
+                        },
+                    });
                 }
-                res.json({
-                    success: true,
-                    data: {
-                        sid: data.sid,
-                        artist: data.artist,
-                        title: data.title,
-                        pid: data.pid,
-                    },
-                });
             }
 
         }
