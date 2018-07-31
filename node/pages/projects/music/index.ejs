@@ -9,10 +9,15 @@
 			<div class="card">
 				<div class="card-header"><b>Music</b></div>
 				<div class="card-body">
-					<div id="playlist_buttons" class='btn-group' role="group">
-                        <a class='btn btn-light' href='music'><i class='fa fa-music'></i> All</a>
-                        <a class="btn btn-light" data-toggle="modal" data-target="#editPlaylistModal"><i class='fa fa-edit'></i></a>
-					</div>
+                    <div class="d-flex flex-row">
+    					<div id="playlist_buttons" class='btn-group' role="group">
+                            <a class='btn btn-light' href='music'><i class='fa fa-music'></i> All</a>
+                            <a class="btn btn-light" data-toggle="modal" data-target="#editPlaylistModal"><i class='fa fa-edit'></i></a>
+    					</div>
+                        <div class="btn-group ml-auto" role="group">
+                            <a class="btn btn-light" onclick="update()"><i class="fas fa-sync-alt"></i></a>
+                        </div>
+                    </div>
 					<div class="table-responsive">
 						<table class='table table-hover table-condensed table-responsive'>
 							<thead>
@@ -37,208 +42,451 @@
 
 		<audio id="audio"></audio>
 
-
 		<div id="editPlaylistModal" class="modal fade" role="dialog">
 			<div class="modal-dialog">
 				<div class="modal-content">
-						<div class="modal-header">
-                            <h4 class="modal-title">Edit playlist</h4>
-							<button type="button" class="close" data-dismiss="modal">&times;</button>
-						</div>
-						<div class="modal-body">
-							<table class='table table-hover table-condensed table-responsive'>
-								<thead>
-									<tr>
-										<th>Name</th>
-										<th>Content</th>
-										<th>Edit</th>
-										<th>Remove</th>
-									</tr>
-								</thead>
-								<tbody id="editPlaylistModal">
-								</tbody>
-							</table>
-						</div>
-					<form action = "/api/music/addPlaylist" method = "post">
-						<div class="modal-header">
-							<h4 class="modal-title">Add playlist</h4>
-						</div>
-						<div class="modal-body">
-							<div class="form-group">
-								<div class="input-group">
-                                    <div class="input-group-prepend">
-                                        <div class="input-group-text"><i class="fa fa-music"></i></div>
-                                    </div>
-									<input name="name" type="text" class="form-control" placeholder="New Playlist"/>
-								</div>
+					<div class="modal-header">
+                        <h4 class="modal-title">Edit playlist</h4>
+						<button type="button" class="close" data-dismiss="modal">&times;</button>
+					</div>
+					<div class="modal-body">
+						<table class='table table-hover table-condensed table-responsive'>
+							<thead>
+								<tr>
+									<th>Name</th>
+									<th>Content</th>
+									<th>Edit</th>
+									<th>Remove</th>
+								</tr>
+							</thead>
+							<tbody id="editPlaylistModalContent">
+							</tbody>
+						</table>
+					</div>
+					<div class="modal-header">
+						<h4 class="modal-title">Add playlist</h4>
+					</div>
+					<div class="modal-body">
+						<div class="form-group">
+							<div class="input-group">
+                                <div class="input-group-prepend">
+                                    <div class="input-group-text"><i class="fa fa-music"></i></div>
+                                </div>
+								<input id="new_playlist" name="name" type="text" class="form-control" placeholder="New Playlist"/>
 							</div>
 						</div>
-						<div class="modal-footer">
-							<button type="submit" class="btn btn-primary">Add</button>
-							<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-						</div>
-					</form>
+					</div>
+					<div class="modal-footer">
+						<button class="btn btn-primary" onclick="playlists.create()" data-dismiss="modal">Add</button>
+						<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+					</div>
 				</div>
 			</div>
 		</div>
-
 
 		<div id="editSongModal" class="modal fade" role="dialog">
 			<div class="modal-dialog">
 				<div class="modal-content">
-					<form action = "/api/music/editSong" method="post">
-						<div class="modal-header">
-                            <h4 class="modal-title">Edit song</h4>
-							<button type="button" class="close" data-dismiss="modal">&times;</button>
+					<div class="modal-header">
+                        <h4 class="modal-title">Edit song</h4>
+						<button type="button" class="close" data-dismiss="modal">&times;</button>
+					</div>
+					<div class="modal-body">
+						<div class="form-group">
+							<div class="input-group">
+                                <div class="input-group-prepend">
+                                    <div class="input-group-text"><i class="fa fa-headphones"></i></div>
+                                </div>
+								<input id="artist" name="artist" type="text" class="form-control" placeholder="Artist"/>
+							</div>
 						</div>
-						<div class="modal-body">
-							<div class="form-group">
-								<div class="input-group">
-                                    <div class="input-group-prepend">
-                                        <div class="input-group-text"><i class="fa fa-headphones"></i></div>
+						<div class="form-group">
+							<div class="input-group">
+                                <div class="input-group-prepend">
+                                    <div class="input-group-text"><i class="fa fa-music"></i></div>
+                                </div>
+								<input id="title" name="title" type="text" class="form-control" placeholder="Title"/>
+							</div>
+						</div>
+						<div class="form-group">
+                            <div class="panel panel-default">
+                                <div class="panel-heading"><b>Playlists</b></div>
+                                <div id="editSongModalContent" class="panel-body">
+                                    <div class='form-check disabled'>
+                                        <label class="form-check-label">
+                                            <input type='checkbox' disabled checked/> All
+                                        </label>
                                     </div>
-									<input id="artist" name="artist" type="text" class="form-control" placeholder="Artist"/>
-								</div>
-							</div>
-							<div class="form-group">
-								<div class="input-group">
-                                    <div class="input-group-prepend">
-                                        <div class="input-group-text"><i class="fa fa-music"></i></div>
-                                    </div>
-									<input id="title" name="title" type="text" class="form-control" placeholder="Title"/>
-								</div>
-							</div>
-							<div id="editSongModalContent" class="form-group">
-							</div>
+                                </div>
+                            </div>
 						</div>
-						<div class="modal-footer">
-							<input id="sid" name="sid" type="hidden"/>
-							<button class="btn btn-primary" type="submit">Save</button>
-							<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-						</div>
-					</form>
+					</div>
+					<div class="modal-footer">
+						<input id="sid" name="sid" type="hidden"/>
+						<button class="btn btn-primary" data-dismiss="modal">Save</button>
+						<button class="btn btn-default" data-dismiss="modal">Close</button>
+					</div>
 				</div>
 			</div>
 		</div>
 
-		<div id="removeSongModal" class="modal fade" role="dialog">
-			<div class="modal-dialog modal-sm">
-				<div class="modal-content">
-					<form action = "/api/music/removeSong" method="post">
-						<div class="modal-header">
-                            <h4 class="modal-title">Remove song</h4>
-							<button type="button" class="close" data-dismiss="modal">&times;</button>
-						</div>
-						<div class="modal-body">
-							<p>Are you sure you want to remove this song?</p>
-						</div>
-						<div class="modal-footer">
-							<input id="sid" name="sid" type="hidden"/>
-							<button class="btn btn-primary" type="submit">Remove</button>
-							<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-						</div>
-					</form>
-				</div>
-			</div>
-		</div>
+        <div id="confirmRemoval" class="modal fade" role="dialog">
+            <div class="modal-dialog modal-sm">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title"></h4>
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <p></p>
+                    </div>
+                    <div class="modal-footer">
+                        <input type="hidden"/>
+                        <button class="btn btn-danger" data-dismiss="modal"><i class="fa fa-trash"></i> Remove </button>
+                        <button class="btn btn-default" data-dismiss="modal"> Close </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <%- include ../../components/footer %>
+
         <script>
+        var playlists, songs;
 
-        async function init() {
-            const playlists = await Request.GET("/api/music/playlist").then(data => data.playlists);
-            const songs = await Request.GET("/api/music/song").then(data => data.songs);
+        function createElement(htmlString, element="div") {
+            const el = document.createElement(element);
+            el.innerHTML = htmlString.trim();
+            return el.firstChild;
+        }
 
-            if (playlists && playlists.length) {
-                document.getElementById("editSongModalContent").innerHTML += `<div class="panel panel-default">
-                    <div class="panel-heading"><b>Playlists</b></div>
-                    <div class="panel-body">`;
+        function removeElements(query) {
+            const nodes = document.querySelectorAll(query);
+
+            for (let i = 0; i < nodes.length; i++) {
+                nodes[i].remove();
+            }
+        }
+
+        function displayClass(c, show) {
+            const elements = document.getElementsByClassName(c);
+            for (let i = 0; i < elements.length; i++) {
+                elements[i].style.display = show ? "block" : "none";
+            }
+        }
+
+        function confirmRemoval(title, body, onclick) {
+            const el = document.getElementById("confirmRemoval");
+
+            el.querySelector("h4").innerText = title;
+            el.querySelector("p").innerText = body;
+            el.querySelector(".btn-danger").onclick = onclick;
+
+            $("#confirmRemoval").modal();
+        }
+
+        class Playlists {
+            constructor () {
+                this.playlists = {};
+                this.apiEndpoint = "/api/music/playlist";
+                this.update();
             }
 
-            for (let i = 0; i < playlists.length; i++) {
-                const playlist = playlists[i];
-                document.getElementById("playlist_buttons").innerHTML += createPlaylistButton(playlist);
-                document.getElementById("editPlaylistModal").innerHTML += createEditPlaylists(playlist);
-                document.getElementById("editSongModalContent").innerHTML += createEditSongModal(playlist);
+            update() {
+                this._request = Request.GET(this.apiEndpoint).then(data => {
+                    removeElements(".playlist_entries");
+
+                    const playlists = data.playlists;
+
+                    this.playlists = {};
+
+                    for (let i = 0; i < playlists.length; i++) {
+                        this.add(playlists[i]);
+                    }
+                });
             }
 
-            for (let i = 0; i < songs.length; i++) {
-                const song = songs[i];
-                document.getElementById("allSongs").innerHTML += createSongEntry(song);
+            add(playlist) {
+                const button = createElement(this._createPlaylistButton(playlist));
+                const edit = createElement(this._createEditPlaylist(playlist), "tbody");
+                const songModal = createElement(this._createEditSongModal(playlist));
+
+                const buttons = document.getElementById("playlist_buttons");
+
+                buttons.insertBefore(button, buttons.children[buttons.children.length - 1]);
+                document.getElementById("editPlaylistModalContent").appendChild(edit);
+                document.getElementById("editSongModalContent").appendChild(songModal);
+
+                this.playlists[playlist.id] = {
+                    id: playlist.id,
+                    name: playlist.name,
+                    elements: {
+                        button,
+                        edit,
+                        songModal,
+                    },
+                    delete: function () {
+                        this.elements.button.remove();
+                        this.elements.edit.remove();
+                        this.elements.songModal.remove();
+                    },
+                    edit: function (name) {
+                        this.elements.button.childNodes[1].nodeValue = ` ${name} `;
+                        this.elements.edit.querySelector("span").innerText = name;
+                        this.elements.edit.querySelector("input").value = name;
+                        this.elements.songModal.querySelector("label").childNodes[1].nodeValue = ` ${name} `;
+                    }
+                };
             }
 
-            $(".playlist").click(function() {
-                $(this).find("span").hide();
-                $(this).find("input").show();
-                $(this).find(".btn-info").hide();
-                $(this).find(".btn-success").show();
-            })
+            async create(name) {
+                const name = document.getElementById("new_playlist").value;
+                const playlist = await Request.PUT(this.apiEndpoint, {
+                    name,
+                });
+                this.add(playlist);
+            }
 
-            $(".playButton").click(function() {
-                const id = $(this).attr("data-id");
-                console.log(id);
-                $("#audio").attr("src", "/api/music/stream?id="+id);
-                $("#audio")[0].play();
-                $(".pauseButton").hide();
-                $(".playButton").show();
-                $(this).hide();
-                $(this).next().show();
+            async delete(id) {
+                await Request.DELETE(this.apiEndpoint, {
+                    id
+                });
+                this.playlists[id].delete();
+                delete this.playlists[id];
+            }
+
+            async edit(id, name) {
+                await Request.POST(this.apiEndpoint, {
+                    id,
+                    name,
+                });
+                this.playlists[id].edit(name);
+            }
+
+            toggleEdit(id) {
+                const el = this.playlists[id].elements.edit;
+                el.querySelector("span").style.display = "none";
+                el.querySelector("input").style.display = "block";
+                el.querySelector(".btn-info").style.display = "none";
+                el.querySelector(".btn-success").style.display = "block";
+            }
+
+            saveEdit(id) {
+                const el = this.playlists[id].elements.edit;
+                const name = el.querySelector("input").value;
+                this.playlists[id].name = name;
+
+                Request.POST(this.apiEndpoint, {
+                    id,
+                    name,
+                }).then(() => {
+                    this.edit(id, name);
+                    el.querySelector("span").style.display = "block";
+                    el.querySelector("input").style.display = "none";
+                    el.querySelector(".btn-info").style.display = "block";
+                    el.querySelector(".btn-success").style.display = "none";
+                });
+            }
+
+            toggleRemove(id) {
+                confirmRemoval("Remove Playlist", `Are you sure you want to remove the playlist "${this.playlists[id].name}"?`, () => {
+                    this.delete(id);
+                });
+            }
+
+            _createPlaylistButton(playlist) {
+                return `<a class='btn btn-light playlist_entries' onclick='songs.filterPlaylist(${playlist.id})'><i class='fa fa-music'></i> ${playlist.name} </a>`;
+            }
+
+            _createEditPlaylist(playlist) {
+                return `<tr class='playlist_entries'>
+                    <td><span>${playlist.name}</span><input type='text' style='display:none;width:120px;' value='${playlist.name}'/></td>
+                    <td> ${playlist.numberOfSongs} songs </td>
+                    <td>
+                        <a class='btn btn-info btn-xs' onclick='playlists.toggleEdit(${playlist.id})'><i class='fa fa-edit'></i> Edit </a>
+                        <a class='btn btn-success btn-xs' onclick='playlists.saveEdit(${playlist.id})' style='display: none;'><i class='fa fa-save'></i> Save </a>
+                    </td>
+                    <td><a class='btn btn-danger btn-xs' onclick='playlists.toggleRemove(${playlist.id})'><i class='fa fa-trash'></i> Remove </a></td>
+                </tr>`;
+            }
+
+            _createEditSongModal(playlist) {
+                return `<div class='form-check playlist_entries'>
+                    <label class="form-check-label"><input id='pid_${playlist.id}' type='checkbox' value='${playlist.id}'/> ${playlist.name} </label>
+                </div>`;
+            }
+        }
+
+        class Songs {
+            constructor() {
+                this.songs = {};
+                this.apiEndpoint = "/api/music/song";
+                this.update();
+            }
+
+            update() {
+                this._request = Request.GET(this.apiEndpoint).then(data => {
+                    removeElements(".song_entries");
+
+                    const songs = data.songs;
+
+                    this.playlistInfo = data.playlistInfo;
+                    this.songs = {};
+
+                    for (let i = 0; i < songs.length; i++) {
+                        this.add(songs[i]);
+                    }
+                });
+            }
+
+            add(song) {
+                song.playlists = this.playlistInfo.filter(info => info.sid === song.id);
+                const entry = createElement(this._createSongEntry(song), "tbody");
+
+                document.getElementById("allSongs").appendChild(entry);
+
+                this.songs[song.id] = {
+                    id: song.id,
+                    artist: song.artist,
+                    title: song.title,
+                    provider: song.provider,
+                    url: song.url,
+                    filename: song.filename,
+                    cached: song.cached,
+                    playlists: song.playlists,
+                    element: entry,
+                    delete: function() {
+                        this.element.remove();
+                    },
+                    edit: function(artist, title, playlists) {
+                        this.element.children[1].innerText = artist;
+                        this.element.children[2].innerText = title;
+                        this.element.children[3].innerText = playlists.join(", ");
+                    }
+                }
+            }
+
+            async delete(id) {
+                await Request.DELETE(this.apiEndpoint, {
+                    id
+                });
+                this.songs[id].delete();
+                delete this.songs[id];
+            }
+
+            async edit(id, artist, title, playlists) {
+                await Request.POST(this.apiEndpoint, {
+                    id,
+                    artist,
+                    title,
+                    playlists,
+                });
+                this.songs[id].edit(artist, title, playlists);
+            }
+
+            stream(id) {
+                const audio = document.getElementById('audio');
+                if (this.streaming_id !== id) {
+                    this.streaming_id = id;
+                    audio.src = `/api/music/stream?id=${id}`;
+                }
+                audio.play();
+                displayClass("playButton", true);
+                displayClass("pauseButton", false);
+
+                this.songs[id].element.querySelector(".playButton").style.display = "none";
+                this.songs[id].element.querySelector(".pauseButton").style.display = "block";
+            }
+
+            pause() {
+                const audio = document.getElementById('audio');
+                audio.pause();
+                displayClass("playButton", true);
+                displayClass("pauseButton", false);
+            }
+
+            filterPlaylist(pid) {
+
+            }
+
+            toggleEdit(id) {
+                const song = this.songs[id];
+                document.querySelector("#editSongModal #artist").value = song.artist;
+                document.querySelector("#editSongModal #title").value = song.title;
+
+                const checkboxes = document.querySelectorAll("#editSongModal input[type=checkbox]");
+                for (let i = 1; i < checkboxes.length; i++) {
+                    checkboxes[i].checked = false;
+                }
+
+                for (let i = 0; i< song.playlists.length; i++) {
+                    document.querySelector(`#editSongModal #pid_${song.playlists[i].pid}`).checked = true;
+                }
+
+                document.querySelector("#editSongModal .btn-primary").onclick = () => {
+                    this.saveEdit(id);
+                }
+
+                $("#editSongModal").modal();
+            }
+
+            saveEdit(id) {
+                const artist = document.querySelector("#editSongModal #artist").value;
+                const title = document.querySelector("#editSongModal #title").value;
+                const playlists = [];
+
+                const checkboxes = document.querySelectorAll("#editSongModal input[type=checkbox]");
+
+                for (let i = 1; i < checkboxes.length; i++) {
+                    const checkbox = checkboxes[i];
+                    if (checkbox.checked) playlists.push(checkbox.value);
+                }
+
+                console.log({
+                    artist,
+                    title,
+                    playlists,
+                });
+            }
+
+            toggleRemove(id) {
+                confirmRemoval("Remove Song", `Are you sure you want to remove the song "${this.songs[id].artist} - ${this.songs[id].title}"?`, () => {
+                    this.delete(id);
+                });
+            }
+
+            _createSongEntry(song) {
+                return `<tr id="sid_${song.id}" class="song_entries">
+                    <td>
+                        <a class='playButton btn btn-link btn-xs' onclick='songs.stream(${song.id})'><i class='fa fa-play'></i></a>
+                        <a class='pauseButton btn btn-link btn-xs' onclick='songs.pause()' style='display: none;'><i class='fa fa-pause'></i></a>
+                    </td>
+                    <td>${song.artist}</td>
+                    <td>${song.title}</td>
+                    <td>${song.playlists.map(info => info.name).join(", ")}</td>
+                    <td><a class='btn btn-success btn-xs' href="/api/music/song?id=${song.id}&download"><i class='fa fa-download'></i> Download </a></td>
+                    <td><a class='btn btn-link btn-xs' href='${song.url}' taget='_blank'><i class='fab fa-youtube' taget='_blank'></i>${song.filename}</a></td>
+                    <td><a class='btn btn-info btn-xs' onclick='songs.toggleEdit(${song.id})'><i class='fa fa-edit'></i> Edit </a></td>
+                    <td><a class='btn btn-danger btn-xs' onclick='songs.toggleRemove(${song.id})'><i class='fa fa-trash'></i> Remove </a></td>
+                </tr>`;
+            }
+        }
+
+        function init() {
+            playlists = new Playlists();
+            songs = new Songs();
+
+            Promise.all([playlists._request, songs._request]).then(() => {
+                console.log("ready");
             });
-            $(".pauseButton").click(function() {
-                $("#audio")[0].pause();
-                $(".pauseButton").hide();
-                $(".playButton").show();
-            });
         }
 
-        function createPlaylistButton(playlist) {
-            return `<a class='btn btn-light' onclick='openPlaylist(${playlist.id})'><i class='fa fa-music'></i> ${playlist.name} </a>`;
-        }
-
-        function createSongEntry(song) {
-            return `<tr id="sid_${song.id}">
-                <td>
-                    <a class='playButton btn btn-link btn-xs' data-id='${song.id}'><i class='fa fa-play'></i></a>
-                    <a class='pauseButton btn btn-link btn-xs' style='display: none;'><i class='fa fa-pause'></i></a>
-                </td>
-                <td>${song.artist}</td>
-                <td>${song.title}</td>
-                <td>${song.playlistNames.join(", ")}</td>
-                <td><a class='btn btn-success btn-xs' href="/api/music/song?id=${song.id}&download"><i class='fa fa-download'></i> Download </a></td>
-                <td><a class='btn btn-link btn-xs' href='${song.url}' taget='_blank'><i class='fab fa-youtube' taget='_blank'></i>${song.filename}</a></td>
-                <td><a class='btn btn-info btn-xs' data-toggle='modal' data-target='#editSongModal' onclick='editSong(${song.id}, "${song.artist}", "${song.title}", [${song.playlistIds.join(",")}])'><i class='fa fa-edit'></i> Edit </a></td>
-                <td><a class='btn btn-danger btn-xs' data-toggle='modal' data-target='#removeSongModal' onclick='removeSong(${song.id})'><i class='fa fa-trash'></i> Remove </a></td>
-            </tr>`;
-        }
-
-        function createEditPlaylists(playlist) {
-            return `<tr class='playlist' id='pid_${playlist.id}'>
-                <td><span>${playlist.name}</span><input type='text' style='display:none;' value='${playlist.name}'/></td>
-                <td>${playlist.numberOfSongs} songs </td>
-                <td><a class='btn btn-info btn-xs'><i class='fa fa-edit'></i> Edit </a><a class='btn btn-success btn-xs' style='display: none;'><i class='fa fa-save'></i> Save </a></td>
-                <td><a class='btn btn-danger btn-xs'><i class='fa fa-trash'></i> Remove </a></td>
-            </tr>`;
-        }
-
-        function createEditSongModal(playlist) {
-            return `<div class='checkbox'>
-                <label><input id='pid_${playlist.id}' type='checkbox' name='pid' value='${playlist.id}'/>${playlist.name}</label>
-            </div>`;
+        function update() {
+            songs.update();
+            playlists.update();
         }
 
         init();
-
-        function editSong(sid, artist, title, pidList) {
-			$("#editSongModal #sid").val(sid);
-			$("#editSongModal #artist").val(artist);
-			$("#editSongModal #title").val(title);
-			$("#editSongModal input[type=checkbox]").prop('checked', false);
-			for (pid of pidList) {
-				$(`#editSongModal #pid_${pid}`).prop('checked', true);
-			}
-		}
-		function removeSong(sid) {
-			$("#removeSongModal #sid").val(sid);
-		}
         </script>
 	</body>
 </html>
