@@ -362,8 +362,13 @@ async function addLoginAttemptByID(id, success, ip) {
 }
 
 // Get all login attempts
-async function getLoginAttempts() {
-    return await query("SELECT * FROM users.loginAttempts ORDER BY Timestamp DESC");
+async function getLoginAttempts(limit) {
+    return await query("SELECT * FROM users.loginAttempts ORDER BY Timestamp DESC LIMIT ?", [limit]);
+}
+
+async function getLoginAttemptsBefore(data, limit) {
+    return await query("SELECT * FROM users.loginAttempts WHERE timestamp <= ? ORDER BY Timestamp DESC LIMIT ?", [data, limit]);
+
 }
 
 // Register a namechange to the given username of a user with given ID
@@ -752,6 +757,7 @@ module.exports = {
     addLoginAttempt,
     addLoginAttemptByID,
     getLoginAttempts,
+    getLoginAttemptsBefore,
     addUsernameChange,
     getUsernameChangeHistory,
     getLatestUsernameChange,

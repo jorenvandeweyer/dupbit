@@ -61,9 +61,6 @@ module.exports = {
         requireLogin: true,
         requireLogout: false,
         requireLevel: 3,
-        pageData: {
-            "attempts": "Database.getLoginAttempts()",
-        }
     },
     "/projects/calendar/index": {
         title: "Dupbit - Calendar",
