@@ -183,10 +183,10 @@ function removeElements(query) {
     }
 }
 
-function displayClass(c, show) {
+function displayClass(c, type) {
     const elements = document.getElementsByClassName(c);
     for (let i = 0; i < elements.length; i++) {
-        elements[i].style.display = show ? "block" : "none";
+        elements[i].style.display = type;
     }
 }
 </script>

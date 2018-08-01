@@ -11,7 +11,7 @@
 				<div class="card-body">
                     <div class="d-flex flex-row">
     					<div id="playlist_buttons" class='btn-group' role="group">
-                            <a class='btn btn-light' onclick="songs.filterPlaylist()"><i class='fa fa-music'></i> All</a>
+                            <a class='btn btn-light' onclick="songs.filterPlaylist(0)"><i class='fa fa-music'></i> All</a>
                             <a class="btn btn-light" data-toggle="modal" data-target="#editPlaylistModal"><i class='fa fa-edit'></i></a>
     					</div>
                         <div class="btn-group ml-auto" role="group">
@@ -423,8 +423,8 @@
                     audio.src = `/api/music/stream?id=${id}`;
                 }
                 audio.play();
-                displayClass("playButton", true);
-                displayClass("pauseButton", false);
+                displayClass("playButton", "block");
+                displayClass("pauseButton", "none");
 
                 this.songs[id].element.querySelector(".playButton").style.display = "none";
                 this.songs[id].element.querySelector(".pauseButton").style.display = "block";
@@ -433,12 +433,22 @@
             pause() {
                 const audio = document.getElementById('audio');
                 audio.pause();
-                displayClass("playButton", true);
-                displayClass("pauseButton", false);
+                displayClass("playButton", "block");
+                displayClass("pauseButton", "none");
             }
 
             filterPlaylist(pid) {
-
+                if (pid === 0) {
+                    displayClass("song_entries", "table-row");
+                } else {
+                    displayClass("song_entries", "none");
+                    for (let i in this.playlistInfo) {
+                        const entry = this.playlistInfo[i];
+                        if (entry.pid == pid) {
+                            this.songs[entry.sid].element.style.display = "table-row";
+                        }
+                    }
+                }
             }
 
             toggleEdit(id) {
@@ -484,7 +494,7 @@
                     <td>${song.title}</td>
                     <td>${song.playlists.map(info => info.name).join(", ")}</td>
                     <td><a class='btn btn-success btn-xs' href="/api/music/song?id=${song.id}&download"><i class='fa fa-download'></i> Download </a></td>
-                    <td><a class='btn btn-link btn-xs' href='${song.url}' taget='_blank'><i class='fab fa-youtube' taget='_blank'></i>${song.filename}</a></td>
+                    <td><a class='btn btn-link btn-xs' href='${song.url}' taget='_blank'><i class='fab fa-youtube' taget='_blank'></i> ${song.provider}</a></td>
                     <td><a class='btn btn-info btn-xs' onclick='songs.toggleEdit(${song.id})'><i class='fa fa-edit'></i> Edit </a></td>
                     <td><a class='btn btn-danger btn-xs' onclick='songs.toggleRemove(${song.id})'><i class='fa fa-trash'></i> Remove </a></td>
                 </tr>`;
