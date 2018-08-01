@@ -89,15 +89,29 @@ async function checkTables() {
     });
 
 
+    await query(`CREATE TABLE IF NOT EXISTS music.songs_raw (
+        id INT NOT NULL UNIQUE AUTO_INCREMENT,
+        filename VARCHAR(255) NOT NULL,
+        url VARCHAR(255) NOT NULL,
+        provider VARCHAR(255) NOT NULL DEFAULT('UNKNOWN'),
+        cached BOOLEAN NOT NULL DEFAULT 0,
+        downloads INT NOT NULL DEFAULT 0,
+        PRIMARY KEY (id)
+    )`).then((result) => {
+        if (result.warningCount == 0) {
+            console.log("Created table \"music.songs_raw\".");
+        }
+    });
+
     await query(`CREATE TABLE IF NOT EXISTS music.songs (
-		id INT NOT NULL UNIQUE AUTO_INCREMENT,
-		ytid CHAR(11) NOT NULL,
-		title VARCHAR(255),
-		artist VARCHAR(255),
-		uid INT NOT NULL,
-        cached BOOLEAN NOT NULL DEFAULT 1,
-		PRIMARY KEY (id),
-		FOREIGN KEY (uid) REFERENCES users.users(id) ON DELETE CASCADE
+        id INT NOT NULL UNIQUE AUTO_INCREMENT,
+        srid INT NOT NULL,
+        uid INT NOT NULL,
+        title VARCHAR(255),
+        artist VARCHAR(255),
+        PRIMARY KEY (id),
+        FOREIGN KEY (srid) REFERENCES music.songs_raw(id) ON DELETE CASCADE,
+        FOREIGN KEY (uid) REFERENCES users.users(id) ON DELETE CASCADE
     )`).then((result) => {
         if (result.warningCount == 0) {
             console.log("Created table \"music.songs\".");
@@ -119,8 +133,8 @@ async function checkTables() {
     await query(`CREATE TABLE IF NOT EXISTS music.songInPlaylist (
 		sid INT NOT NULL,
 		pid INT NOT NULL,
-		FOREIGN KEY (sid) REFERENCES music.songs(ID) ON DELETE CASCADE,
-		FOREIGN KEY (pid) REFERENCES music.playlists(ID) ON DELETE CASCADE
+		FOREIGN KEY (sid) REFERENCES music.songs(id) ON DELETE CASCADE,
+		FOREIGN KEY (pid) REFERENCES music.playlists(id) ON DELETE CASCADE
     )`).then((result) => {
         if (result.warningCount == 0) {
             console.log("Created table \"music.songInPlaylist\".");
@@ -217,7 +231,7 @@ async function register(username, password, email, level=0) {
         message_title: "Thanks for registering at Dupbit!",
         message_content: "To complete your registration click the button below. If you did not register to Dupbit, you can just ignore this email.",
         button_title: "Confirm Email",
-        button_url: `https://dupbit.com/api/validate?id=${id}&hash=${emailhash}`,
+        button_url: `https://dupbit.com/api/account/validate?id=${id}&hash=${emailhash}`,
 
     });
     return q;
@@ -348,8 +362,13 @@ async function addLoginAttemptByID(id, success, ip) {
 }
 
 // Get all login attempts
-async function getLoginAttempts() {
-    return await query("SELECT * FROM users.loginAttempts ORDER BY Timestamp DESC");
+async function getLoginAttempts(limit) {
+    return await query("SELECT * FROM users.loginAttempts ORDER BY Timestamp DESC LIMIT ?", [limit]);
+}
+
+async function getLoginAttemptsBefore(data, limit) {
+    return await query("SELECT * FROM users.loginAttempts WHERE timestamp <= ? ORDER BY Timestamp DESC LIMIT ?", [data, limit]);
+
 }
 
 // Register a namechange to the given username of a user with given ID
@@ -367,13 +386,44 @@ async function getLatestUsernameChange(id) {
     return await query("SELECT * FROM users.usernameChanges WHERE uid=? ORDER BY Timestamp DESC LIMIT 1", [id]);
 }
 
-//MUST RETURN INSERT ID INSTEAD
-// Add a song with given title and artist
-async function addSong(ytid, title, artist, uid) {
-    return await query("INSERT INTO music.songs (ytid, title, artist, uid) VALUES (?, ?, ?, ?)", [ytid, title, artist, uid]);
+//add pointer to certain song not related to a user
+async function addSongRaw(filename, url, provider, cached=false) {
+    return await query("INSERT INTO music.songs_raw (filename, url, provider, cached) VALUES (?, ?, ?, ?)", [filename, url, provider, cached]);
 }
 
-// Remove a song with given id
+async function getSongRawByName(filename) {
+    const result = await query("SELECT * FROM music.songs_raw WHERE filename=?", [filename]);
+    if (result.length) {
+        return result[0];
+    } else {
+        return null;
+    }
+}
+// Get song
+async function getSongRaw(srid) {
+    let result = await query("SELECT * FROM music.songs_raw WHERE id=?", [srid]);
+    if (result.length) {
+        return result[0];
+    } else {
+        return null;
+    }
+}
+
+//add convert from user pointing to song
+async function addSong(srid, uid, title, artist) {
+    return await query("INSERT INTO music.songs (srid, uid, title, artist) VALUES (?, ?, ?, ?)", [srid, uid, title, artist]);
+}
+
+async function getSong(id) {
+    const result = await query("SELECT songs.id, songs_raw.id AS srid, songs_raw.filename, songs_raw.url, songs_raw.provider, songs.title, songs.artist, songs.uid FROM music.songs INNER JOIN music.songs_raw where songs.srid = songs_raw.id AND songs.id = ?", [id]);
+    if (result.length) {
+        return result[0];
+    } else {
+        return null;
+    }
+}
+
+// Remove a convert with given id
 async function removeSong(id) {
     return await query("DELETE FROM music.songs WHERE id=?", [id]);
 }
@@ -390,13 +440,13 @@ async function setArtist(id, artist) {
 
 //MUST RETURN INSERT ID INSTEAD
 // Add a playlist with given name for the given user
-async function addPlaylist(name, uid) {
-    if (name === null) {
-        name = "New Playlist";
-    }
+async function addPlaylist(uid, name="New Playlist") {
     return await query("INSERT INTO music.playlists (name, uid) VALUES (?, ?)", [name, uid]);
 }
 
+async function setNamePlaylist(id, name) {
+    return await query("UPDATE music.playlists SET name=? WHERE id=?", [name, id]);
+}
 // Remove a playlist with given id
 async function removePlaylist(id) {
     return await query("DELETE FROM music.playlists WHERE id=?", [id]);
@@ -414,12 +464,16 @@ async function removeSongFromPlaylist(sid, pid) {
 
 // Get all songs of user with given id
 async function getSongsOf(uid) {
-    return await query("SELECT * FROM music.songs WHERE uid=? ORDER BY artist, title", [uid]);
+    return await query("SELECT songs.id, songs_raw.id AS srid, songs.uid, songs_raw.url, songs_raw.filename, songs.artist, songs.title, songs_raw.cached, songs_raw.provider FROM music.songs INNER JOIN music.songs_raw WHERE songs.srid = songs_raw.id AND uid=?", [uid]);
 }
 
 // Get all songs in playlist with given id
 async function getSongsIn(pid) {
-    return await query("SELECT * FROM music.songInPlaylist JOIN music.songs WHERE sid = id AND pid=? ORDER BY artist, title", [pid]);
+    return await query("SELECT * FROM music.songInPlaylist INNER JOIN music.songs WHERE songInPlaylist.sid = songs.id AND songInPlaylist.pid=? ORDER BY artist, title", [pid]);
+}
+
+async function getSongsInPlaylistsOf(uid) {
+    return await query("SELECT songs.id AS sid, playlists.id AS pid, playlists.name FROM music.songs INNER JOIN music.playlists, music.songInPlaylist WHERE songInPlaylist.pid = playlists.id AND songInPlaylist.sid = songs.id AND songs.uid = ?", [uid]);
 }
 
 // Get all songs decided by playlist and userid
@@ -450,16 +504,6 @@ async function getUserOfSong(sid) {
     }
 }
 
-// Get song
-async function getSong(sid) {
-    let result = await query("SELECT * FROM music.songs WHERE id=?", [sid]);
-    if (result.length) {
-        return result[0];
-    } else {
-        return null;
-    }
-}
-
 // Get all playlist of user with given id
 async function getPlaylistsOf(uid) {
     return await query("SELECT * FROM music.playlists WHERE uid=? ORDER BY name", [uid]);
@@ -467,7 +511,7 @@ async function getPlaylistsOf(uid) {
 
 // Get owner of the playlist with given id
 async function getUserOfPlaylist(pid) {
-    let result = await query("SELECT uid FROM music.playlist WHERE id=?", [pid]);
+    let result = await query("SELECT uid FROM music.playlists WHERE id=?", [pid]);
     if (result.length) {
         return result[0].uid;
     } else {
@@ -713,25 +757,31 @@ module.exports = {
     addLoginAttempt,
     addLoginAttemptByID,
     getLoginAttempts,
+    getLoginAttemptsBefore,
     addUsernameChange,
     getUsernameChangeHistory,
     getLatestUsernameChange,
+    addSongRaw,
+    getSongRaw,
+    getSongRawByName,
     addSong,
+    getSong,
     removeSong,
     setTitle,
     setArtist,
     addPlaylist,
+    setNamePlaylist,
     removePlaylist,
     addSongToPlaylist,
     removeSongFromPlaylist,
     getSongsOf,
     getUserOfSong,
-    getSong,
     getPlaylistsOf,
     getPlaylistsOfSmart,
     getUserOfPlaylist,
     getPlaylistsOfSong,
     getSongsIn,
+    getSongsInPlaylistsOf,
     getSongsSmart,
     filename,
     recoverAccount,

@@ -2,24 +2,18 @@
 <html lang="en">
 
 	<head>
-		<%- include /usr/src/app/pages/components/head %>
+		<%- include ./components/head %>
 	</head>
 
 	<body>
 
-		<%- include /usr/src/app/pages/components/header %>
+		<%- include ./components/header %>
         </br>
 		<div class="container">
 			<div class="card mx-auto" style="max-width: 500px;">
 				<div class="card-header"><b>Register</b></div>
 				<div class="card-body">
-                    <% errorMessageList.forEach((errorMessage) => { %>
-                    <div class="alert alert-danger alert-dismissable">
-                        <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-                        <strong><%= query.errorMessage %></strong>
-                    </div>
-                    <% }) %>
-					<form id="register" action="api/register" method="post">
+					<form id="register" action="api/account/register" method="post">
 						<div class="form-group" id="username">
 							<span class="help-block float-right"><%= lang["username.help"] %></span>
 							<div class="input-group has-feedback">
@@ -65,7 +59,7 @@
 				</div>
 			</div>
 		</div>
-        <%- include /usr/src/app/pages/components/footer %>
+        <%- include ./components/footer %>
         <script>
 		function validate() {
 
@@ -79,7 +73,7 @@
 				email: inputList[3].find("input").val()
 			}
 
-			$.post("api/verifyRegistration", postData, function(errorList) {
+			$.post("api/account/verify", postData, function(errorList) {
 				for (i in inputList) {
 					var label = labelList[i];
 					var inputGroup = inputList[i];

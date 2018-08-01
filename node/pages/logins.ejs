@@ -2,12 +2,12 @@
 <html lang="en">
 
 	<head>
-		<%- include /usr/src/app/pages/components/head %>
+		<%- include ./components/head %>
 	</head>
 
 	<body>
 
-		<%- include /usr/src/app/pages/components/header %>
+		<%- include ./components/header %>
         </br>
 		<div class="container">
 			<div class="card">
@@ -23,23 +23,59 @@
 								<th>Timestamp</th>
 							</tr>
 						</thead>
-						<tbody>
-                            <% var attempts = pageData.attempts %>
-                            <% for (let attempt in attempts) { %>
-                                <%- "<tr>" %>
-                                    <%- "<td>" + attempts[attempt]['uid'] + "</td>" %>
-                                    <%- "<td>" + attempts[attempt]['username'] + "</td>" %>
-                                    <%- "<td>" + attempts[attempt]['ip'] + "</td>" %>
-                                    <%- "<td>" + attempts[attempt]['success'] + "</td>" %>
-                                    <%- "<td>" + attempts[attempt]['timestamp'] + "</td>" %>
-                                <%- "</tr>" %>
-                            <% } %>
+						<tbody id="attemps">
 						</tbody>
 					</table>
+                    <div class="d-flex justify-content-center">
+                        <a class="btn btn-light" onclick="attemps.more()"><i class="fas fa-ellipsis-h"></i></button>
+                    </div>
 				</div>
 			</div>
 		</div>
-        <%- include /usr/src/app/pages/components/footer %>
+        <%- include ./components/footer %>
 
+        <script>
+        class Attempts {
+            constructor() {
+                this.update();
+            }
+
+            update() {
+                this._request = Request.GET("/api/admin/logins").then((data) => {
+                    const logins = data.logins;
+                    this.addAttempts(logins);
+                });
+            }
+
+            more() {
+                this._request = Request.GET("/api/admin/logins", {
+                    before: this.last.replace("T", " ").replace(".000Z", ""),
+                }).then((data) => {
+                    const logins = data.logins;
+                    this.addAttempts(logins);
+                })
+            }
+
+            addAttempts(logins) {
+                for (let i = 0; i < logins.length; i++) {
+                    this.last = logins[i].timestamp;
+                    const el = createElement(this._createLoginEntry(logins[i]), "tbody");
+                    document.getElementById("attemps").appendChild(el)
+                }
+            }
+
+            _createLoginEntry(login) {
+                return `<tr>
+                    <td> ${login.uid} </td>
+                    <td> ${login.username} </td>
+                    <td> ${login.ip} </td>
+                    <td> ${login.success} </td>
+                    <td> ${login.timestamp} </td>
+                </tr>`;
+            }
+        }
+
+        var attemps = new Attempts();
+        </script>
 	</body>
 </html>

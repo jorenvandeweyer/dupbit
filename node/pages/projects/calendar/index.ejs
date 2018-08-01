@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 	<head>
-		<%- include /usr/src/app/pages/components/head %>
+		<%- include ../../components/head %>
 	</head>
 	<body>
-		<%- include /usr/src/app/pages/components/header %>
+		<%- include ../../components/header %>
 
 		<div class="container">
 			</br>
@@ -25,8 +25,7 @@
 				</div>
 			<% } %>
 
-			<% if("calendar" in query) { %>
-
+            <div id="calendar" style="display:none;">
 				<button type="button" class="btn btn-primary" onclick="goBack()">Back</button>
 				</br>
 				</br>
@@ -50,15 +49,7 @@
 		            				<th>Delete</th>
 	            				</tr>
 	        				</thead>
-	        				<tbody>
-                                <% var urls = pageData.calendarUrls %>
-                                <% for (let url in urls) { %>
-                                    <%- "<tr id= " + urls[url]['id'] + ">" %>
-                                        <%- "<td>" + urls[url]['data'] + "</td>" %>
-                                        <%- "<td>" + urls[url]['name'] + "</td>" %>
-                                        <%- "<td><button type='button' class='btn btn-danger' onclick='deleteUrl(" + urls[url]['id'] + ")'> Delete </button></td>" %>
-                                    <%- "</tr>" %>
-                                <% } %>
+	        				<tbody id ="urls">
 	        				</tbody>
 	    				</table>
 		            </div>
@@ -81,15 +72,7 @@
 		            				<th>Delete</th>
 	            				</tr>
 	        				</thead>
-	        				<tbody>
-                                <% var courseNumbers = pageData.calendarCourseNumbers %>
-                                <% for (let number in courseNumbers) { %>
-                                    <%- "<tr id= " + courseNumbers[number]['id'] + ">" %>
-                                        <%- "<td>" + courseNumbers[number]['data'] + "</td>" %>
-                                        <%- "<td>" + courseNumbers[number]['name'] + "</td>" %>
-                                        <%- "<td><button type='button' class='btn btn-danger' onclick='deleteCourse(" + courseNumbers[number]['id'] + ")'> Delete </button></td>" %>
-                                    <%- "</tr>" %>
-                                <% } %>
+	        				<tbody id="courseNumbers">
 	        				</tbody>
 	    				</table>
 		            </div>
@@ -104,7 +87,8 @@
 					</div>
 				</form>
 				</br>
-			<% } else { %>
+            </div>
+            <div id="calendar_overview" style="display:none;">
 				<!-- calendar table -->
 				<table class='table table-hover setbackground'>
 					<thead>
@@ -115,16 +99,7 @@
 							<th>Delete</th>
 						</tr>
 					</thead>
-					<tbody>
-                        <% var tables = pageData.calendarTable %>
-                        <% for (let table in tables) { %>
-                            <%- "<tr id= " + tables[table]['id'] + ">" %>
-                                <%- "<td>" + tables[table]['id'] + "</td>" %>
-                                <%- "<td>" + tables[table]['name'] + "</td>" %>
-                                <%- "<td><button type='button' class='btn btn-link'><a href='?calendar=" + tables[table]['id'] + "'>Edit</a></button></td>" %>
-                                <%- "<td><button type='button' class='btn btn-danger' onclick='deleteCalendar(" + tables[table]['id'] + ")'> Delete </button></td>" %>
-                            <%- "</tr>" %>
-                        <% } %>
+					<tbody id="calendar_overview_content">
 					</tbody>
 				</table>
 				<!-- calendar table -->
@@ -139,20 +114,11 @@
 		            </div>
 		            <div class="col-xs-5"></div>
 		        </div>
-			<% } %>
-
+            </div>
+            <input id="calendar_id" type="hidden" name="calendar" value="<%= query.calendar %>">
 		</div>
-		<form action="/api/calendar" style="visibility:hidden" method="post" id="submitform">
-			<input type="hidden" name="id" id="id">
-			<input type="hidden" name="calendar" value="<%= query.calendar %>">
-			<input type="hidden" name="name" id="name">
-			<input type="hidden" name="action" id="action">
-			<input type="hidden" name="sort" id="sort">
-			<input type="hidden" name="data" id="data">
-			<input type="hidden" name="info" id="info">
-		</form>
 
-        <%- include /usr/src/app/pages/components/footer %>
+        <%- include ../../components/footer %>
 		<script>
 			function handleKeyPress(e){
 				var key=e.keyCode || e.which;
@@ -161,49 +127,139 @@
 				}
 			}
 			function deleteCalendar(id){
-				$("#id").val(id);
-				$("#action").val("deleteCalendar");
-				$("#submitform").submit();
+                Request.DELETE("/api/calendar", {
+                    id
+                }).then((result) => {
+                    if (result.success) {
+                        document.getElementById(`c_${id}`).remove();
+                    }
+                });
 			}
 			function createCalendar(){
-				var newName = $("#newName").val();
-				$("#name").val(newName);
-				$("#action").val("createCalendar");
-				$("#submitform").submit();
+                const name = document.getElementById("newName").value;
+                Request.POST("/api/calendar", {
+                    name,
+                }).then((result) => {
+                    if (result.success) {
+                        document.getElementById("calendar_overview_content").innerHTML += createCalendarRow(result.data);
+                    }
+                });
 			}
 			function deleteCourse(id){
-				$("#id").val(id);
-				$("#sort").val("courses");
-				$("#action").val("deleteCalendarData");
-				$("#submitform").submit();
+                Request.DELETE("/api/calendar", {
+                    id,
+                    sort: "courses",
+                }).then((result) => {
+                    if (result.success) {
+                        document.getElementById(`cn_${id}`).remove();
+                    }
+                });
 			}
 			function deleteUrl(id){
-				$("#id").val(id);
-				$("#sort").val("urls");
-				$("#action").val("deleteCalendarData");
-				$("#submitform").submit();
+                Request.DELETE("/api/calendar", {
+                    id,
+                    sort: "urls",
+                }).then((result) => {
+                    if (result.success) {
+                        document.getElementById(`url_${id}`).remove();
+                    }
+                });
 			}
 			function addUrl(){
-				var data = $("#url").val();
-				var info = $("#urlTag").val();
-				$("#sort").val("urls");
-				$("#data").val(data);
-				$("#info").val(info);
-				$("#action").val("createCalendarData");
-				$("#submitform").submit();
+                const data = document.getElementById("url").value;
+                const info = document.getElementById("urlTag").value;
+                const calendar = document.getElementById("calendar_id").value;
+
+                Request.POST("/api/calendar", {
+                    sort: "urls",
+                    calendar,
+                    data,
+                    info,
+                }).then((result) => {
+                    if (result.success) {
+                        document.getElementById("urls").innerHTML += createUrlRow(result.data);
+                    }
+                });
 			}
 			function addCourse(){
-				var data = $("#course").val();
-				var info = $("#courseTag").val();
-				$("#sort").val("courses");
-				$("#data").val(data);
-				$("#info").val(info);
-				$("#action").val("createCalendarData");
-				$("#submitform").submit();
+                const data = document.getElementById("course").value;
+                const info = document.getElementById("courseTag").value;
+                const calendar = document.getElementById("calendar_id").value;
+
+                Request.POST("/api/calendar", {
+                    sort: "courses",
+                    calendar,
+                    data,
+                    info,
+                }).then((result) => {
+                    if (result.success) {
+                        document.getElementById("courseNumbers").innerHTML += createCourseRow(result.data);
+                    }
+                });
 			}
 			function goBack(){
 				window.location.href = "/projects/calendar";
 			}
+            async function setup() {
+                const calendar = getParameterByName("calendar");
+                if (calendar) {
+                    const result = await Request.GET("/api/calendar", {
+                        calendar,
+                    });
+                    if (result) {
+                        document.getElementById("calendar").style.display = "block";
+                        document.getElementById("calendar_overview").style.diplay = "none";
+
+                        const urls = result.data.urls;
+                        const courseNumbers = result.data.courseNumbers;
+
+                        for (let i = 0; i < urls.length; i++) {
+                            document.getElementById("urls").innerHTML += createUrlRow(urls[i]);
+                        }
+
+                        for (let i = 0; i < courseNumbers.length; i++) {
+                            document.getElementById("courseNumbers").innerHTML += createCourseRow(courseNumbers[i]);
+                        }
+                    }
+                } else {
+                    const result = await Request.GET("/api/calendar");
+                    if (result) {
+                        document.getElementById("calendar_overview").style.display = "block";
+                        document.getElementById("calendar").style.display = "none";
+
+                        const tables = result.data.tables;
+
+                        for (let i = 0; i < tables.length; i++) {
+                            document.getElementById("calendar_overview_content").innerHTML += createCalendarRow(tables[i]);
+                        }
+                    }
+                }
+            }
+
+            setup();
+
+            function createCalendarRow(row) {
+                return `<tr id="c_${row.id}">
+                <td>${row.id}</td>
+                <td>${row.name}</td>
+                <td><button type='button' class='btn btn-link'><a href='?calendar=${row.id}'>Edit</a></button></td>
+                <td><button type='button' class='btn btn-danger' onclick='deleteCalendar(${row.id})'> Delete </button></td>
+                </td>`;
+            }
+            function createCourseRow(row) {
+                return `<tr id="cn_${row.id}">
+                <td>${row.data}</td>
+                <td>${row.name}</td>
+                <td><button type='button' class='btn btn-danger' onclick='deleteCourse(${row.id})'> Delete </button></td>
+                </tr>`;
+            }
+            function createUrlRow(row) {
+                return `<tr id="url_${row.id}">
+                <td>${row.data}</td>
+                <td>${row.name}</td>
+                <td><button type='button' class='btn btn-danger' onclick='deleteUrl(${row.id})'> Delete </button></td>
+                </tr>`;
+            }
 		</script>
 
 	</body>

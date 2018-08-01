@@ -1,19 +1,16 @@
-async function resolve (data, apidata) {
-    if (apidata.session.isLoggedIn && data.id) {
-        const id = data.id;
-        return {
-            success: true,
-            download: JSON.stringify({
-                id
-            }),
-            name: id + ".txt",
-        };
-    }
-    return {
-        success: false,
-    };
-}
+module.exports = async (req, res) => {
+    const data = req.query;
 
-module.exports = {
-    resolve,
+    if (req.auth.isLoggedIn && data.id) {
+        const id = data.id;
+        res.set("Content-disposition", `attachment; filename=${id}.json`);
+        res.send(JSON.stringify({
+            id,
+        }));
+    } else {
+        res.status(403).json({
+            success: false,
+            reason: "authentication required",
+        });
+    }
 };

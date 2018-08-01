@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 	<head>
-		<%- include /usr/src/app/pages/components/head %>
+		<%- include ./components/head %>
 		<meta name="keywords" content="<%= pageInfo.metaKeywords %>">
 		<meta name="description" content="<%= pageInfo.metaDescription %>">
 		<meta property='og:image' content='/images/dupbot.png'>
@@ -9,7 +9,7 @@
 		<meta property='og:description' content='Dupbot is a smart RemindeMe bot and an extensive moderation bot with a good permissions framework.'>
 	</head>
 	<body>
-		<%- include /usr/src/app/pages/components/header %>
+		<%- include ./components/header %>
         </br>
 		<div class="container">
             <div class="card">
@@ -99,7 +99,7 @@
     			</div>
             </div>
 		</div>
-        <%- include /usr/src/app/pages/components/footer %>
+        <%- include ./components/footer %>
 
 		<script>
 $(document).ready(function(){

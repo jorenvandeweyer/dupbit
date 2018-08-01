@@ -1,4 +1,4 @@
-<% if(!("redirect" in query)) {query.redirect = "welcome"} %>
+<% if(!("redirect" in query)) {query.redirect = "/welcome"} %>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -26,7 +26,7 @@
 						<strong>Account not activated!</strong> Please activate your account first.
 					</div>
 					<% } %>
-					<form action="api/login" method="post">
+					<form action="api/account/login" method="post">
 						<div class="form-group">
 							<div class="input-group">
                                 <div class="input-group-prepend">
