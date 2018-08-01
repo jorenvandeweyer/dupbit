@@ -232,6 +232,8 @@
                 });
                 this.playlists[id].delete();
                 delete this.playlists[id];
+                songs.playlistInfo = songs.playlistInfo.filter(entry => entry.pid !== id);
+                songs.updatePlaylistNames();
             }
 
             async edit(id, name) {
