@@ -5,6 +5,6 @@ module.exports = (url) => {
     return {
         id,
         hash: crypto.createHash("md5").update(id).digest("hex"),
-        url: `https://youtube.com/watch?v=${id}`,
+        url: `https://www.youtube.com/watch?v=${id}`,
     };
 };
