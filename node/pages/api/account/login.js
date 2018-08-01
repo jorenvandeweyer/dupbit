@@ -7,7 +7,7 @@ module.exports = async (req, res) => {
         const login = await Database.verifyLogin(data.username, data.password);
 
         if (login) {
-            Database.addLoginAttempt(data.username, true, req.ip);
+            Database.addLoginAttempt(data.username, true, req.get("x-real-ip"));
             const id = await Database.getIDByUsername(data.username);
             const level = await Database.getLevelByID(id);
 
@@ -34,7 +34,7 @@ module.exports = async (req, res) => {
                 }, expires, {
                     remote: data.remote,
                     name: getInfo(req, data),
-                    ip: req.ip,
+                    ip: req.get("x-real-ip"),
                 });
                 res.cookie("sid", token, {
                     maxAge: expires*1000,
@@ -61,7 +61,7 @@ module.exports = async (req, res) => {
             }
 
         } else {
-            Database.addLoginAttempt(data.username, false, req.ip);
+            Database.addLoginAttempt(data.username, false, req.get("x-real-ip"));
 
             if (data.remote) {
                 res.json({

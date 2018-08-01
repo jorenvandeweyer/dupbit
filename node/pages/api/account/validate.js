@@ -14,7 +14,7 @@ module.exports = async (req, res) => {
 
         if (passwordHash && bcrypt.compareSync(passwordHash, hash) && notActivated) {
             await Database.setLevel(id, 1);
-            await Database.addLoginAttempt(id, true, req.ip);
+            await Database.addLoginAttempt(id, true, req.get("x-real-ip"));
 
             const token = await Token.createToken({
                 isLoggedIn: true,
@@ -22,7 +22,7 @@ module.exports = async (req, res) => {
             }, 365*10*24*60*60, {
                 remote: "website",
                 name: getInfo(req, data),
-                ip: req.ip
+                ip: req.get("x-real-ip")
             });
 
             res.cookie("sid", token, {

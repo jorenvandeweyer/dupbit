@@ -1,3 +1,3 @@
 module.exports = async (req, res) => {
-    res.send(req.ip);
+    res.send(req.get("x-real-ip"));
 };
