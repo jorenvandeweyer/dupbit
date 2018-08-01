@@ -58,6 +58,7 @@ module.exports = express.Router()
                 data: {
                     id: result.insertId,
                     name: data.name,
+                    numberOfSongs: 0,
                 },
             });
         }

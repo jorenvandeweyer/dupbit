@@ -199,6 +199,7 @@
                 this.playlists[playlist.id] = {
                     id: playlist.id,
                     name: playlist.name,
+                    numberOfSongs: playlist.numberOfSongs,
                     elements: {
                         button,
                         edit,
@@ -214,6 +215,9 @@
                         this.elements.edit.querySelector("span").innerText = name;
                         this.elements.edit.querySelector("input").value = name;
                         this.elements.songModal.querySelector("label").childNodes[1].nodeValue = ` ${name} `;
+                    },
+                    update: function() {
+                        this.elements.edit.children[1].innerText = ` ${this.numberOfSongs} songs `;
                     }
                 };
             }
@@ -272,8 +276,22 @@
                 });
             }
 
-            updatePlaylistContent(del, add) {
+            updatePlaylistContent(del, add=[]) {
+                console.log("update");
+                for (let i = 0; i < del.length; i++) {
+                    const pid = del[i].pid;
+                    const playlist = this.playlists[pid];
+                    playlist.numberOfSongs--;
+                    playlist.update();
 
+                }
+
+                for (let i = 0; i < add.length; i++) {
+                    const pid = add[i].pid;
+                    const playlist = this.playlists[pid];
+                    playlist.numberOfSongs++;
+                    playlist.update();
+                }
             }
 
             _createPlaylistButton(playlist) {
@@ -356,6 +374,9 @@
 
                 const playlist_ids = [];
                 const checkboxes = document.querySelectorAll("#editSongModal input[type=checkbox]");
+
+                const playlist_del = this.playlistInfo.filter(entry => entry.sid === id);
+
                 this.playlistInfo = this.playlistInfo.filter(entry => entry.sid !== id);
 
                 for (let i = 1; i < checkboxes.length; i++) {
@@ -369,6 +390,10 @@
                         });
                     }
                 }
+
+                const playlist_add = this.playlistInfo.filter(entry => entry.sid === id);
+
+                playlists.updatePlaylistContent(playlist_del, playlist_add);
 
                 song.update();
 
