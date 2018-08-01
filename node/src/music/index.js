@@ -22,7 +22,7 @@ async function convert(uid, provider, url, title, artist) {
     let result = await db.getSongRawByName(data.hash);
 
     if (!result) {
-        downloadFromUrl(data.url, data.hash);
+        await downloadFromUrl(data.url, data.hash);
         await db.addSongRaw(data.hash, url, provider, true);
         result = await db.getSongRawByName(data.hash);
     }
