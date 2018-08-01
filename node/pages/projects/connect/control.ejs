@@ -194,32 +194,58 @@
 
     const youtube = {
         muteVideo: (token_id) => {
-            $.get(`/api/connect/interact?name=youtube&action=setVolume&value=0&tid=${token_id}`, (data) => {
-                 console.log(data);
+            Request.POST("/api/connect/interact", {
+                name: "youtube",
+                action: "setVolume",
+                value: "0",
+                tid: token_id,
+            }).then((data) => {
+                console.log(data);
             });
         },
         unmuteVideo: (token_id) => {
-            $.get(`/api/connect/interact?name=youtube&action=setVolume&value=100&tid=${token_id}`, (data) => {
+            Request.POST("/api/connect/interact", {
+                name: "youtube",
+                action: "setVolume",
+                value: "100",
+                tid: token_id,
+            }).then((data) => {
                 console.log(data);
             });
         },
         pauseVideo: (token_id) => {
-            $.get(`/api/connect/interact?name=youtube&action=pauseVideo&tid=${token_id}`, (data) => {
+            Request.POST("/api/connect/interact", {
+                name: "youtube",
+                action: "pauseVideo",
+                tid: token_id,
+            }).then((data) => {
                 console.log(data);
             });
         },
         playVideo: (token_id) => {
-            $.get(`/api/connect/interact?name=youtube&action=playVideo&tid=${token_id}`, (data) => {
+            Request.POST("/api/connect/interact", {
+                name: "youtube",
+                action: "playVideo",
+                tid: token_id,
+            }).then((data) => {
                 console.log(data);
             });
         },
         nextVideo: (token_id) => {
-            $.get(`/api/connect/interact?name=youtube&action=nextVideo&tid=${token_id}`, (data) => {
+            Request.POST("/api/connect/interact", {
+                name: "youtube",
+                action: "nextVideo",
+                tid: token_id,
+            }).then((data) => {
                 console.log(data);
             });
         },
         previousVideo: (token_id) => {
-            $.get(`/api/connect/interact?name=youtube&action=previousVideo&tid=${token_id}`, (data) => {
+            Request.POST("/api/connect/interact", {
+                name: "youtube",
+                action: "previousVideo",
+                tid: token_id,
+            }).then((data) => {
                 console.log(data);
             });
         },
@@ -248,55 +274,66 @@
             }
         },
         setVolume: function() {
-            console.log("updating value");
-            this.last_value = this.value + 0;
-            $.get(`/api/connect/interact?name=volume&action=set&value=${this.value}&tid=${modal.tid}`, (data) => {
+            this.last_value = this.value,
+            Request.POST("/api/connect/interact", {
+                name: "volume",
+                action: "set",
+                value: this.value,
+                tid: modal.tid,
+            }).then((data) => {
                 console.log(data);
             });
         },
-        getVolume: async (tid) => {
-            return new Promise((resolve, reject) => {
-                $.get(`/api/connect/interact?name=volume&action=get&tid=${tid}`, (data) => {
-                    if (!data.success) return reject();
-                    resolve(data.feedback);
-                });
-            })
+        getVolume: (tid) => {
+            return Request.POST("/api/connect/interact", {
+                name: "volume",
+                action: "get",
+                tid: modal.tid,
+            });
         }
     };
 
     const device = {
         displaysleep: () => {
-            $.get(`/api/connect/interact?name=screen&action=displaysleep&tid=${modal.tid}`, (data) => {
+            Request.POST("/api/connect/interact", {
+                name: "screen",
+                action: "displaysleep",
+                tid: modal.tid,
+            }).then((data) => {
                 console.log(data);
             });
         },
         lock: () => {
-            $.get(`/api/connect/interact?name=screen&action=lock&tid=${modal.tid}`, (data) => {
+            Request.POST("/api/connect/interact", {
+                name: "screen",
+                action: "lock",
+                tid: modal.tid,
+            }).then((data) => {
                 console.log(data);
             });
         },
         unlock: () => {
-            $.get(`/api/connect/interact?name=screen&action=unlock&tid=${modal.tid}`, (data) => {
+            Request.POST("/api/connect/interact", {
+                name: "screen",
+                action: "unlock",
+                tid: modal.tid,
+            }).then((data) => {
                 console.log(data);
             });
         },
         shutdown: () => {
-            $.get(`/api/connect/interact?name=device&action=shutdown&tid=${modal.tid}`, (data) => {
+            Request.POST("/api/connect/interact", {
+                name: "device",
+                action: "shutdown",
+                tid: modal.tid,
+            }).then((data) => {
                 console.log(data);
             });
         }
     }
 
     async function fetchDevices() {
-        return new Promise((resolve, reject) => {
-            $.get("/api/connect/devices", (data) => {
-                if (data.success) {
-                    resolve([data.data, data.tokens]);
-                } else {
-                    reject("error fetching devices");
-                }
-            });
-        });
+        return await Request.GET("/api/connect/devices").then(data => [data.data, data.tokens]);
     }
 
     async function main() {

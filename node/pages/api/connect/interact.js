@@ -12,6 +12,7 @@ module.exports = async (req, res) => {
             if (socket) {
                 socket.send(JSON.stringify({
                     action: {
+                        name: data.name,
                         data: {
                             action: data.action,
                             value: data.value,

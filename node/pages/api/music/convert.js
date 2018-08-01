@@ -1,8 +1,7 @@
 const { convert, createFilename } = require("../../../src/music/index");
 
 module.exports = async (req, res) => {
-    const data = req.query;
-
+    const data = req.body;
     if (req.auth.isLoggedIn && data.url) {
 
         res.set("Access-Control-Allow-Credentials", "true");
@@ -19,7 +18,7 @@ module.exports = async (req, res) => {
                 res.json({
                     success: true,
                     id,
-                    downloadUrl: `https://dupbit.com/api/music/song?id=${id}`,
+                    downloadUrl: `/api/music/song?id=${id}&download`,
                     filename: createFilename(data.title, data.artist, data.url)+".mp3",
                 });
             } else {
@@ -32,7 +31,7 @@ module.exports = async (req, res) => {
                 res.json({
                     success: true,
                     id,
-                    downloadUrl: `https://dupbit.com/api/music/downloadMetaData?id=${id}`,
+                    downloadUrl: `/api/music/downloadMetaData?id=${id}`,
                     filename: createFilename(data.title, data.artist, data.url)+".txt"
                 });
             } else {

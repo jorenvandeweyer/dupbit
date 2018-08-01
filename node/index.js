@@ -1,9 +1,12 @@
+const http = require("http");
 const express = require("express");
+const WebSocket = require("./src/websocket/index");
+
 const bodyParser = require("body-parser");
 
 const ua_parser = require("ua-parser");
 const Cookie = require("./src/util/Cookie");
-// const WebSocket = require("./src/websocket/index");
+
 const auth = require("./src/auth");
 const api = require("./src/api");
 const html = require("./src/html");
@@ -32,6 +35,7 @@ app.use("*", auth);
 app.use("/api", api);
 app.use("*", html);
 
-app.listen(8080);
+const server = http.createServer(app);
+server.listen(8080);
 
-// WebSocket.create(app);
+WebSocket.create(server);
