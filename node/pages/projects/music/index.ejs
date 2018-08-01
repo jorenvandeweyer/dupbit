@@ -11,7 +11,7 @@
 				<div class="card-body">
                     <div class="d-flex flex-row">
     					<div id="playlist_buttons" class='btn-group' role="group">
-                            <a class='btn btn-light' href='music'><i class='fa fa-music'></i> All</a>
+                            <a class='btn btn-light' onclick="songs.filterPlaylist()"><i class='fa fa-music'></i> All</a>
                             <a class="btn btn-light" data-toggle="modal" data-target="#editPlaylistModal"><i class='fa fa-edit'></i></a>
     					</div>
                         <div class="btn-group ml-auto" role="group">
@@ -219,7 +219,9 @@
             }
 
             async create() {
-                const name = document.getElementById("new_playlist").value;
+                let name = document.getElementById("new_playlist").value;
+                if (!name) name = "New Playlist";
+
                 const playlist = await Request.PUT(this.apiEndpoint, {
                     name,
                 });
@@ -236,14 +238,24 @@
                 songs.updatePlaylistNames();
             }
 
-            async edit(id, name) {
-                await Request.POST(this.apiEndpoint, {
+            edit(id) {
+                const el = this.playlists[id].elements.edit;
+                const name = el.querySelector("input").value;
+                this.playlists[id].name = name;
+
+                Request.POST(this.apiEndpoint, {
                     id,
                     name,
+                }).then(() => {
+                    this.playlists[id].edit(name);
+                    songs.playlistInfo.filter(entry => entry.pid === id).map(entry => entry.name = name);
+                    songs.updatePlaylistNames();
+
+                    el.querySelector("span").style.display = "block";
+                    el.querySelector("input").style.display = "none";
+                    el.querySelector(".btn-info").style.display = "block";
+                    el.querySelector(".btn-success").style.display = "none";
                 });
-                this.playlists[id].edit(name);
-                songs.playlistInfo.filter(entry => entry.pid === id).map(entry => entry.name = name);
-                songs.updatePlaylistNames();
             }
 
             toggleEdit(id) {
@@ -254,27 +266,14 @@
                 el.querySelector(".btn-success").style.display = "block";
             }
 
-            saveEdit(id) {
-                const el = this.playlists[id].elements.edit;
-                const name = el.querySelector("input").value;
-                this.playlists[id].name = name;
-
-                Request.POST(this.apiEndpoint, {
-                    id,
-                    name,
-                }).then(() => {
-                    this.edit(id, name);
-                    el.querySelector("span").style.display = "block";
-                    el.querySelector("input").style.display = "none";
-                    el.querySelector(".btn-info").style.display = "block";
-                    el.querySelector(".btn-success").style.display = "none";
-                });
-            }
-
             toggleRemove(id) {
                 confirmRemoval("Remove Playlist", `Are you sure you want to remove the playlist "${this.playlists[id].name}"?`, () => {
                     this.delete(id);
                 });
+            }
+
+            updatePlaylistContent(del, add) {
+
             }
 
             _createPlaylistButton(playlist) {
@@ -287,7 +286,7 @@
                     <td> ${playlist.numberOfSongs} songs </td>
                     <td>
                         <a class='btn btn-info btn-xs' onclick='playlists.toggleEdit(${playlist.id})'><i class='fa fa-edit'></i> Edit </a>
-                        <a class='btn btn-success btn-xs' onclick='playlists.saveEdit(${playlist.id})' style='display: none;'><i class='fa fa-save'></i> Save </a>
+                        <a class='btn btn-success btn-xs' onclick='playlists.edit(${playlist.id})' style='display: none;'><i class='fa fa-save'></i> Save </a>
                     </td>
                     <td><a class='btn btn-danger btn-xs' onclick='playlists.toggleRemove(${playlist.id})'><i class='fa fa-trash'></i> Remove </a></td>
                 </tr>`;
@@ -350,22 +349,46 @@
                 }
             }
 
+            edit(id) {
+                const song = this.songs[id];
+                song.artist = document.querySelector("#editSongModal #artist").value;
+                song.title = document.querySelector("#editSongModal #title").value;
+
+                const playlist_ids = [];
+                const checkboxes = document.querySelectorAll("#editSongModal input[type=checkbox]");
+                this.playlistInfo = this.playlistInfo.filter(entry => entry.sid !== id);
+
+                for (let i = 1; i < checkboxes.length; i++) {
+                    const checkbox = checkboxes[i];
+                    if (checkbox.checked) {
+                        playlist_ids.push(checkbox.value);
+                        this.playlistInfo.push({
+                            sid: id,
+                            pid: parseInt(checkbox.value),
+                            name: playlists.playlists[checkbox.value].name,
+                        });
+                    }
+                }
+
+                song.update();
+
+                Request.POST(this.apiEndpoint, {
+                    sid: id,
+                    artist: song.artist,
+                    title: song.title,
+                    pids: playlist_ids,
+                });
+            }
+
             async delete(sid) {
                 await Request.DELETE(this.apiEndpoint, {
                     sid,
                 });
                 this.songs[sid].delete();
                 delete this.songs[sid];
-            }
-
-            async edit(id, artist, title, playlists) {
-                await Request.POST(this.apiEndpoint, {
-                    id,
-                    artist,
-                    title,
-                    playlists,
-                });
-                this.songs[id].edit(artist, title, playlists);
+                playlists.updatePlaylistContent(this.playlistInfo.filter(entry => entry.sid === sid));
+                this.playlistInfo = this.playlistInfo.filter(entry => entry.sid !== sid);
+                if (this.streaming_id === sid) this.pause();
             }
 
             stream(id) {
@@ -408,41 +431,10 @@
                 }
 
                 document.querySelector("#editSongModal .btn-primary").onclick = () => {
-                    this.saveEdit(id);
+                    this.edit(id);
                 }
 
                 $("#editSongModal").modal();
-            }
-
-            saveEdit(id) {
-                const song = this.songs[id];
-                song.artist = document.querySelector("#editSongModal #artist").value;
-                song.title = document.querySelector("#editSongModal #title").value;
-
-                const playlist_ids = [];
-                const checkboxes = document.querySelectorAll("#editSongModal input[type=checkbox]");
-                this.playlistInfo = this.playlistInfo.filter(entry => entry.sid !== id);
-
-                for (let i = 1; i < checkboxes.length; i++) {
-                    const checkbox = checkboxes[i];
-                    if (checkbox.checked) {
-                        playlist_ids.push(checkbox.value);
-                        this.playlistInfo.push({
-                            sid: id,
-                            pid: parseInt(checkbox.value),
-                            name: playlists.playlists[checkbox.value].name,
-                        });
-                    }
-                }
-
-                song.update();
-
-                Request.POST(this.apiEndpoint, {
-                    sid: id,
-                    artist: song.artist,
-                    title: song.title,
-                    pids: playlist_ids,
-                });
             }
 
             toggleRemove(id) {
