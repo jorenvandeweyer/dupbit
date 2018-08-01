@@ -42,7 +42,6 @@
 
             update() {
                 this._request = Request.GET("/api/admin/logins").then((data) => {
-                    removeElements("#attempts");
                     const logins = data.logins;
                     this.addAttempts(logins);
                 });

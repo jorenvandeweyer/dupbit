@@ -37,9 +37,6 @@ module.exports = {
         currentPage: "/users",
         requireLogin: true,
         requireLevel: 3,
-        pageData: {
-            "users": "Database.getUsers()",
-        }
     },
     "/dupbot": {
         title: "Dupbit - Dupbot",

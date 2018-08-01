@@ -3,31 +3,6 @@
 
 	<head>
 		<%- include ./components/head %>
-		<script>
-		function editUser(id){
-			var level = $("#" + id + " td:eq(3)").text();
-			$("#" + id + " td")[1].innerHTML = '<input id="username" value="'+ $("#" + id + " td:eq(1)").text() +'"></input>';
-			$("#" + id + " td")[2].innerHTML = '<input id="email"value="'+ $("#" + id + " td:eq(2)").text() +'"></input>';
-			$("#" + id + " td")[3].innerHTML = '<select id="level"><option>0</option><option>1</option><option>2</option><option>3</option></select>';
-			$("#" + id + " td")[5].innerHTML = '<button type="button" class="btn btn-link" onclick="saveUser(' + id + ')">Save</button>';
-			$("#" + id + " option:eq("+ level +")").prop("selected", true);
-		}
-
-		function saveUser(id){
-			$("#submitform #id").val(id);
-			$("#submitform #username").val($("#"+id+" #username").val());
-			$("#submitform #email").val($("#"+id+" #email").val());
-			$("#submitform #level").val($("#"+id+" #level").val());
-			$("#submitform #action").val("update");
-			$("#submitform").submit();
-		}
-
-		function deleteUser(id){
-			$("#submitform #id").val(id);
-			$("#submitform #action").val("delete");
-			$("#submitform").submit();
-		}
-		</script>
 	</head>
 
 	<body>
@@ -50,33 +25,103 @@
 								<th>Delete</th>
 							</tr>
 						</thead>
-						<tbody>
-                            <% var users = pageData.users %>
-                            <% for (let user in users) { %>
-                                <%- "<tr id=" + users[user]['id'] + ">" %>
-                                    <%- "<td>" + users[user]['id'] + "</td>" %>
-                                    <%- "<td>" + users[user]['username'] + "</td>" %>
-                                    <%- "<td>" + users[user]['email'] + "</td>" %>
-                                    <%- "<td>" + users[user]['level'] + "</td>" %>
-                                    <%- "<td>" + users[user]['registrationTimestamp'] + "</td>" %>
-                                    <%- "<td><button type='button' class='btn btn-link' onclick='editUser(" + users[user]['id'] + ")'>Edit</button></td>" %>
-                                    <%- "<td><button type='button' class='btn btn-danger' onclick='deleteUser(" + users[user]['id'] + ")'>Delete</button></td>" %>
-                                <%- "</tr>" %>
-                            <% } %>
+						<tbody id="user_list">
 						</tbody>
 					</table>
 				</div>
 			</div>
 		</div>
 
-		<form action="api/account/edit" style="visibility:hidden" method="post" id="submitform">
-			<input type="hidden" name="id" id="id"/>
-			<input type="hidden" name="level" id="level"/>
-			<input type="hidden" name="email" id="email"/>
-			<input type="hidden" name="username" id="username"/>
-			<input type="hidden" name="action" id="action"/>
-		</form>
         <%- include ./components/footer %>
+    <script>
+    class Users {
+        constructor() {
+            this.users = {};
+            this.update();
+        }
 
+        update() {
+            Request.GET("/api/admin/users").then((data) => {
+                const users = data.users;
+                console.log(users);
+                for (let i = 0; i < users.length; i++) {
+                    this.add(users[i]);
+                }
+            });
+        }
+
+        add(user) {
+            const el = createElement(this._createUser(user), "tbody");
+            document.getElementById("user_list").append(el);
+            this.users[user.id] = {
+                id: user.id,
+                username: user.username,
+                email: user.email,
+                level: user.level,
+                registrationTimestamp: user.registrationTimestamp,
+                element: el,
+                delete: function() {
+                    this.element.remove();
+                    delete this.users[this.id];
+                },
+                edit: function() {
+                    this.element
+                }
+            }
+        }
+
+        edit(user) {
+            Request.POST("/api/admin/users", {
+                id,
+                username,
+                email,
+                level,
+            }).then(() => {
+
+            });
+        }
+
+        delete(user) {
+            Request.DELETE("/api/admin/users", {
+                id
+            }).then(() => {
+                this.users[user].delete();
+            });
+        }
+
+        _createUser(user) {
+            return `<tr>
+                <td> ${user.id} </td>
+                <td> ${user.username} </td>
+                <td> ${user.email} </td>
+                <td> ${user.level} </td>
+                <td> ${user.registrationTimestamp} </td>
+                <td><button type='button' class='btn btn-link' onlclick='users.edit(${user.id})'>Edit</button></td>
+                <td><button type='button' class='btn btn-danger' onclick='users.delete(${user.id})'>Remove</button></td>
+            </tr>`;
+        }
+    }
+
+    var users = new Users();
+
+    function editUser(id){
+        var level = $("#" + id + " td:eq(3)").text();
+        $("#" + id + " td")[1].innerHTML = '<input id="username" value="'+ $("#" + id + " td:eq(1)").text() +'"></input>';
+        $("#" + id + " td")[2].innerHTML = '<input id="email"value="'+ $("#" + id + " td:eq(2)").text() +'"></input>';
+        $("#" + id + " td")[3].innerHTML = '<select id="level"><option>0</option><option>1</option><option>2</option><option>3</option></select>';
+        $("#" + id + " td")[5].innerHTML = '<button type="button" class="btn btn-link" onclick="saveUser(' + id + ')">Save</button>';
+        $("#" + id + " option:eq("+ level +")").prop("selected", true);
+    }
+
+    function saveUser(id){
+        $("#submitform #id").val(id);
+        $("#submitform #username").val($("#"+id+" #username").val());
+        $("#submitform #email").val($("#"+id+" #email").val());
+        $("#submitform #level").val($("#"+id+" #level").val());
+        $("#submitform #action").val("update");
+        $("#submitform").submit();
+    }
+
+    </script>
 	</body>
 </html>
