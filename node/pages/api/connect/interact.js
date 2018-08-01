@@ -19,7 +19,8 @@ module.exports = async (req, res) => {
                         },
                     },
                 }));
-                return await waitForResponse(socket, data.name);
+                const result = await waitForResponse(socket, data.name);
+                res.json(result);
             }
         } else {
             res.status(401).json({
