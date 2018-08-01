@@ -218,12 +218,12 @@
                 };
             }
 
-            async create(name) {
+            async create() {
                 const name = document.getElementById("new_playlist").value;
                 const playlist = await Request.PUT(this.apiEndpoint, {
                     name,
                 });
-                this.add(playlist);
+                this.add(playlist.data);
             }
 
             async delete(id) {
