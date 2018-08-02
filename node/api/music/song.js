@@ -1,6 +1,6 @@
 const express = require("express");
-const db = require("../../../src/util/Database");
-const Music = require("../../../src/music/index");
+const db = require("../../src/util/Database");
+const Music = require("../../src/music/index");
 
 module.exports = express.Router()
     .all("*", (req, res, next) => {

@@ -1,4 +1,4 @@
-const { convert, createFilename } = require("../../../src/music/index");
+const { convert, createFilename } = require("../../src/music/index");
 
 module.exports = async (req, res) => {
     const data = req.body;

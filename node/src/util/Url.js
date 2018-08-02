@@ -5,15 +5,14 @@ const absolute = Path.dirname(process.mainModule.filename);
 const utf8 = [".ejs", ".js"];
 
 class Url {
-    constructor(url, suggestedExt = ".ejs") {
+    constructor(url, suggestedExt, dir="") {
         this.original = url;
 
         const url_parsed = url2.parse(this.original, true);
-        this.query = url_parsed.query;
         this.pathname = url_parsed.pathname;
 
-        if (fs.existsSync(`${absolute}/pages${this.pathname}`)) {
-            if (fs.lstatSync(`${absolute}/pages${this.pathname}`).isDirectory()) {
+        if (fs.existsSync(`${absolute}${dir}${this.pathname}`)) {
+            if (fs.lstatSync(`${absolute}${dir}${this.pathname}`).isDirectory()) {
                 if (this.pathname === "/") this.pathname = ""; //dirtyfix should improve logic!
                 this.pathname += "/index";
             }
@@ -25,7 +24,7 @@ class Url {
         this.ext = path.ext || suggestedExt;
 
         if (path.dir === "/") path.dir = "";
-        this.dir = `/pages${path.dir}`;
+        this.dir = `${dir}${path.dir}`;
 
         if (utf8.includes(this.ext)) {
             this.type = "utf8";
@@ -51,16 +50,6 @@ class Url {
     get fullFileName() {
         return `${this.filename}${this.ext}`;
     }
-
-    queryHas(param) {
-        return (param in this.query);
-    }
-
-    queryGet(param) {
-        if (!this.queryHas(param)) return null;
-        return this.query[param];
-    }
-
 }
 
 module.exports = Url;

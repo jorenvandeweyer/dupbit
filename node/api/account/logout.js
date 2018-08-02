@@ -1,5 +1,5 @@
-const Token = require("../../../src/util/Token");
-const WebSocket = require("../../../src/websocket/index");
+const Token = require("../../src/util/Token");
+const WebSocket = require("../../src/websocket/index");
 
 module.exports = async (req, res) => {
     await Token.removeToken(req.auth.tid);

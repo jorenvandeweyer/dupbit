@@ -1,4 +1,4 @@
-const db = require("../../../src/util/Database");
+const db = require("../../src/util/Database");
 
 module.exports = async (req, res) => {
     const data = req.query;

@@ -5,7 +5,7 @@ module.exports = async (req, res, next) => {
     const url = new Url(req.originalUrl, ".js");
     req._url = url;
 
-    if (fs.existsSync(url.fullPath)) {        
+    if (fs.existsSync(url.fullPath)) {
         require(url.fullPath)(req, res, next);
     } else {
         res.status(404).json({

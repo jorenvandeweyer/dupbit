@@ -28,7 +28,7 @@ const mimeTypes = {
 const cache = new Cache();
 
 module.exports = async (req, res) => {
-    const url = new Url(req.originalUrl);
+    const url = new Url(req.originalUrl, ".ejs", "/pages");
     res.set("Content-Type", mimeTypes[url.ext]);
     // const lang = require("../../lang/en.json");
 
@@ -44,7 +44,7 @@ module.exports = async (req, res) => {
     req.locals.session = req.auth;
     req.locals.query = url.query;
     req.locals.lang = lang;
-    
+
     if (pageInfo.requireLogout && req.auth.isLoggedIn) {
         return res.redirect(303, "/welcome");
     } else if (pageInfo.requireLogin && !req.auth.isLoggedIn) {

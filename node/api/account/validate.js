@@ -1,5 +1,5 @@
-const Database = require("../../../src/util/Database");
-const Token = require("../../../src/util/Token");
+const Database = require("../../src/util/Database");
+const Token = require("../../src/util/Token");
 const bcrypt = require("bcrypt");
 
 module.exports = async (req, res) => {

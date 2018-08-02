@@ -1,5 +1,5 @@
 const express = require("express");
-const db = require("../../src/util/Database");
+const db = require("../src/util/Database");
 
 module.exports = express.Router()
     .all("*", (req, res, next) => {

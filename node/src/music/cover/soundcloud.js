@@ -12,7 +12,6 @@ module.exports = async (song) => {
         }, function (err, res, body) {
             if (err) return reject(err);
             const data = JSON.parse(body);
-            console.log(data);
             r.get(data.thumbnail_url, (err, res, body) => {
                 if (err) return reject(err);
                 resolve(body);

@@ -1,5 +1,5 @@
-const ws = require("../../../src/websocket/index");
-const db = require("../../../src/util/Database");
+const ws = require("../../src/websocket/index");
+const db = require("../../src/util/Database");
 
 module.exports = async (req, res) => {
     const data = req.body;

@@ -1,5 +1,5 @@
-const Music = require("../../../src/music/index");
-const db =  require("../../../src/util/Database");
+const Music = require("../../src/music/index");
+const db =  require("../../src/util/Database");
 
 module.exports = async (req, res) => {
     const data = req.query;

@@ -19,6 +19,7 @@ services:
         volumes:
             - ./node/config.json:/usr/src/app/config.json
             - ./node/pages/:/usr/src/app/pages/
+            - ./node/api/:/usr/src/app/api/
             - ./node/src/:/usr/src/app/src/
             - ./files/youtube-dl/:/usr/src/app/data/music/
             - ./node/data/secrets/:/usr/src/app/data/secrets/

@@ -1,5 +1,5 @@
-const db = require("../../../src/util/Database");
-const ws = require("../../../src/websocket/index");
+const db = require("../../src/util/Database");
+const ws = require("../../src/websocket/index");
 
 module.exports = async (req, res) => {
     if (req.auth.isLoggedIn) {
