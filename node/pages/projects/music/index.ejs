@@ -494,7 +494,7 @@
                     <td>${song.title}</td>
                     <td>${song.playlists.map(info => info.name).join(", ")}</td>
                     <td><a class='btn btn-success btn-xs' href="/api/music/song?id=${song.id}&download"><i class='fa fa-download'></i> Download </a></td>
-                    <td><a class='btn btn-link btn-xs' href='${song.url}' taget='_blank'><i class='fab fa-youtube' taget='_blank'></i> ${song.provider}</a></td>
+                    <td><a class='btn btn-link btn-xs' href='${song.url}' taget='_blank'><i class='fab fa-${song.provider}' taget='_blank'></i> ${song.provider}</a></td>
                     <td><a class='btn btn-info btn-xs' onclick='songs.toggleEdit(${song.id})'><i class='fa fa-edit'></i> Edit </a></td>
                     <td><a class='btn btn-danger btn-xs' onclick='songs.toggleRemove(${song.id})'><i class='fa fa-trash'></i> Remove </a></td>
                 </tr>`;
