@@ -2,14 +2,14 @@ const RawIPC = require("node-ipc").IPC;
 const EventEmitter = require("events");
 
 class YouTubeDownloader extends EventEmitter {
-    constructor(url) {
+    constructor(url, filename="") {
         super();
         this.ipc = new RawIPC;
         this.ipc.config.id = "client";
         this.ipc.config.retry = 1500;
         this.ipc.config.silent = true;
 
-        this.ipc.connectToNet("youtube-dl-api", "youtube-dl", 8000, () => { this.connect(url); });
+        this.ipc.connectToNet("youtube-dl-api", "youtube-dl", 8000, () => { this.connect({url, filename}); });
     }
 
     connect(url) {
@@ -41,9 +41,9 @@ class YouTubeDownloader extends EventEmitter {
     }
 }
 
-module.exports = async (url) => {
+module.exports = async (url, filename) => {
     return new Promise((resolve, reject) => {
-        const downloader = new YouTubeDownloader(url);
+        const downloader = new YouTubeDownloader(url, filename);
 
         downloader.on("finished", (data) => {
             resolve(data);

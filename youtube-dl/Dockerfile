@@ -10,7 +10,7 @@ RUN curl -L https://yt-dl.org/downloads/latest/youtube-dl -o /usr/local/bin/yout
 
 RUN chmod a+rx /usr/local/bin/youtube-dl
 
-ARG CACHEBUST=2
+ARG CACHEBUST=3
 
 RUN git clone https://github.com/jorenvandeweyer/youtube-dl-docker-api.git .
 

@@ -3,11 +3,6 @@ const NodeID3 = require("node-id3");
 const db = require("../util/Database");
 const downloader = require("./downloader");
 
-async function downloadFromUrl(url, hash) {
-    const download = await downloader(url);
-    fs.renameSync(`data/music/${download.info}`, `data/music/${hash}.mp3`);
-}
-
 async function convert(uid, provider, url, title, artist) {
     let extractor;
 
@@ -22,7 +17,7 @@ async function convert(uid, provider, url, title, artist) {
     let result = await db.getSongRawByName(data.hash);
 
     if (!result) {
-        await downloadFromUrl(data.url, data.hash);
+        await downloader(data.url, `${data.hash}.mp3`);
         await db.addSongRaw(data.hash, url, provider, true);
         result = await db.getSongRawByName(data.hash);
     }
@@ -34,7 +29,7 @@ async function convert(uid, provider, url, title, artist) {
 
 async function stream(song) {
     if (!fs.existsSync(`data/music/${song.filename}.mp3`)) {
-        await downloadFromUrl(song.url, song.filename);
+        await downloader(song.url, `${song.filename}.mp3`);
     }
     return fs.readFileSync(`data/music/${song.filename}.mp3`);
 }
