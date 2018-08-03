@@ -4,6 +4,11 @@ const EventEmitter = require("events");
 class YouTubeDownloader extends EventEmitter {
     constructor(url, filename="") {
         super();
+        this.autoResolve = true;
+        this._promise = new Promise((resolve, reject) => {
+            this.resolve = resolve;
+            this.reject = reject;
+        });
         this.ipc = new RawIPC;
         this.ipc.config.id = "client";
         this.ipc.config.retry = 1500;
@@ -32,25 +37,14 @@ class YouTubeDownloader extends EventEmitter {
 
         this.ipc.of["youtube-dl-api"].on("close", (data) => {
             this.emit("finished", data);
+            if (this.autoResolve) this.resolve(data);
             this.ipc.disconnect("youtube-dl-api");
         });
 
         this.ipc.of["youtube-dl-api"].on("error", () => {
+            this.reject();
             this.ipc.disconnect("youtube-dl-api");
         });
     }
 }
-
-module.exports = async (url, filename) => {
-    return new Promise((resolve, reject) => {
-        const downloader = new YouTubeDownloader(url, filename);
-
-        downloader.on("finished", (data) => {
-            resolve(data);
-        });
-
-        downloader.on("error", (data) => {
-            reject(data);
-        });
-    });
-};
+module.exports = YouTubeDownloader;

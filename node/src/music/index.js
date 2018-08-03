@@ -17,19 +17,26 @@ async function convert(uid, provider, url, title, artist) {
     let result = await db.getSongRawByName(data.hash);
 
     if (!result) {
-        await downloader(data.url, `${data.hash}.mp3`);
-        await db.addSongRaw(data.hash, url, provider, true);
-        result = await db.getSongRawByName(data.hash);
+        const download = new downloader(data.url, `${data.hash}.mp3`);
+        download.autoResolve = false;
+        download.on("finished", async () => {
+            await db.addSongRaw(data.hash, url, provider, true);
+            result = await db.getSongRawByName(data.hash);
+            const convert = await db.addSong(result.id, uid, title, artist);
+            download.resolve(convert.insertId);
+        });
+        return download;
+    } else {
+        const convert = await db.addSong(result.id, uid, title, artist);
+        return convert.insertId;
     }
 
-    const convert = await db.addSong(result.id, uid, title, artist);
 
-    return convert.insertId;
 }
 
 async function stream(song) {
     if (!fs.existsSync(`data/music/${song.filename}.mp3`)) {
-        await downloader(song.url, `${song.filename}.mp3`);
+        await new downloader(song.url, `${song.filename}.mp3`)._promise;
     }
     return fs.readFileSync(`data/music/${song.filename}.mp3`);
 }

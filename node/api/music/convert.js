@@ -7,7 +7,7 @@ module.exports = async (req, res) => {
         res.set("Access-Control-Allow-Credentials", "true");
         res.set("Access-Control-Allow-Origin", req.headers.origin ? req.headers.origin : `chrome-extension://${data.origin}`);
         if (req.auth.level >= 2) {
-            const id = await convert(
+            const downloader = await convert(
                 req.auth.id,
                 data.provider ? data.provider : "unknown",
                 data.url,
@@ -15,13 +15,31 @@ module.exports = async (req, res) => {
                 data.artist);
 
             if (data.remote) {
-                res.json({
-                    success: true,
-                    id,
-                    downloadUrl: `/api/music/song?id=${id}&download`,
-                    filename: createFilename(data.title, data.artist, data.url)+".mp3",
-                });
+                if (typeof downloader === "number") {
+                    const id = downloader;
+                    res.json({
+                        success: true,
+                        id,
+                        downloadUrl: `/api/music/song?id=${id}&download`,
+                        filename: createFilename(data.title, data.artist, data.url)+".mp3",
+                    });
+                } else {
+                    res.set("Connection", "Transfer-Encoding");
+                    res.set("Content-Type", "application/json; charset=utf-8");
+                    res.set("Transfer-Encoding", "chunked");
+                    res.write("{\"progress\":[\"0%\"");
+
+                    downloader.on("state-change", (data) => {
+                        res.write(`,${JSON.stringify(data)}`);
+                    });
+
+                    const id = await downloader._promise;
+
+                    res.write(`],"succes":true,"id":${id},"downloadUrl":"/api/music/song?id=${id}&download","filename":"${createFilename(data.title, data.artist, data.url)}.mp3"}`);
+                    res.end();
+                }
             } else {
+                const id = await downloader._promise;
                 res.redirect(`/api/music/song?id=${id}`);
             }
         } else {
