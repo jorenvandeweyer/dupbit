@@ -42,7 +42,7 @@ module.exports = async (req, res) => {
 
     req.locals.pageInfo = pageInfo;
     req.locals.session = req.auth;
-    req.locals.query = url.query;
+    req.locals.query = req.query;
     req.locals.lang = lang;
 
     if (pageInfo.requireLogout && req.auth.isLoggedIn) {
