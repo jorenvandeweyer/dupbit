@@ -13,6 +13,7 @@ module.exports = async (req, res) => {
                 socket.send(JSON.stringify({
                     action: {
                         name: data.name,
+                        tabId: data.tabId,
                         data: {
                             action: data.action,
                             value: data.value,
