@@ -62,7 +62,7 @@ module.exports = async (req, res) => {
         res.send(content);
     } else {
         res.set("Content-Type", mimeTypes[".ejs"]);
-        content = await cache.get(new Url("/notfound"));
+        content = await cache.get(new Url("/notfound", ".ejs", "/pages"));
         content = await ejs.render(content, req.locals, {filename: url.fullPath});
         res.status(404).send(content);
     }
