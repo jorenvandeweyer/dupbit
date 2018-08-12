@@ -44,6 +44,12 @@ module.exports = {
         metaKeywords: "Dupbot, Discord, Bot, Discordbot",
         metaDescription: "Dupbot the bot for you Discord server.",
     },
+    "/snitch": {
+        title: "Dupbit - Snitch",
+        currentPage: "/snitch",
+        metaKeywords: "Snitch, Discord, Bot, Discordbot",
+        metaDescription: "Word Notifications with emoji support for your Discord server! 🎉.",
+    },
     "/notfound": {
         title: "Dupbit - Not Found",
         currentPage: "/notfound",

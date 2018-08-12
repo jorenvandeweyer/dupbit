@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<%- include ./components/head %>
+		<meta name="keywords" content="<%= pageInfo.metaKeywords %>">
+		<meta name="description" content="<%= pageInfo.metaDescription %>">
+		<meta property='og:image' content='/images/snitch.png'>
+		<meta property='og:title' content='Snitch, knows everything any time.'>
+		<meta property='og:description' content='<%= pageInfo.metaDescription %>'>
+	</head>
+	<body>
+		<%- include ./components/header %>
+        </br>
+		<div class="container">
+            <div class="card">
+                <div class="card-header">
+                    <a href="https://discordbots.org/bot/452042500828299264"><img src="https://discordbots.org/api/widget/status/452042500828299264.svg" alt="Discord Bots" /></a>
+                    <a href="https://discordbots.org/bot/452042500828299264"><img src="https://discordbots.org/api/widget/servers/452042500828299264.svg" alt="Discord Bots" /></a>
+                    <a href="https://discordbots.org/bot/452042500828299264"><img src="https://discordbots.org/api/widget/owner/452042500828299264.svg" alt="Discord Bots" /></a>
+                </div>
+
+    			<div id="embed" class="card">
+    				<div class="card-body">
+    					<button type="button" class="btn btn-success" onclick="window.open('https://discordapp.com/oauth2/authorize?client_id=452042500828299264&permissions=67497024&scope=bot')">Invite Snitch!</button>
+    					<br><br>
+    					<ul class="nav nav-tabs" role="tablist">
+                            <li class="nav-item">
+                                <a class="nav-link active" data-toggle="tab" href="#info_tab">Info</a>
+                            </li>
+    						<li class="nav-item">
+                                <a class="nav-link" data-toggle="tab" href="#commands_tab">Commands</a>
+                            </li>
+    					</ul>
+    					<br>
+    					<div class="tab-content">
+    						<div id="info_tab" class="container tab-pane active">
+    							<img src="/images/snitch.png" style="float:right;width:200px">
+                                <p> Snitch will send you a Direct Message with link to the message, when someone in the server mentions a word you are subscribed too.</p>
+                                <div>
+                                    <img src="https://i.am-a.ninja/a0214c.png" style="width:600px">
+                                </div>
+                                </br>
+                                <p> So for example: </p>
+                                <p> Every time someone says the word "cookie", the bot will send you a DM with the following info:</br> • Server </br> • Channel </br> • Mentioner </br> • Link </br></p>
+                                <p> You can easily remove a trigger when you decide you don't want to get notified anymore.</br>You can do this by reacting the red cross emoji to the last notification you got or use the <code class='inline'>listen!remove</code> command.</p>
+    							<button type="button" class="btn btn-success" onclick="window.open('https://discord.gg/5FcKNvk')">Snitch Support Server</button><br>
+    						</div>
+    						<div id="commands_tab" class="container tab-pane fade">
+    						</div>
+    					</div>
+    				</div>
+    			</div>
+            </div>
+		</div>
+        <%- include ./components/footer %>
+
+		<script>
+$(document).ready(function(){
+    $('[data-toggle="tooltip"]').tooltip();
+});
+init();
+if(window.location.search.substring(1).includes("embed")){
+    const embed = document.getElementById("embed");
+    document.body.innerHTML = embed.innerHTML;
+}
+function createAccordion(tab, content){
+	return  `<div id="${tab}">${content}</div>`;
+}
+function createExample(command, examples){
+    if (!examples || !examples.length) return "";
+
+    return "<br><p>Examples:<p/>" + examples.map((example) => {
+        let text = example.shift();
+        let commands = example.map(command =>  `<pre>${command}</pre>`).join("");
+        return `<p>${text}</p>${commands}`
+    }).join("<br>");
+}
+function createPanel(parent, command, content){
+    return `  <div class="card">
+          <div class="card-header" id="${command}_top">
+              <button class="btn btn-link" style="text-decoration: none;" data-toggle="collapse" data-target="#${command}" aria-expanded="false" aria-controls="${command}">
+                  <code class="inline">${content.title}</code>
+              </button>
+          </div>
+
+          <div id="${command}" class="collapse" aria-labelledby="${command}_top" data-parent="#${parent}">
+              <div class="card-body">
+                  <p><b>${content.content}</b></p>${createExample(command, content.example)}
+              </div>
+          </div>
+      </div>`;
+}
+function tooltip(message){
+    return `<span data-toggle="tooltip" data-placement="top" title='${message}' class='fas fa-info-circle'></span>`;
+}
+function init(){
+	const commands = {
+		commands: {
+			add: {
+				title: "listen!add &lt;word&gt;",
+				content: "Add a word to your trigger list.",
+                example: [
+                    [
+                        "Add the word \"Ecstabis\"",
+                        "listen!add Ecstabis"
+                    ], [
+                        "Add the emoji \"🍆\"",
+                        "listen!add 🍆"
+                    ]
+                ],
+			},
+            remove: {
+                title: "listen!remove &lt;word&gt;",
+                content: "Remove a word from your trigger list.",
+                example: [
+                    [
+                        "Remove the word \"Ecstabis\"",
+                        "listen!remove Ecstabis"
+                    ]
+                ],
+            },
+            regex: {
+                title: "listen!regex &lt;regexp&gt; [Coming Soon]",
+                content: "[Coming Soon]"
+            },
+            list: {
+                title: "listen!list",
+                content: "Show all the triggers in your trigger list"
+            },
+            help: {
+                title: "listen!help",
+                content: "Shows these commands."
+            },
+            invite: {
+                title: "listen!invite",
+                content: "DM's you an invite to add this bot to your server"
+            },
+            stats: {
+                title: "listen!stats",
+                content: "Shows some fancy stats about the bot"
+            }
+		},
+	};
+
+	for(let tab in commands){
+		let command_tab = commands[tab];
+		let content = "";
+		for(let command in command_tab){
+			content += createPanel(tab, command, command_tab[command]);
+		}
+		document.getElementById(tab + "_tab").innerHTML = createAccordion(tab, content);
+	}
+    var url = (window.location != window.parent.location)
+            ? document.referrer.replace("?","#")
+            : document.location.href;
+
+    if (url.includes("#")){
+        let cmd = url.split("#")[1];
+        for(let tab in commands){
+            if(cmd in commands[tab]){
+                $('.nav-tabs a[href="#' + tab + '_tab"]').tab('show');
+                $('#'+cmd).collapse("show")
+                $('html, body').animate({
+                    scrollTop: $("#" + cmd + "_top").offset().top
+                }, 1000);
+            }
+        }
+
+    }
+
+}
+function activaTab(tab){
+
+}
+function openCommand(cmd){
+
+}
+		</script>
+	</body>
+</html>
