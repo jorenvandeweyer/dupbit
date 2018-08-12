@@ -1,11 +1,11 @@
 const { webhookAuth } = require("../../config.json");
-// const { query } = require("../../src/util/Database");
+const db = require("../../src/util/Database");
 
 module.exports = async (req, res) => {
     const auth = req.get("authorization");
     const query = req.body;
     if (auth === webhookAuth) {
-        console.log(query);
+        await db.query("INSERT INTO discordbots.webhook_dbl (bot, user, type, query) values (?, ?, ?, ?)", [query.bot, query.user, query.type, query.query]);
         res.send();
     } else {
         res.status(404).json({success: false});
