@@ -57,13 +57,10 @@ module.exports = async (req, res) => {
 
     if (content) {
         if (url.ext === ".ejs") {
-            content = await ejs.render(content, req.locals, {filename: url.fullPath});
+            content = ejs.render(content, req.locals, {filename: url.fullPath});
         }
         res.send(content);
     } else {
-        res.set("Content-Type", mimeTypes[".ejs"]);
-        content = await cache.get(new Url("/notfound", ".ejs", "/pages"));
-        content = await ejs.render(content, req.locals, {filename: url.fullPath}).catch(() => console.log(url));
-        res.status(404).send(content);
+        res.redirect(303, "/notfound");
     }
 };
