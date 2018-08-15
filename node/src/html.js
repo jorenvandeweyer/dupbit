@@ -28,11 +28,11 @@ const mimeTypes = {
 const cache = new Cache();
 
 module.exports = async (req, res) => {
-    const url = new Url(req.originalUrl, ".ejs", "/pages");
-    res.set("Content-Type", mimeTypes[url.ext]);
-    // const lang = require("../../lang/en.json");
+    const url = await Url.new(req.originalUrl, ".ejs", "/pages");
 
-    let pageInfo = PageInfo[url.pathname];
+    res.set("Content-Type", mimeTypes[url.ext]);
+
+    let pageInfo = PageInfo[url.path];
 
     if (pageInfo == undefined) {
         pageInfo = {

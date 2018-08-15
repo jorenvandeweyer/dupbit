@@ -1,34 +1,41 @@
 const Path = require("path");
 const url2 = require("url");
 const fs = require("fs");
+const util = require("util");
 const absolute = Path.dirname(process.mainModule.filename);
 const utf8 = [".ejs", ".js"];
 
+const stat = util.promisify(fs.stat);
+
 class Url {
-    constructor(url, suggestedExt, dir="") {
-        this.original = url;
-
-        const url_parsed = url2.parse(this.original, true);
-        this.pathname = url_parsed.pathname;
-
-        if (fs.existsSync(`${absolute}${dir}${this.pathname}`)) {
-            if (fs.lstatSync(`${absolute}${dir}${this.pathname}`).isDirectory()) {
-                if (this.pathname === "/") this.pathname = ""; //dirtyfix should improve logic!
-                this.pathname += "/index";
-            }
-        }
-
-        const path = Path.parse(this.pathname);
-
-        this.name = path.name;
-        this.ext = path.ext || suggestedExt;
-
-        if (path.dir === "/") path.dir = "";
-        this.dir = `${dir}${path.dir}`;
-
+    constructor(path, dir, name, ext) {
+        this.path = path;
+        this.dir = dir;
+        this.name = name;
+        this.ext = ext;
         if (utf8.includes(this.ext)) {
             this.type = "utf8";
         }
+    }
+
+    static async new (url, suggestedExt, dir="") {
+        let path = url.split("?")[0];
+        const stats_dir = await stat(`${absolute}${dir}${path}`).catch(() => null);
+
+        if (stats_dir && stats_dir.isDirectory()) {
+            if (path[path.length-1] !== "/") path += "/";
+            path += "index";
+        }
+
+        const path_parsed = Path.parse(path);
+
+        const directory = `${dir}${path_parsed.dir}`;
+        const name = path_parsed.name;
+        const ext = path_parsed.ext || suggestedExt;
+
+        const c = new Url(path, directory, name, ext);
+
+        return c;
     }
 
     static get dirTop() {
@@ -49,6 +56,11 @@ class Url {
 
     get fullFileName() {
         return `${this.filename}${this.ext}`;
+    }
+
+    async isFile() {
+        const s = await stat(this.fullPath);
+        return s.isFile();
     }
 }
 

@@ -6,10 +6,11 @@ module.exports = async (req, res, next) => {
     const decoded = await Token.verifyToken(req.cookies.sid);
     if (decoded) {
         const id = decoded.data.id;
-        req.auth = Object.assign(decoded.data, {
+        req.auth = {
+            ...decoded.data,
             username: await Database.getUsernameByID(id),
             level: await Database.getLevelByID(id)
-        });
+        };
         req.locals.user = await new User(id).load();
     } else {
         req.auth = {

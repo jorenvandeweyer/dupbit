@@ -1,4 +1,6 @@
 const fs = require("fs");
+const util = require("util");
+const readFile = util.promisify(fs.readFile);
 
 class Cache {
     constructor() {
@@ -7,9 +9,13 @@ class Cache {
 
     async get(url) {
         if (!this.cache.has(url.shortPath)) {
-            let file = await this.loadFile(url.fullPath, url.type);
-            if (file) {
-                this.cache.set(url.shortPath, file);
+            if (url.isFile()) {
+                const file = await readFile(url.fullPath, url.type).catch(() => null);
+                if (file) {
+                    this.cache.set(url.shortPath, file);
+                } else {
+                    return null;
+                }
             } else {
                 return null;
             }
@@ -17,19 +23,8 @@ class Cache {
         return this.cache.get(url.shortPath);
     }
 
-    async loadFile(path, type) {
-        return new Promise((resolve, reject) => {
-            if (fs.existsSync(path)) {
-                fs.readFile(path, type, (err, data) => {
-                    if (err) return reject(err);
-                    return resolve(data);
-                });
-            } else {
-                return resolve(null);
-            }
-        }).catch((err) => {
-            console.log(err);
-        });
+    flush() {
+        this.cache = new Map();
     }
 }
 
