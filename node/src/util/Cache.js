@@ -11,8 +11,10 @@ class Cache {
         if (!this.cache.has(url.shortPath)) {
             if (url.isFile()) {
                 const file = await readFile(url.fullPath, url.type).catch(() => null);
-                if (file) {
+                if (file && process.env.NODE_ENV === "production") {
                     this.cache.set(url.shortPath, file);
+                } else if (file) {
+                    return file;
                 } else {
                     return null;
                 }

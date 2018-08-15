@@ -39,3 +39,5 @@ const server = http.createServer(app);
 server.listen(8080);
 
 WebSocket.create(server);
+
+console.log(`Running in: ${process.env.NODE_ENV}`);
