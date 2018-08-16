@@ -144,6 +144,38 @@ function init(){
                     ]
                 ],
             },
+            removeall: {
+                title: "listen!removeAll",
+                content: "Remove all triggers from your trigger list.",
+            },
+            ignore: {
+                title: "listen!ignore <userid>",
+                content: "The bot will ignore all messages from this user",
+                example: [
+                    [
+                        "Ignore Ecstabis with id",
+                        "listen!ignore 261634894428372992"
+                    ],
+                    [
+                        "Ignore Ecstabis with a mention",
+                        "listen!ignore @Ecstabis#0001"
+                    ]
+                ]
+            },
+            unignore: {
+                title: "listen!unignore <userid>",
+                content: "The bot will start listening to messages from this user",
+                example: [
+                    [
+                        "Unignore Ecstabis with id",
+                        "listen!unignore 261634894428372992"
+                    ],
+                    [
+                        "Unignore Ecstabis with a mention",
+                        "listen!unignore @Ecstabis#0001"
+                    ]
+                ]
+            },
             list: {
                 title: "listen!list",
                 content: "Show all the triggers in your trigger list"
