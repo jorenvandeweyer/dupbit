@@ -59,8 +59,8 @@ class Url {
     }
 
     async isFile() {
-        const s = await stat(this.fullPath);
-        return s.isFile();
+        const s = await stat(this.fullPath).catch(() => null);
+        return s && s.isFile();
     }
 }
 
