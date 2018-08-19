@@ -27,6 +27,14 @@ module.exports = express.Router()
             await db.addUsernameChange(data.id, data.username);
             await db.setEmail(data.id, data.email);
             await db.setLevel(data.id, data.level);
+            res.json({
+                success: true,
+                data: {
+                    username: data.username,
+                    email: data.email,
+                    level: data.level
+                }
+            });
         } else {
             res.status(405).json({
                 success: false,
