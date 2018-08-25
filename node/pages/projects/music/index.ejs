@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 	<head>
-		<%- include ../../components/head %>
+        <%- include ../../components/head %>
+        <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
 	</head>
 	<body>
 		<%- include ../../components/header %>
@@ -12,11 +13,14 @@
 				<div class="card-body">
                     <div class="d-flex flex-row">
     					<div id="playlist_buttons" class='btn-group' role="group">
-                            <a class='btn btn-light' onclick="songs.filterPlaylist(0)"><i class='fa fa-music'></i> All</a>
+                            <a class='btn btn-light' @click="songs.filterPlaylist(0)"><i class='fa fa-music'></i> All</a>
+                            <a class='btn btn-light playlist_entries' v-for='playlist of playlists.playlists' @click='songs.filterPlaylist(playlist.id)' v-cloak>
+                                <i class='fa fa-music'></i> {{playlist.name}}
+                            </a>
                             <a class="btn btn-light" data-toggle="modal" data-target="#editPlaylistModal"><i class='fa fa-edit'></i></a>
     					</div>
                         <div class="btn-group ml-auto" role="group">
-                            <a class="btn btn-light" onclick="update()"><i class="fas fa-sync-alt"></i></a>
+                            <a class="btn btn-light" @click="update()"><i class="fas fa-sync-alt"></i></a>
                         </div>
                     </div>
 					<div class="table-responsive">
@@ -34,127 +38,148 @@
 								</tr>
 							</thead>
 							<tbody id="allSongs">
+                                <tr id="sid" class="song_entries" v-for="song in songs.songs" v-bind:style='{display: song.visible ? "table-row" : "none"}' v-cloak>
+                                    <td>
+                                        <a class='playButton btn btn-link btn-xs' @click='songs.stream(song.id)' v-bind:style='{display: song.playing ? "none": "block"}'><i class='fa fa-play'></i></a>
+                                        <a class='pauseButton btn btn-link btn-xs' @click='songs.pause()' v-bind:style='{display: song.playing ? "block": "none"}'><i class='fa fa-pause'></i></a>
+                                    </td>
+                                    <td>{{song.artist}}</td>
+                                    <td>{{song.title}}</td>
+                                    <td>{{song.playlists.map(info => info.name).join(", ")}}</td>
+                                    <td><a class='btn btn-success btn-xs' v-bind:href='"api/music/song?id=" + song.id + "&download"'><i class='fa fa-download'></i> Download </a></td>
+                                    <td><a class='btn btn-link btn-xs' v-bind:href='song.url' target='_blank'><i class='fab fa-${song.provider}' taget='_blank' v-bind:class='[classes[song.provider]]'></i> {{song.provider}} </a></td>
+                                    <td><a class='btn btn-info btn-xs' @click='songs.toggleEdit(song.id)'><i class='fa fa-edit'></i> Edit </a></td>
+                                    <td><a class='btn btn-danger btn-xs' @click='songs.toggleRemove(song.id)'><i class='fa fa-trash'></i> Remove </a></td>
+                                </tr>
 							</tbody>
 						</table>
 					</div>
 				</div>
-			</div>
+            </div>
+
+            <div id="editSongModal" class="modal fade" role="dialog">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title">Edit song</h4>
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <div class="input-group-text"><i class="fa fa-headphones"></i></div>
+                                    </div>
+                                    <input id="artist" name="artist" type="text" class="form-control" placeholder="Artist" v-model="editSongModal.artist"/>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <div class="input-group-text"><i class="fa fa-music"></i></div>
+                                    </div>
+                                    <input id="title" name="title" type="text" class="form-control" placeholder="Title" v-model="editSongModal.title"/>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="panel panel-default">
+                                    <div class="panel-heading"><b>Playlists</b></div>
+                                    <div id="editSongModalContent" class="panel-body">
+                                        <div class='form-check disabled'>
+                                            <label class="form-check-label">
+                                                <input type='checkbox' disabled checked/> All
+                                            </label>
+                                        </div>
+                                        <div class='form-check playlist_entries' v-for='playlist in playlists.playlists' v-cloak>
+                                            <label class="form-check-label"><input type='checkbox' v-model="editSongModal.options[playlist.id]"/> {{playlist.name}} </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn btn-primary" data-dismiss="modal" @click="songs.saveEdit()">Save</button>
+                            <button class="btn btn-default" data-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="editPlaylistModal" class="modal fade" role="dialog">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title">Edit playlist</h4>
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <table class='table table-hover table-condensed table-responsive'>
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Content</th>
+                                        <th>Edit</th>
+                                        <th>Remove</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="editPlaylistModalContent">
+                                    <tr class='playlist_entries' v-for='playlist of playlists.playlists' v-cloak>
+                                        <td><span v-bind:style='{display: playlist.edit ? "none" : "block"}'>{{playlist.name}}</span><input type='text' style='width:120px;' v-bind:style='{display: playlist.edit ? "block" : "none"}' v-model='editPlaylistModal.name'/></td>
+                                        <td> {{playlist.numberOfSongs}} songs </td>
+                                        <td>
+                                            <a class='btn btn-info btn-xs' @click='playlists.toggleEdit(playlist.id)' v-bind:style='{display: playlist.edit ? "none" : "block"}'><i class='fa fa-edit'></i> Edit </a>
+                                            <a class='btn btn-success btn-xs' @click='playlists.saveEdit(playlist.id)' v-bind:style='{display: playlist.edit ? "block" : "none"}'><i class='fa fa-save'></i> Save </a>
+                                        </td>
+                                        <td><a class='btn btn-danger btn-xs' @click='playlists.toggleRemove(playlist.id)'><i class='fa fa-trash'></i> Remove </a></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="modal-header">
+                            <h4 class="modal-title">Add playlist</h4>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <div class="input-group-text"><i class="fa fa-music"></i></div>
+                                    </div>
+                                    <input id="new_playlist" name="name" type="text" class="form-control" placeholder="New Playlist" v-model="editPlaylistModal.new"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn btn-primary" @click="playlists.create()" data-dismiss="modal">Add</button>
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        
+            <div id="confirmRemoval" class="modal fade" role="dialog">
+                <div class="modal-dialog modal-sm">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title"></h4>
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <p></p>
+                        </div>
+                        <div class="modal-footer">
+                            <input type="hidden"/>
+                            <button class="btn btn-danger" data-dismiss="modal"><i class="fa fa-trash"></i> Remove </button>
+                            <button class="btn btn-default" data-dismiss="modal"> Close </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
 		</div>
 
 		<audio id="audio"></audio>
 
-		<div id="editPlaylistModal" class="modal fade" role="dialog">
-			<div class="modal-dialog">
-				<div class="modal-content">
-					<div class="modal-header">
-                        <h4 class="modal-title">Edit playlist</h4>
-						<button type="button" class="close" data-dismiss="modal">&times;</button>
-					</div>
-					<div class="modal-body">
-						<table class='table table-hover table-condensed table-responsive'>
-							<thead>
-								<tr>
-									<th>Name</th>
-									<th>Content</th>
-									<th>Edit</th>
-									<th>Remove</th>
-								</tr>
-							</thead>
-							<tbody id="editPlaylistModalContent">
-							</tbody>
-						</table>
-					</div>
-					<div class="modal-header">
-						<h4 class="modal-title">Add playlist</h4>
-					</div>
-					<div class="modal-body">
-						<div class="form-group">
-							<div class="input-group">
-                                <div class="input-group-prepend">
-                                    <div class="input-group-text"><i class="fa fa-music"></i></div>
-                                </div>
-								<input id="new_playlist" name="name" type="text" class="form-control" placeholder="New Playlist"/>
-							</div>
-						</div>
-					</div>
-					<div class="modal-footer">
-						<button class="btn btn-primary" onclick="playlists.create()" data-dismiss="modal">Add</button>
-						<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-					</div>
-				</div>
-			</div>
-		</div>
-
-		<div id="editSongModal" class="modal fade" role="dialog">
-			<div class="modal-dialog">
-				<div class="modal-content">
-					<div class="modal-header">
-                        <h4 class="modal-title">Edit song</h4>
-						<button type="button" class="close" data-dismiss="modal">&times;</button>
-					</div>
-					<div class="modal-body">
-						<div class="form-group">
-							<div class="input-group">
-                                <div class="input-group-prepend">
-                                    <div class="input-group-text"><i class="fa fa-headphones"></i></div>
-                                </div>
-								<input id="artist" name="artist" type="text" class="form-control" placeholder="Artist"/>
-							</div>
-						</div>
-						<div class="form-group">
-							<div class="input-group">
-                                <div class="input-group-prepend">
-                                    <div class="input-group-text"><i class="fa fa-music"></i></div>
-                                </div>
-								<input id="title" name="title" type="text" class="form-control" placeholder="Title"/>
-							</div>
-						</div>
-						<div class="form-group">
-                            <div class="panel panel-default">
-                                <div class="panel-heading"><b>Playlists</b></div>
-                                <div id="editSongModalContent" class="panel-body">
-                                    <div class='form-check disabled'>
-                                        <label class="form-check-label">
-                                            <input type='checkbox' disabled checked/> All
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
-						</div>
-					</div>
-					<div class="modal-footer">
-						<input id="sid" name="sid" type="hidden"/>
-						<button class="btn btn-primary" data-dismiss="modal">Save</button>
-						<button class="btn btn-default" data-dismiss="modal">Close</button>
-					</div>
-				</div>
-			</div>
-		</div>
-
-        <div id="confirmRemoval" class="modal fade" role="dialog">
-            <div class="modal-dialog modal-sm">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h4 class="modal-title"></h4>
-                        <button type="button" class="close" data-dismiss="modal">&times;</button>
-                    </div>
-                    <div class="modal-body">
-                        <p></p>
-                    </div>
-                    <div class="modal-footer">
-                        <input type="hidden"/>
-                        <button class="btn btn-danger" data-dismiss="modal"><i class="fa fa-trash"></i> Remove </button>
-                        <button class="btn btn-default" data-dismiss="modal"> Close </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
         <%- include ../../components/footer %>
-
         <script>
-        var playlists, songs;
-
         function confirmRemoval(title, body, onclick) {
             const el = document.getElementById("confirmRemoval");
 
@@ -165,358 +190,235 @@
             $("#confirmRemoval").modal();
         }
 
-        class Playlists {
-            constructor () {
-                this.playlists = {};
-                this.apiEndpoint = "/api/music/playlist";
-                this.update();
-            }
-
-            update() {
-                this._request = Request.GET(this.apiEndpoint).then(data => {
-                    removeElements(".playlist_entries");
-
-                    const playlists = data.playlists;
-
-                    this.playlists = {};
-
-                    for (let i = 0; i < playlists.length; i++) {
-                        this.add(playlists[i]);
-                    }
-                });
-            }
-
-            add(playlist) {
-                const button = createElement(this._createPlaylistButton(playlist));
-                const edit = createElement(this._createEditPlaylist(playlist), "tbody");
-                const songModal = createElement(this._createEditSongModal(playlist));
-
-                const buttons = document.getElementById("playlist_buttons");
-
-                buttons.insertBefore(button, buttons.children[buttons.children.length - 1]);
-                document.getElementById("editPlaylistModalContent").appendChild(edit);
-                document.getElementById("editSongModalContent").appendChild(songModal);
-
-                this.playlists[playlist.id] = {
-                    id: playlist.id,
-                    name: playlist.name,
-                    numberOfSongs: playlist.numberOfSongs,
-                    elements: {
-                        button,
-                        edit,
-                        songModal,
-                    },
-                    delete: function () {
-                        this.elements.button.remove();
-                        this.elements.edit.remove();
-                        this.elements.songModal.remove();
-                    },
-                    edit: function (name) {
-                        this.elements.button.childNodes[1].nodeValue = ` ${name} `;
-                        this.elements.edit.querySelector("span").innerText = name;
-                        this.elements.edit.querySelector("input").value = name;
-                        this.elements.songModal.querySelector("label").childNodes[1].nodeValue = ` ${name} `;
-                    },
-                    update: function() {
-                        this.elements.edit.children[1].innerText = ` ${this.numberOfSongs} songs `;
-                    }
-                };
-            }
-
-            async create() {
-                let name = document.getElementById("new_playlist").value;
-                if (!name) name = "New Playlist";
-
-                const playlist = await Request.PUT(this.apiEndpoint, {
-                    name,
-                });
-                this.add(playlist.data);
-            }
-
-            async delete(id) {
-                await Request.DELETE(this.apiEndpoint, {
-                    id
-                });
-                this.playlists[id].delete();
-                delete this.playlists[id];
-                songs.playlistInfo = songs.playlistInfo.filter(entry => entry.pid !== id);
-                songs.updatePlaylistNames();
-            }
-
-            edit(id) {
-                const el = this.playlists[id].elements.edit;
-                const name = el.querySelector("input").value;
-                this.playlists[id].name = name;
-
-                Request.POST(this.apiEndpoint, {
-                    id,
-                    name,
-                }).then(() => {
-                    this.playlists[id].edit(name);
-                    songs.playlistInfo.filter(entry => entry.pid === id).map(entry => entry.name = name);
-                    songs.updatePlaylistNames();
-
-                    el.querySelector("span").style.display = "block";
-                    el.querySelector("input").style.display = "none";
-                    el.querySelector(".btn-info").style.display = "block";
-                    el.querySelector(".btn-success").style.display = "none";
-                });
-            }
-
-            toggleEdit(id) {
-                const el = this.playlists[id].elements.edit;
-                el.querySelector("span").style.display = "none";
-                el.querySelector("input").style.display = "block";
-                el.querySelector(".btn-info").style.display = "none";
-                el.querySelector(".btn-success").style.display = "block";
-            }
-
-            toggleRemove(id) {
-                confirmRemoval("Remove Playlist", `Are you sure you want to remove the playlist "${this.playlists[id].name}"?`, () => {
-                    this.delete(id);
-                });
-            }
-
-            updatePlaylistContent(del, add=[]) {
-                console.log("update");
-                for (let i = 0; i < del.length; i++) {
-                    const pid = del[i].pid;
-                    const playlist = this.playlists[pid];
-                    playlist.numberOfSongs--;
-                    playlist.update();
-
-                }
-
-                for (let i = 0; i < add.length; i++) {
-                    const pid = add[i].pid;
-                    const playlist = this.playlists[pid];
-                    playlist.numberOfSongs++;
-                    playlist.update();
-                }
-            }
-
-            _createPlaylistButton(playlist) {
-                return `<a class='btn btn-light playlist_entries' onclick='songs.filterPlaylist(${playlist.id})'><i class='fa fa-music'></i> ${playlist.name} </a>`;
-            }
-
-            _createEditPlaylist(playlist) {
-                return `<tr class='playlist_entries'>
-                    <td><span>${playlist.name}</span><input type='text' style='display:none;width:120px;' value='${playlist.name}'/></td>
-                    <td> ${playlist.numberOfSongs} songs </td>
-                    <td>
-                        <a class='btn btn-info btn-xs' onclick='playlists.toggleEdit(${playlist.id})'><i class='fa fa-edit'></i> Edit </a>
-                        <a class='btn btn-success btn-xs' onclick='playlists.edit(${playlist.id})' style='display: none;'><i class='fa fa-save'></i> Save </a>
-                    </td>
-                    <td><a class='btn btn-danger btn-xs' onclick='playlists.toggleRemove(${playlist.id})'><i class='fa fa-trash'></i> Remove </a></td>
-                </tr>`;
-            }
-
-            _createEditSongModal(playlist) {
-                return `<div class='form-check playlist_entries'>
-                    <label class="form-check-label"><input id='pid_${playlist.id}' type='checkbox' value='${playlist.id}'/> ${playlist.name} </label>
-                </div>`;
-            }
-        }
-
         class Songs {
             constructor() {
-                this.songs = {};
+                this.songs = [];
                 this.apiEndpoint = "/api/music/song";
                 this.update();
             }
 
             update() {
                 this._request = Request.GET(this.apiEndpoint).then(data => {
-                    removeElements(".song_entries");
-
-                    const songs = data.songs;
-
                     this.playlistInfo = data.playlistInfo;
-                    this.songs = {};
-
-                    for (let i = 0; i < songs.length; i++) {
-                        this.add(songs[i]);
-                    }
+                    this.songs = data.songs;
+                    this.songs.forEach(song => {
+                        song.playlists = this.playlistInfo.filter(info => info.sid === song.id);
+                        song.playing = false;
+                        song.visible = true;
+                    });
                 });
             }
 
-            add(song) {
-                song.playlists = this.playlistInfo.filter(info => info.sid === song.id);
-                const entry = createElement(this._createSongEntry(song), "tbody");
-
-                document.getElementById("allSongs").appendChild(entry);
-
-                this.songs[song.id] = {
-                    id: song.id,
-                    artist: song.artist,
-                    title: song.title,
-                    provider: song.provider,
-                    url: song.url,
-                    filename: song.filename,
-                    cached: song.cached,
-                    playlists: song.playlists,
-                    element: entry,
-                    delete: function() {
-                        this.element.remove();
-                    },
-                    update: function() {
-                        this.playlists = songs.playlistInfo.filter(info => info.sid === song.id);
-                        this.element.children[1].innerText = this.artist;
-                        this.element.children[2].innerText = this.title;
-                        this.element.children[3].innerText = this.playlists.map(info => info.name).join(", ");
-                    },
-                }
-            }
-
-            edit(id) {
-                const song = this.songs[id];
-                song.artist = document.querySelector("#editSongModal #artist").value;
-                song.title = document.querySelector("#editSongModal #title").value;
-
-                const playlist_ids = [];
-                const checkboxes = document.querySelectorAll("#editSongModal input[type=checkbox]");
-
-                const playlist_del = this.playlistInfo.filter(entry => entry.sid === id);
-
-                this.playlistInfo = this.playlistInfo.filter(entry => entry.sid !== id);
-
-                for (let i = 1; i < checkboxes.length; i++) {
-                    const checkbox = checkboxes[i];
-                    if (checkbox.checked) {
-                        playlist_ids.push(checkbox.value);
-                        this.playlistInfo.push({
-                            sid: id,
-                            pid: parseInt(checkbox.value),
-                            name: playlists.playlists[checkbox.value].name,
-                        });
-                    }
-                }
-
-                const playlist_add = this.playlistInfo.filter(entry => entry.sid === id);
-
-                playlists.updatePlaylistContent(playlist_del, playlist_add);
-
-                song.update();
-
-                Request.POST(this.apiEndpoint, {
-                    sid: id,
-                    artist: song.artist,
-                    title: song.title,
-                    pids: playlist_ids,
-                });
-            }
-
-            async delete(sid) {
-                await Request.DELETE(this.apiEndpoint, {
-                    sid,
-                });
-                this.songs[sid].delete();
-                delete this.songs[sid];
-                playlists.updatePlaylistContent(this.playlistInfo.filter(entry => entry.sid === sid));
-                this.playlistInfo = this.playlistInfo.filter(entry => entry.sid !== sid);
-                if (this.streaming_id === sid) this.pause();
+            find(id) {
+                return this.songs.find(song => song.id === id);
             }
 
             stream(id) {
                 const audio = document.getElementById('audio');
-                if (this.streaming_id !== id) {
-                    this.streaming_id = id;
-                    audio.src = `/api/music/stream?id=${id}`;
+                const song = this.find(id);
+                if (audio.streaming !== id) {
+                    audio.streaming = id;
+                    audio.src = `/api/music/stream?id=${id}`
                 }
+                this.songs.forEach(song => song.playing = false);
+                song.playing = true;
                 audio.play();
-                displayClass("playButton", "block");
-                displayClass("pauseButton", "none");
-
-                this.songs[id].element.querySelector(".playButton").style.display = "none";
-                this.songs[id].element.querySelector(".pauseButton").style.display = "block";
             }
 
             pause() {
+                this.songs.forEach(song => song.playing = false);
                 const audio = document.getElementById('audio');
                 audio.pause();
-                displayClass("playButton", "block");
-                displayClass("pauseButton", "none");
             }
-
-            filterPlaylist(pid) {
-                if (pid === 0) {
-                    displayClass("song_entries", "table-row");
-                } else {
-                    displayClass("song_entries", "none");
-                    for (let i in this.playlistInfo) {
-                        const entry = this.playlistInfo[i];
-                        if (entry.pid == pid) {
-                            this.songs[entry.sid].element.style.display = "table-row";
-                        }
-                    }
-                }
-            }
-
+        
             toggleEdit(id) {
-                const song = this.songs[id];
-                document.querySelector("#editSongModal #artist").value = song.artist;
-                document.querySelector("#editSongModal #title").value = song.title;
+                const song = this.find(id);
+                vm.editSongModal.artist = song.artist;
+                vm.editSongModal.title = song.title;
+                vm.editSongModal.id = song.id;
 
-                const checkboxes = document.querySelectorAll("#editSongModal input[type=checkbox]");
-                for (let i = 1; i < checkboxes.length; i++) {
-                    checkboxes[i].checked = false;
+                for (let checkbox in vm.editSongModal.options) {
+                    vm.editSongModal.options[checkbox] = false;
                 }
 
-                for (let i = 0; i< song.playlists.length; i++) {
-                    document.querySelector(`#editSongModal #pid_${song.playlists[i].pid}`).checked = true;
-                }
-
-                document.querySelector("#editSongModal .btn-primary").onclick = () => {
-                    this.edit(id);
+                for (let playlist of song.playlists) {
+                    vm.editSongModal.options[playlist.pid] = true;
                 }
 
                 $("#editSongModal").modal();
             }
 
+            saveEdit() {
+                const song = this.find(vm.editSongModal.id);
+                song.artist = vm.editSongModal.artist;
+                song.title = vm.editSongModal.title;
+
+                const playlist_del = this.playlistInfo.filter(info => info.sid === song.id);
+                const newPlaylistInfo = this.playlistInfo.filter(info => info.sid !== song.id);
+
+                for (let option in vm.editSongModal.options) {
+                    if (!vm.editSongModal.options[option]) continue;
+                    newPlaylistInfo.push({
+                        sid: song.id,
+                        pid: parseInt(option),
+                        name: vm.playlists.find(parseInt(option)).name,
+                    });
+                }
+
+                this.playlistInfo = newPlaylistInfo;
+
+                song.playlists = this.playlistInfo.filter(info => info.sid === song.id);
+                
+                const playlist_add = song.playlists.map(info => info.pid);
+                console.log(playlist_add);
+                vm.playlists.updatePlaylistContent(playlist_del, playlist_add);
+
+                Request.POST(this.apiEndpoint, {
+                    sid: song.id,
+                    artist: song.artist,
+                    title: song.title,
+                    pids: playlist_add,
+                });
+            }
+        
             toggleRemove(id) {
-                confirmRemoval("Remove Song", `Are you sure you want to remove the song "${this.songs[id].artist} - ${this.songs[id].title}"?`, () => {
+                confirmRemoval("Remove Song", `Are you sure you want to remove the song "${this.find(id).artist} - ${this.find(id).title}"?`, () => {
                     this.delete(id);
                 });
             }
 
-            updatePlaylistNames() {
-                for (let key in this.songs) {
-                    this.songs[key].update();
+            async delete(sid) {
+                if (this.find(sid).playing) this.pause();
+
+                Request.DELETE(this.apiEndpoint, {
+                    sid,
+                });
+                
+                this.songs = this.songs.filter(song => song.id !== sid);
+                vm.playlists.updatePlaylistContent(this.playlistInfo.filter(entry => entry.sid === sid));
+                this.playlistInfo = this.playlistInfo.filter(entry => entry.sid !== sid);
+            }
+
+            filterPlaylist(pid) {
+                if (pid === 0) {
+                    this.songs.forEach(song => song.visible = true);
+                } else {
+                    this.songs.forEach(song => song.visible = false);
+                    for (let entry of this.playlistInfo) {
+                        if (entry.pid == pid) {
+                            this.find(entry.sid).visible = true;
+                        }
+                    }
                 }
             }
-
-            _createSongEntry(song) {
-                return `<tr id="sid_${song.id}" class="song_entries">
-                    <td>
-                        <a class='playButton btn btn-link btn-xs' onclick='songs.stream(${song.id})'><i class='fa fa-play'></i></a>
-                        <a class='pauseButton btn btn-link btn-xs' onclick='songs.pause()' style='display: none;'><i class='fa fa-pause'></i></a>
-                    </td>
-                    <td>${song.artist}</td>
-                    <td>${song.title}</td>
-                    <td>${song.playlists.map(info => info.name).join(", ")}</td>
-                    <td><a class='btn btn-success btn-xs' href="/api/music/song?id=${song.id}&download"><i class='fa fa-download'></i> Download </a></td>
-                    <td><a class='btn btn-link btn-xs' href='${song.url}' taget='_blank'><i class='fab fa-${song.provider}' taget='_blank'></i> ${song.provider}</a></td>
-                    <td><a class='btn btn-info btn-xs' onclick='songs.toggleEdit(${song.id})'><i class='fa fa-edit'></i> Edit </a></td>
-                    <td><a class='btn btn-danger btn-xs' onclick='songs.toggleRemove(${song.id})'><i class='fa fa-trash'></i> Remove </a></td>
-                </tr>`;
+        
+            updatePlaylistNames() {
+                this.songs.forEach(song => {
+                    song.playlists = this.playlistInfo.filter(entry => entry.sid === song.id);
+                });
             }
         }
 
-        function init() {
-            playlists = new Playlists();
-            songs = new Songs();
+        class Playlists {
+            constructor() {
+                this.playlists = [];
+                this.apiEndpoint = "/api/music/playlist";
+                this.update();
+            }
 
-            Promise.all([playlists._request, songs._request]).then(() => {
-                console.log("ready");
-            });
+            update() {
+                this._request = Request.GET(this.apiEndpoint).then(data => {
+                    this.playlists = data.playlists;
+                    this.playlists.forEach(playlist => playlist.edit = false);
+                });
+            }
+
+            find(id) {
+                return this.playlists.find(playlist => playlist.id === id);
+            }
+            
+            async create() {
+                let name = vm.editPlaylistModal.new;
+                if (!name) name = "New Playlist";
+
+                const playlist = await Request.PUT(this.apiEndpoint, {
+                    name,
+                });
+
+                this.playlists.push(playlist.data);
+            }
+
+            toggleEdit(id) {
+                this.playlists.forEach(playlist => playlist.edit = false);
+                vm.editPlaylistModal.name = this.find(id).name;
+                this.find(id).edit = true;
+            }
+
+            saveEdit(id) {
+                const name = vm.editPlaylistModal.name;
+                this.find(id).name = name;
+                this.find(id).edit = false;
+                vm.songs.playlistInfo.filter(entry => entry.pid === id).forEach(entry => entry.name = name);
+                vm.songs.updatePlaylistNames();
+                Request.POST(this.apiEndpoint, {
+                    id, 
+                    name,
+                });
+            }
+
+            toggleRemove(id) {
+                confirmRemoval("Remove Playlist", `Are you sure you want to remove the playlist "${this.find(id).name}"?`, () => {
+                    this.delete(id);
+                });
+            }
+
+            async delete(id) {
+                await Request.DELETE(this.apiEndpoint, {
+                    id
+                });
+                this.playlists = this.playlists.filter(playlist => playlist.id !== id);
+                songs.playlistInfo = vm.songs.playlistInfo.filter(entry => entry.pid !== id);
+                songs.updatePlaylistNames();
+            }
+
+            updatePlaylistContent(dels, adds=[]) {
+                for (let del of dels) {
+                    this.find(del.pid).numberOfSongs--;
+                }
+                for (let add of adds) {
+                    this.find(add).numberOfSongs++;
+                }
+            }            
         }
 
-        function update() {
-            songs.update();
-            playlists.update();
-        }
+        const vm = new Vue({
+            el: '.container',
+            data: {
+                songs: new Songs(),
+                playlists: new Playlists(),
+                editSongModal: {
+                    id: 0,
+                    artist: "Artist",
+                    title: "Title",
+                    options: {}
+                },
+                editPlaylistModal: {
+                    new: "New Playlist",
+                    name: "playlist name",
+                },
+                classes: {
+                    "soundcloud": "fa-soundcloud",
+                    "youtube": "fa-youtube",
+                }
+            },
+            methods: {
+                update: function() {
+                    this.songs.update();
+                    this.playlists.update();
+                }
+            }
+        });
 
-        init();
         </script>
 	</body>
 </html>
