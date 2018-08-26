@@ -1,65 +1,78 @@
 <!DOCTYPE html>
 <html lang="en">
-	<head>
+    <head>
         <%- include ../../components/head %>
         <script src="https://cdn.jsdelivr.net/npm/vue"></script>
-	</head>
-	<body>
-		<%- include ../../components/header %>
-		<div class="container">
+        <style>
+        .fa-soundcloud {
+            color: #ff8800
+        }
+        .fa-youtube {
+            color: #ff0000
+        }
+        .btn-link {
+            color: black;
+        }
+        </style>
+    </head>
+    <body>
+        <%- include ../../components/header %>
+        <div class="container">
             </br>
-			<div class="card">
-				<div class="card-header"><b>Music</b></div>
-				<div class="card-body">
+            <div class="card">
+                <div class="card-header"><b>Music</b></div>
+                <div class="card-body">
                     <div class="d-flex flex-row">
-    					<div class='btn-group' role="group">
+                        <div class='btn-group' role="group">
                             <a class='btn btn-light' @click="songs.filterPlaylist(0)"><i class='fa fa-music'></i> All</a>
                             <a class='btn btn-light' v-for='playlist of playlists.playlists' @click='songs.filterPlaylist(playlist.id)' v-cloak>
                                 <i class='fa fa-music'></i> {{playlist.name}}
                             </a>
                             <a class="btn btn-light" data-toggle="modal" data-target="#editPlaylistModal"><i class='fa fa-edit'></i></a>
-    					</div>
+                        </div>
                         <div class="btn-group ml-auto" role="group">
                             <a class="btn btn-light" @click="update()"><i class="fas fa-sync-alt"></i></a>
                         </div>
                     </div>
-					<div class="table-responsive">
-						<table class='table table-hover table-condensed'>
-							<thead>
-								<tr>
-									<th></th>
-									<th>Artist</th>
-									<th>Title</th>
-									<th>Playlists</th>
-									<th>Download</th>
-									<th>Youtube</th>
-									<th>Edit</th>
-									<th>Remove</th>
-								</tr>
-							</thead>
-							<tbody>
+                    <div class="table-responsive">
+                        <table class='table table-hover table-condensed'>
+                            <thead>
+                                <tr>
+                                    <th></th>
+                                    <th>Title</th>
+                                    <th>Artist</th>
+                                    <th>Playlists</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
                                 <tr id="sid" v-for="song in songs.songs" v-show='song.visible' v-cloak>
                                     <td>
-                                        <a class='btn btn-link btn-xs' @click='songs.stream(song.id)' v-show='!song.playing'><i class='fa fa-play'></i></a>
-                                        <a class='btn btn-link btn-xs' @click='songs.pause()' v-show='song.playing'><i class='fa fa-pause'></i></a>
+                                            <a class='btn btn-link btn-xs' @click='songs.stream(song.id)' v-show='!song.playing'><i class='fa fa-play'></i></a>
+                                            <a class='btn btn-link btn-xs' @click='songs.pause()' v-show='song.playing'><i class='fa fa-pause'></i></a>
                                     </td>
-                                    <td>{{song.artist}}</td>
                                     <td>{{song.title}}</td>
+                                    <td>{{song.artist}}</td>
                                     <td>{{song.playlists.map(info => info.name).join(", ")}}</td>
-                                    <td><a class='btn btn-success btn-xs' v-bind:href='"api/music/song?id=" + song.id + "&download"'><i class='fa fa-download'></i> Download </a></td>
                                     <td>
-                                        <a class='btn btn-link btn-xs' v-bind:href='song.url' target='_blank'>
-                                        <i class='fab' taget='_blank' v-bind:class='[classes[song.provider]]'></i> 
-                                        {{song.provider}} 
+                                        <a class='btn btn-link btn-xs' v-bind:href='song.url' target='_blank' data-toggle="tooltip" data-placement="top" title="Open Platform">
+                                            <i class='fab'v-bind:class='[classes[song.provider]]'></i> 
                                         </a>
+                                        <a class='btn btn-link btn-xs' v-bind:href='"api/music/song?id=" + song.id + "&download"' data-toggle="tooltip" data-placement="top" title="Download">
+                                            <i class='fa fa-download'></i>
+                                        </a>
+                                        <a class='btn btn-link btn-xs' @click='songs.toggleEdit(song.id)' data-toggle="tooltip" data-placement="top" title="Edit">
+                                            <i class='fa fa-edit'></i>
+                                            </a>
+                                        <a class='btn btn-link btn-xs' @click='songs.toggleRemove(song.id)' data-toggle="tooltip" data-placement="top" title="Delete">
+                                            <i class='fa fa-times'></i>
+                                            </a>
                                     </td>
-                                    <td><a class='btn btn-info btn-xs' @click='songs.toggleEdit(song.id)'><i class='fa fa-edit'></i> Edit </a></td>
-                                    <td><a class='btn btn-danger btn-xs' @click='songs.toggleRemove(song.id)'><i class='fa fa-trash'></i> Remove </a></td>
                                 </tr>
-							</tbody>
-						</table>
-					</div>
-				</div>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
 
             <div id="editSongModal" class="modal fade" role="dialog">
@@ -73,7 +86,7 @@
                             <div class="form-group">
                                 <div class="input-group">
                                     <div class="input-group-prepend">
-                                        <div class="input-group-text"><i class="fa fa-headphones"></i></div>
+                                        <div class="input-group-text"><i class="fa fa-user"></i></div>
                                     </div>
                                     <input type="text" class="form-control" placeholder="Artist" v-model="editSongModal.artist"/>
                                 </div>
@@ -107,8 +120,8 @@
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <button class="btn btn-primary" data-dismiss="modal" @click="songs.saveEdit()">Save</button>
-                            <button class="btn btn-default" data-dismiss="modal">Close</button>
+                                <button class="btn btn-link" data-dismiss="modal"> Cancel </button>
+                                <button class="btn btn-light" data-dismiss="modal" @click="songs.saveEdit()"> Confirm </button>
                         </div>
                     </div>
                 </div>
@@ -122,41 +135,37 @@
                             <button type="button" class="close" data-dismiss="modal">&times;</button>
                         </div>
                         <div class="modal-body">
-                            <table class='table table-hover table-condensed table-responsive'>
-                                <thead>
-                                    <tr>
-                                        <th>Name</th>
-                                        <th>Content</th>
-                                        <th>Edit</th>
-                                        <th>Remove</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="editPlaylistModalContent">
-                                    <tr v-for='playlist of playlists.playlists' v-cloak>
-                                        <td>
-                                            <span v-show='!playlist.edit'>{{playlist.name}}</span>
-                                            <input type='text' style='width:120px;' v-show='playlist.edit' v-model='editPlaylistModal.name'/>
-                                        </td>
-                                        <td> {{playlist.numberOfSongs}} songs </td>
-                                        <td>
-                                            <a class='btn btn-info btn-xs' @click='playlists.toggleEdit(playlist.id)' v-show='!playlist.edit'>
-                                                <i class='fa fa-edit'></i> 
-                                                Edit 
-                                            </a>
-                                            <a class='btn btn-success btn-xs' @click='playlists.saveEdit(playlist.id)' v-show='playlist.edit'>
-                                                <i class='fa fa-save'></i> 
-                                                Save 
-                                            </a>
-                                        </td>
-                                        <td>
-                                            <a class='btn btn-danger btn-xs' @click='playlists.toggleRemove(playlist.id)'>
-                                                <i class='fa fa-trash'></i> 
-                                                Remove 
-                                            </a>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                            <div class="table-responsive">
+                                <table class='table table-hover table-condensed'>
+                                    <thead>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>Content</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="editPlaylistModalContent">
+                                        <tr v-for='playlist of playlists.playlists' v-cloak>
+                                            <td style='vertical-align: middle'>
+                                                <span v-show='!playlist.edit'>{{playlist.name}}</span>
+                                                <input type='text' class="form-control" v-show='playlist.edit' v-model='editPlaylistModal.name'/>
+                                            </td>
+                                            <td style='vertical-align: middle'> {{playlist.numberOfSongs}} songs </td>
+                                            <td style='vertical-align: middle'>
+                                                <a class='btn btn-link btn-xs' @click='playlists.toggleEdit(playlist.id)' v-show='!playlist.edit' data-toggle="tooltip" data-placement="top" title="Edit">
+                                                    <i class='fa fa-edit'></i> 
+                                                </a>
+                                                <a class='btn btn-link btn-xs' @click='playlists.saveEdit(playlist.id)' v-show='playlist.edit' data-toggle="tooltip" data-placement="top" title="Save">
+                                                    <i class='fa fa-save'></i> 
+                                                </a>
+                                                <a class='btn btn-link btn-xs' @click='playlists.toggleRemove(playlist.id)' data-toggle="tooltip" data-placement="top" title="Delete">
+                                                    <i class='fa fa-times'></i> 
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                         <div class="modal-header">
                             <h4 class="modal-title">Add playlist</h4>
@@ -168,11 +177,11 @@
                                         <div class="input-group-text"><i class="fa fa-music"></i></div>
                                     </div>
                                     <input type="text" class="form-control" placeholder="New Playlist" v-model="editPlaylistModal.new"/>
+                                    <button class="btn btn-light" data-dismiss="modal" @click="playlists.create()">Add</button>
                                 </div>
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <button class="btn btn-primary" data-dismiss="modal" @click="playlists.create()">Add</button>
                             <button class="btn btn-default" data-dismiss="modal">Close</button>
                         </div>
                     </div>
@@ -180,7 +189,7 @@
             </div>
         
             <div id="confirmRemoval" class="modal fade" role="dialog">
-                <div class="modal-dialog modal-sm">
+                <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header">
                             <h4 class="modal-title"></h4>
@@ -190,11 +199,10 @@
                             <p></p>
                         </div>
                         <div class="modal-footer">
-                            <button class="btn btn-danger" data-dismiss="modal">
-                                <i class="fa fa-trash"></i> 
-                                Remove 
+                            <button class="btn btn-link" data-dismiss="modal"> Cancel </button>
+                            <button class="btn btn-light" data-dismiss="modal">
+                                Confirm 
                             </button>
-                            <button class="btn btn-default" data-dismiss="modal"> Close </button>
                         </div>
                     </div>
                 </div>
@@ -208,7 +216,7 @@
 
             el.querySelector("h4").innerText = title;
             el.querySelector("p").innerText = body;
-            el.querySelector(".btn-danger").onclick = onclick;
+            el.querySelector(".btn-light").onclick = onclick;
 
             $("#confirmRemoval").modal();
         }
@@ -440,8 +448,12 @@
                     this.songs.update();
                     this.playlists.update();
                 },
+            },
+            updated: function () {
+                $('[data-toggle="tooltip"]').tooltip()
             }
         });
+        
         </script>
-	</body>
+    </body>
 </html>
