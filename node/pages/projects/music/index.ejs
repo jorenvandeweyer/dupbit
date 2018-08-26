@@ -12,9 +12,9 @@
 				<div class="card-header"><b>Music</b></div>
 				<div class="card-body">
                     <div class="d-flex flex-row">
-    					<div id="playlist_buttons" class='btn-group' role="group">
+    					<div class='btn-group' role="group">
                             <a class='btn btn-light' @click="songs.filterPlaylist(0)"><i class='fa fa-music'></i> All</a>
-                            <a class='btn btn-light playlist_entries' v-for='playlist of playlists.playlists' @click='songs.filterPlaylist(playlist.id)' v-cloak>
+                            <a class='btn btn-light' v-for='playlist of playlists.playlists' @click='songs.filterPlaylist(playlist.id)' v-cloak>
                                 <i class='fa fa-music'></i> {{playlist.name}}
                             </a>
                             <a class="btn btn-light" data-toggle="modal" data-target="#editPlaylistModal"><i class='fa fa-edit'></i></a>
@@ -37,17 +37,22 @@
 									<th>Remove</th>
 								</tr>
 							</thead>
-							<tbody id="allSongs">
-                                <tr id="sid" class="song_entries" v-for="song in songs.songs" v-bind:style='{display: song.visible ? "table-row" : "none"}' v-cloak>
+							<tbody>
+                                <tr id="sid" v-for="song in songs.songs" v-show='song.visible' v-cloak>
                                     <td>
-                                        <a class='playButton btn btn-link btn-xs' @click='songs.stream(song.id)' v-bind:style='{display: song.playing ? "none": "block"}'><i class='fa fa-play'></i></a>
-                                        <a class='pauseButton btn btn-link btn-xs' @click='songs.pause()' v-bind:style='{display: song.playing ? "block": "none"}'><i class='fa fa-pause'></i></a>
+                                        <a class='btn btn-link btn-xs' @click='songs.stream(song.id)' v-show='!song.playing'><i class='fa fa-play'></i></a>
+                                        <a class='btn btn-link btn-xs' @click='songs.pause()' v-show='song.playing'><i class='fa fa-pause'></i></a>
                                     </td>
                                     <td>{{song.artist}}</td>
                                     <td>{{song.title}}</td>
                                     <td>{{song.playlists.map(info => info.name).join(", ")}}</td>
                                     <td><a class='btn btn-success btn-xs' v-bind:href='"api/music/song?id=" + song.id + "&download"'><i class='fa fa-download'></i> Download </a></td>
-                                    <td><a class='btn btn-link btn-xs' v-bind:href='song.url' target='_blank'><i class='fab fa-${song.provider}' taget='_blank' v-bind:class='[classes[song.provider]]'></i> {{song.provider}} </a></td>
+                                    <td>
+                                        <a class='btn btn-link btn-xs' v-bind:href='song.url' target='_blank'>
+                                        <i class='fab' taget='_blank' v-bind:class='[classes[song.provider]]'></i> 
+                                        {{song.provider}} 
+                                        </a>
+                                    </td>
                                     <td><a class='btn btn-info btn-xs' @click='songs.toggleEdit(song.id)'><i class='fa fa-edit'></i> Edit </a></td>
                                     <td><a class='btn btn-danger btn-xs' @click='songs.toggleRemove(song.id)'><i class='fa fa-trash'></i> Remove </a></td>
                                 </tr>
@@ -70,7 +75,7 @@
                                     <div class="input-group-prepend">
                                         <div class="input-group-text"><i class="fa fa-headphones"></i></div>
                                     </div>
-                                    <input id="artist" name="artist" type="text" class="form-control" placeholder="Artist" v-model="editSongModal.artist"/>
+                                    <input type="text" class="form-control" placeholder="Artist" v-model="editSongModal.artist"/>
                                 </div>
                             </div>
                             <div class="form-group">
@@ -78,20 +83,24 @@
                                     <div class="input-group-prepend">
                                         <div class="input-group-text"><i class="fa fa-music"></i></div>
                                     </div>
-                                    <input id="title" name="title" type="text" class="form-control" placeholder="Title" v-model="editSongModal.title"/>
+                                    <input type="text" class="form-control" placeholder="Title" v-model="editSongModal.title"/>
                                 </div>
                             </div>
                             <div class="form-group">
                                 <div class="panel panel-default">
                                     <div class="panel-heading"><b>Playlists</b></div>
-                                    <div id="editSongModalContent" class="panel-body">
+                                    <div class="panel-body">
                                         <div class='form-check disabled'>
                                             <label class="form-check-label">
-                                                <input type='checkbox' disabled checked/> All
+                                                <input type='checkbox' disabled checked/>
+                                                All
                                             </label>
                                         </div>
-                                        <div class='form-check playlist_entries' v-for='playlist in playlists.playlists' v-cloak>
-                                            <label class="form-check-label"><input type='checkbox' v-model="editSongModal.options[playlist.id]"/> {{playlist.name}} </label>
+                                        <div class='form-check' v-for='playlist in playlists.playlists' v-cloak>
+                                            <label class="form-check-label">
+                                                <input type='checkbox' v-model="editSongModal.options[playlist.id]"/>
+                                                {{playlist.name}} 
+                                            </label>
                                         </div>
                                     </div>
                                 </div>
@@ -123,14 +132,28 @@
                                     </tr>
                                 </thead>
                                 <tbody id="editPlaylistModalContent">
-                                    <tr class='playlist_entries' v-for='playlist of playlists.playlists' v-cloak>
-                                        <td><span v-bind:style='{display: playlist.edit ? "none" : "block"}'>{{playlist.name}}</span><input type='text' style='width:120px;' v-bind:style='{display: playlist.edit ? "block" : "none"}' v-model='editPlaylistModal.name'/></td>
+                                    <tr v-for='playlist of playlists.playlists' v-cloak>
+                                        <td>
+                                            <span v-show='!playlist.edit'>{{playlist.name}}</span>
+                                            <input type='text' style='width:120px;' v-show='playlist.edit' v-model='editPlaylistModal.name'/>
+                                        </td>
                                         <td> {{playlist.numberOfSongs}} songs </td>
                                         <td>
-                                            <a class='btn btn-info btn-xs' @click='playlists.toggleEdit(playlist.id)' v-bind:style='{display: playlist.edit ? "none" : "block"}'><i class='fa fa-edit'></i> Edit </a>
-                                            <a class='btn btn-success btn-xs' @click='playlists.saveEdit(playlist.id)' v-bind:style='{display: playlist.edit ? "block" : "none"}'><i class='fa fa-save'></i> Save </a>
+                                            <a class='btn btn-info btn-xs' @click='playlists.toggleEdit(playlist.id)' v-show='!playlist.edit'>
+                                                <i class='fa fa-edit'></i> 
+                                                Edit 
+                                            </a>
+                                            <a class='btn btn-success btn-xs' @click='playlists.saveEdit(playlist.id)' v-show='playlist.edit'>
+                                                <i class='fa fa-save'></i> 
+                                                Save 
+                                            </a>
                                         </td>
-                                        <td><a class='btn btn-danger btn-xs' @click='playlists.toggleRemove(playlist.id)'><i class='fa fa-trash'></i> Remove </a></td>
+                                        <td>
+                                            <a class='btn btn-danger btn-xs' @click='playlists.toggleRemove(playlist.id)'>
+                                                <i class='fa fa-trash'></i> 
+                                                Remove 
+                                            </a>
+                                        </td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -144,13 +167,13 @@
                                     <div class="input-group-prepend">
                                         <div class="input-group-text"><i class="fa fa-music"></i></div>
                                     </div>
-                                    <input id="new_playlist" name="name" type="text" class="form-control" placeholder="New Playlist" v-model="editPlaylistModal.new"/>
+                                    <input type="text" class="form-control" placeholder="New Playlist" v-model="editPlaylistModal.new"/>
                                 </div>
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <button class="btn btn-primary" @click="playlists.create()" data-dismiss="modal">Add</button>
-                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                            <button class="btn btn-primary" data-dismiss="modal" @click="playlists.create()">Add</button>
+                            <button class="btn btn-default" data-dismiss="modal">Close</button>
                         </div>
                     </div>
                 </div>
@@ -167,17 +190,17 @@
                             <p></p>
                         </div>
                         <div class="modal-footer">
-                            <input type="hidden"/>
-                            <button class="btn btn-danger" data-dismiss="modal"><i class="fa fa-trash"></i> Remove </button>
+                            <button class="btn btn-danger" data-dismiss="modal">
+                                <i class="fa fa-trash"></i> 
+                                Remove 
+                            </button>
                             <button class="btn btn-default" data-dismiss="modal"> Close </button>
                         </div>
                     </div>
                 </div>
             </div>
-		</div>
-
-		<audio id="audio"></audio>
-
+        </div>
+        
         <%- include ../../components/footer %>
         <script>
         function confirmRemoval(title, body, onclick) {
@@ -200,12 +223,12 @@
             update() {
                 this._request = Request.GET(this.apiEndpoint).then(data => {
                     this.playlistInfo = data.playlistInfo;
-                    this.songs = data.songs;
-                    this.songs.forEach(song => {
+                    data.songs.forEach(song => {
                         song.playlists = this.playlistInfo.filter(info => info.sid === song.id);
                         song.playing = false;
                         song.visible = true;
                     });
+                    this.songs = data.songs;
                 });
             }
 
@@ -214,21 +237,19 @@
             }
 
             stream(id) {
-                const audio = document.getElementById('audio');
-                const song = this.find(id);
+                const audio = vm.audio;
                 if (audio.streaming !== id) {
                     audio.streaming = id;
                     audio.src = `/api/music/stream?id=${id}`
                 }
                 this.songs.forEach(song => song.playing = false);
-                song.playing = true;
+                this.find(id).playing = true;
                 audio.play();
             }
 
             pause() {
                 this.songs.forEach(song => song.playing = false);
-                const audio = document.getElementById('audio');
-                audio.pause();
+                vm.audio.pause();
             }
         
             toggleEdit(id) {
@@ -270,7 +291,7 @@
                 song.playlists = this.playlistInfo.filter(info => info.sid === song.id);
                 
                 const playlist_add = song.playlists.map(info => info.pid);
-                console.log(playlist_add);
+
                 vm.playlists.updatePlaylistContent(playlist_del, playlist_add);
 
                 Request.POST(this.apiEndpoint, {
@@ -328,8 +349,8 @@
 
             update() {
                 this._request = Request.GET(this.apiEndpoint).then(data => {
+                    data.playlists.forEach(playlist => playlist.edit = false);
                     this.playlists = data.playlists;
-                    this.playlists.forEach(playlist => playlist.edit = false);
                 });
             }
 
@@ -377,8 +398,8 @@
                     id
                 });
                 this.playlists = this.playlists.filter(playlist => playlist.id !== id);
-                songs.playlistInfo = vm.songs.playlistInfo.filter(entry => entry.pid !== id);
-                songs.updatePlaylistNames();
+                vm.songs.playlistInfo = vm.songs.playlistInfo.filter(entry => entry.pid !== id);
+                vm.songs.updatePlaylistNames();
             }
 
             updatePlaylistContent(dels, adds=[]) {
@@ -393,32 +414,34 @@
 
         const vm = new Vue({
             el: '.container',
-            data: {
-                songs: new Songs(),
-                playlists: new Playlists(),
-                editSongModal: {
-                    id: 0,
-                    artist: "Artist",
-                    title: "Title",
-                    options: {}
-                },
-                editPlaylistModal: {
-                    new: "New Playlist",
-                    name: "playlist name",
-                },
-                classes: {
-                    "soundcloud": "fa-soundcloud",
-                    "youtube": "fa-youtube",
-                }
+            data () {
+                return {
+                    audio: new Audio(),
+                    songs: new Songs(),
+                    playlists: new Playlists(),
+                    editSongModal: {
+                        id: 0,
+                        artist: "Artist",
+                        title: "Title",
+                        options: {}
+                    },
+                    editPlaylistModal: {
+                        new: "New Playlist",
+                        name: "playlist name",
+                    },
+                    classes: {
+                        "soundcloud": "fa-soundcloud",
+                        "youtube": "fa-youtube",
+                    }
+                };
             },
             methods: {
                 update: function() {
                     this.songs.update();
                     this.playlists.update();
-                }
+                },
             }
         });
-
         </script>
 	</body>
 </html>
