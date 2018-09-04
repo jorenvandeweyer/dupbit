@@ -32,7 +32,13 @@ async function verifyToken(token) {
     try {
         let decoded = jwt.verify(token, publicKey, {algorithm: "RS256"});
         let tokenId = await db.getToken({tid: decoded.data.tid});
+
         if (tokenId.length) {
+            Object.assign(decoded.data, {
+                device: tokenId[0].device,
+                name: tokenId[0].name,
+                ip: tokenId[0].ip
+            });
             return decoded;
         }
     } catch(e) {

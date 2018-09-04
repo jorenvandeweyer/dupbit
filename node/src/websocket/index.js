@@ -3,12 +3,13 @@ const Token = require("../util/Token");
 const Cookie = require("../util/Cookie");
 
 let wss;
-const Clients = new Map();
+const Clients = new Map([[0, new Map()]]);
 
 async function verifyClient(info, callback) {
     let token;
-
-    if (info.req.headers.token) {
+    if (info.req.headers.authentication) {
+        token = info.req.headers.authentication;
+    } else if (info.req.headers.token) {
         token = info.req.headers.token;
     } else {
         const cookies = Cookie.parse(info.req.headers.cookie);
@@ -42,6 +43,9 @@ function create(server) {
 
     wss.on("connection", (ws, req) => {
         ws.isAlive = true;
+        ws.identifier = req.headers.identifier || "unkown";
+        ws.owner = req.user;
+
         addWS(ws, req);
         ws.on("message", (message) => {
             handleMessage(ws, req, message);

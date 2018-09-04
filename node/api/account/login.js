@@ -13,7 +13,7 @@ module.exports = async (req, res) => {
 
             if (level < 1) {
                 if (data.remote) {
-                    res.status(404).json({
+                    res.status(401).json({
                         success: false,
                         reason: "email not verified"
                     });
@@ -77,7 +77,7 @@ module.exports = async (req, res) => {
         }
 
     } else {
-        res.status(404).json({
+        res.status(400).json({
             success: false,
             reason: "missing parameters"
         });

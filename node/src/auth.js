@@ -3,7 +3,7 @@ const Database = require("./util/Database");
 const User = require("./util/User");
 
 module.exports = async (req, res, next) => {
-    const decoded = await Token.verifyToken(req.cookies.sid);
+    const decoded = await Token.verifyToken(req.headers.authorization || req.cookies.sid);
     if (decoded) {
         const id = decoded.data.id;
         req.auth = {

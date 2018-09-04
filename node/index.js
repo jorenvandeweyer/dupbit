@@ -1,5 +1,6 @@
 const http = require("http");
 const express = require("express");
+const cors = require("cors");
 const WebSocket = require("./src/websocket/index");
 
 const bodyParser = require("body-parser");
@@ -19,6 +20,8 @@ process.on("unhandledRejection", (reason, p) => {
 const app = express();
 
 app.disable("x-powered-by");
+
+app.options("*", cors());
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));

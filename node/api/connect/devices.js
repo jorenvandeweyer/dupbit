@@ -27,12 +27,14 @@ module.exports = async (req, res) => {
 
             token.info = JSON.parse(token.name);
 
-            if (token.info.os.toLowerCase().includes("darwin")) {
-                token.info.os_parsed = "apple";
-            } else if (token.info.os.toLowerCase().includes("windows")) {
-                token.info.os_parsed = "windows";
-            } else if (token.info.os.toLowerCase().includes("linux")) {
-                token.info.os_parsed = "linux";
+            if (token.info.os) {
+                if (token.info.os.toLowerCase().includes("darwin")) {
+                    token.info.os_parsed = "apple";
+                } else if (token.info.os.toLowerCase().includes("windows")) {
+                    token.info.os_parsed = "windows";
+                } else if (token.info.os.toLowerCase().includes("linux")) {
+                    token.info.os_parsed = "linux";
+                }
             }
         }
         res.json({
