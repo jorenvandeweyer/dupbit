@@ -5,3 +5,4 @@ data/secrets/
 data/music/*.mp3
 src/
 pages/
+scripts/

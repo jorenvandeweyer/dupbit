@@ -1,6 +1,6 @@
 const express = require("express");
 const ws = require("../../src/websocket/index");
-const db = require("../../src/util/Database");
+// const db = require("../../src/util/Database");
 
 module.exports = express.Router()
     .all("*", (req, res, next) => {
@@ -48,10 +48,16 @@ module.exports = express.Router()
         }
     })
     .put("*", async (req, res) => {
+        res.json({
+            success: false,
+        });
         //? put for auth without token to claim through network
     })
     .delete("*", async (req, res) => {
         //?
+        res.json({
+            success: false,
+        });
     });
 
 

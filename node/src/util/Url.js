@@ -1,5 +1,4 @@
 const Path = require("path");
-const url2 = require("url");
 const fs = require("fs");
 const util = require("util");
 const absolute = Path.dirname(process.mainModule.filename);

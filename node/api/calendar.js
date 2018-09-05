@@ -1,5 +1,6 @@
 const express = require("express");
 const db = require("../src/util/Database");
+const ICS = require("../scripts/calendarICS");
 
 module.exports = express.Router()
     .all("*", (req, res, next) => {
@@ -43,6 +44,7 @@ module.exports = express.Router()
                 const result = await db.query("SELECT uid FROM calendar.calendars WHERE id = ?", [data.calendar]);
                 if (result && result[0].uid === req.auth.id) {
                     const result = await db.query(`INSERT INTO calendar.${data.sort} (data, cid, name) VALUES (?, ?, ?)`, [data.data, data.calendar, data.info]);
+                    ICS.updateOne(data.calendar);
                     return res.json({
                         success: true,
                         data: {
@@ -56,6 +58,7 @@ module.exports = express.Router()
         } else {
             if (data.name) {
                 const result = await db.query("INSERT INTO calendar.calendars (uid, name) VALUES (?, ?)", [req.auth.id, data.name]);
+                ICS.updateOne(result.insertId);
                 return res.json({
                     success: true,
                     data: {
@@ -73,12 +76,13 @@ module.exports = express.Router()
     .delete("*", async (req, res) => {
         const data = req.body;
         if (data.sort && data.id) {
-            const result = await db.query(`SELECT uid, ${data.sort}.id as sortId FROM calendar.calendars INNER JOIN calendar.${data.sort} ON calendars.id = ${data.sort}.cid WHERE ${data.sort}.id = ?`, [data.id]);
+            const result = await db.query(`SELECT calendars.id, uid, ${data.sort}.id as sortId FROM calendar.calendars INNER JOIN calendar.${data.sort} ON calendars.id = ${data.sort}.cid WHERE ${data.sort}.id = ?`, [data.id]);
             if (result.length) {
                 let id_check = result[0].uid;
                 let deleteId = result[0].sortId;
                 if (id_check === req.auth.id) {
                     await db.query(`DELETE FROM calendar.${data.sort} WHERE id = ?`, [deleteId]);
+                    ICS.updateOne(result[0].id);
                     return res.json({
                         success: true,
                     });

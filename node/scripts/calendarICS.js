@@ -2,6 +2,11 @@ const db = require("../src/util/Database");
 const ical = require("ical");
 const http = require("http");
 const fs = require("fs");
+const util = require("util");
+
+const stat = util.promisify(fs.stat);
+const mkdir = util.promisify(fs.mkdir);
+const writeFile = util.promisify(fs.writeFile);
 
 class Calendar {
     constructor(name, id) {
@@ -53,6 +58,14 @@ class Calendar {
             + this.events.toString()
             + this.footer;
     }
+
+    async save(path=__dirname + "/../pages/ics") {
+        const s = await stat(path).catch(null);
+        if (!s || !s.isDirectory()) {
+            mkdir(path);
+        }
+        await writeFile(`${path}/calendar_${this.id}.ics`, this.toString());
+    }
 }
 
 class Event {
@@ -98,6 +111,11 @@ async function main() {
     }
 }
 
+async function updateOne(id) {
+    const calendar = await db.query("SELECT * FROM calendar.calendars WHERE id=?", [id]);
+    calendar.length && await createCalendar(calendar[0]);
+}
+
 async function createCalendar(calendar) {
     const cal = new Calendar(calendar.name, calendar.id);
     const urls = await db.getCalendarUrls(calendar.uid, calendar.id);
@@ -112,7 +130,7 @@ async function createCalendar(calendar) {
             console.log(e);
         }
     }
-    saveFile(cal);
+    return cal.save();
 }
 
 function fetchFile(url) {
@@ -148,19 +166,11 @@ function fetchFile(url) {
     });
 }
 
-function saveFile(calendar, path="../pages/ics") {
-    if (!fs.existsSync("../pages/ics")){
-        fs.mkdirSync("../pages/ics");
-    }
-    fs.writeFileSync(`${path}/calendar_${calendar.id}.ics`, calendar.toString());
-}
-
 if (require.main === module) {
     main();
 }
 
 module.exports = {
-    update: function() {
-        main();
-    }
+    update: main,
+    updateOne,
 };

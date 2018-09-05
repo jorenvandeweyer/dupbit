@@ -11,6 +11,7 @@ const Cookie = require("./src/util/Cookie");
 const auth = require("./src/auth");
 const api = require("./src/api");
 const html = require("./src/html");
+require("./src/cron");
 
 process.on("unhandledRejection", (reason, p) => {
     /*eslint no-console: 0*/
@@ -35,6 +36,7 @@ app.use((req, res, next) => {
 });
 
 app.use("*", auth);
+app.use("/ics", express.static("pages/ics"));
 app.use("/api", api);
 app.use("*", html);
 

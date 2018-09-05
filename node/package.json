@@ -23,6 +23,7 @@
     "jsonwebtoken": "^8.3.0",
     "mailgun-js": "^0.18.1",
     "mysql": "^2.16.0",
+    "node-cron": "^1.2.1",
     "node-id3": "^0.1.5",
     "node-ipc": "^9.1.1",
     "node-rsa": "^0.4.2",
