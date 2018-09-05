@@ -10,7 +10,7 @@
   "author": "Joren Vandeweyer",
   "license": "ISC",
   "devDependencies": {
-    "nodemon": "^1.18.3"
+    "nodemon": "^1.18.4"
   },
   "dependencies": {
     "bcrypt": "^3.0.0",
