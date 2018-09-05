@@ -60,7 +60,7 @@ class Calendar {
     }
 
     async save(path=__dirname + "/../pages/ics") {
-        const s = await stat(path).catch(null);
+        const s = await stat(path).catch(() => null);
         if (!s || !s.isDirectory()) {
             mkdir(path);
         }
