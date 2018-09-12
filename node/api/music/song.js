@@ -27,6 +27,7 @@ module.exports = express.Router()
                 } else {
                     res.json({
                         success: true,
+                        data: data,
                         song,
                     });
                 }
