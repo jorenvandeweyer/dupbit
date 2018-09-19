@@ -28,6 +28,7 @@
     "node-ipc": "^9.1.1",
     "node-rsa": "^0.4.2",
     "nodemailer": "^4.6.8",
+    "request": "^2.88.0",
     "ua-parser": "^0.3.5",
     "ws": "^5.2.2"
   }
