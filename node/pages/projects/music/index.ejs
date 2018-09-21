@@ -56,9 +56,9 @@
                                     <td>{{song.playlists.map(info => info.name).join(", ")}}</td>
                                     <td>
                                         <a class='btn btn-link btn-xs' v-bind:href='song.url' target='_blank' data-toggle="tooltip" data-placement="top" title="Open Platform">
-                                            <i class='fab'v-bind:class='[classes[song.provider]]'></i> 
+                                            <i class='fab'v-bind:class='[classes[song.provider]]'></i>
                                         </a>
-                                        <a class='btn btn-link btn-xs' v-bind:href='"api/music/song?id=" + song.id + "&download"' data-toggle="tooltip" data-placement="top" title="Download">
+                                        <a class='btn btn-link btn-xs' v-bind:href='"../api/music/song?id=" + song.id + "&download"' data-toggle="tooltip" data-placement="top" title="Download">
                                             <i class='fa fa-download'></i>
                                         </a>
                                         <a class='btn btn-link btn-xs' @click='songs.toggleEdit(song.id)' data-toggle="tooltip" data-placement="top" title="Edit">
@@ -112,7 +112,7 @@
                                         <div class='form-check' v-for='playlist in playlists.playlists' v-cloak>
                                             <label class="form-check-label">
                                                 <input type='checkbox' v-model="editSongModal.options[playlist.id]"/>
-                                                {{playlist.name}} 
+                                                {{playlist.name}}
                                             </label>
                                         </div>
                                     </div>
@@ -153,13 +153,13 @@
                                             <td style='vertical-align: middle'> {{playlist.numberOfSongs}} songs </td>
                                             <td style='vertical-align: middle'>
                                                 <a class='btn btn-link btn-xs' @click='playlists.toggleEdit(playlist.id)' v-show='!playlist.edit' data-toggle="tooltip" data-placement="top" title="Edit">
-                                                    <i class='fa fa-edit'></i> 
+                                                    <i class='fa fa-edit'></i>
                                                 </a>
                                                 <a class='btn btn-link btn-xs' @click='playlists.saveEdit(playlist.id)' v-show='playlist.edit' data-toggle="tooltip" data-placement="top" title="Save">
-                                                    <i class='fa fa-save'></i> 
+                                                    <i class='fa fa-save'></i>
                                                 </a>
                                                 <a class='btn btn-link btn-xs' @click='playlists.toggleRemove(playlist.id)' data-toggle="tooltip" data-placement="top" title="Delete">
-                                                    <i class='fa fa-times'></i> 
+                                                    <i class='fa fa-times'></i>
                                                 </a>
                                             </td>
                                         </tr>
@@ -187,7 +187,7 @@
                     </div>
                 </div>
             </div>
-        
+
             <div id="confirmRemoval" class="modal fade" role="dialog">
                 <div class="modal-dialog">
                     <div class="modal-content">
@@ -201,14 +201,14 @@
                         <div class="modal-footer">
                             <button class="btn btn-link" data-dismiss="modal"> Cancel </button>
                             <button class="btn btn-light" data-dismiss="modal">
-                                Confirm 
+                                Confirm
                             </button>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        
+
         <%- include ../../components/footer %>
         <script>
         function confirmRemoval(title, body, onclick) {
@@ -259,7 +259,7 @@
                 this.songs.forEach(song => song.playing = false);
                 vm.audio.pause();
             }
-        
+
             toggleEdit(id) {
                 const song = this.find(id);
                 vm.editSongModal.artist = song.artist;
@@ -297,7 +297,7 @@
                 this.playlistInfo = newPlaylistInfo;
 
                 song.playlists = this.playlistInfo.filter(info => info.sid === song.id);
-                
+
                 const playlist_add = song.playlists.map(info => info.pid);
 
                 vm.playlists.updatePlaylistContent(playlist_del, playlist_add);
@@ -309,7 +309,7 @@
                     pids: playlist_add,
                 });
             }
-        
+
             toggleRemove(id) {
                 confirmRemoval("Remove Song", `Are you sure you want to remove the song "${this.find(id).artist} - ${this.find(id).title}"?`, () => {
                     this.delete(id);
@@ -322,7 +322,7 @@
                 Request.DELETE(this.apiEndpoint, {
                     sid,
                 });
-                
+
                 this.songs = this.songs.filter(song => song.id !== sid);
                 vm.playlists.updatePlaylistContent(this.playlistInfo.filter(entry => entry.sid === sid));
                 this.playlistInfo = this.playlistInfo.filter(entry => entry.sid !== sid);
@@ -340,7 +340,7 @@
                     }
                 }
             }
-        
+
             updatePlaylistNames() {
                 this.songs.forEach(song => {
                     song.playlists = this.playlistInfo.filter(entry => entry.sid === song.id);
@@ -365,7 +365,7 @@
             find(id) {
                 return this.playlists.find(playlist => playlist.id === id);
             }
-            
+
             async create() {
                 let name = vm.editPlaylistModal.new;
                 if (!name) name = "New Playlist";
@@ -390,7 +390,7 @@
                 vm.songs.playlistInfo.filter(entry => entry.pid === id).forEach(entry => entry.name = name);
                 vm.songs.updatePlaylistNames();
                 Request.POST(this.apiEndpoint, {
-                    id, 
+                    id,
                     name,
                 });
             }
@@ -417,7 +417,7 @@
                 for (let add of adds) {
                     this.find(add).numberOfSongs++;
                 }
-            }            
+            }
         }
 
         const vm = new Vue({
@@ -453,7 +453,7 @@
                 $('[data-toggle="tooltip"]').tooltip()
             }
         });
-        
+
         </script>
     </body>
 </html>
