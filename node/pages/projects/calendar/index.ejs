@@ -242,7 +242,7 @@
                 return `<tr id="c_${row.id}">
                 <td>${row.id}</td>
                 <td>${row.name}</td>
-                <td><button type='button' class='btn btn-link'><a href='?calendar=${row.id}'>Edit</a></button></td>
+                <td><button type='button' class='btn btn-link' onclick='window.location.href+="?calendar=${row.id}"'><a href='?calendar=${row.id}'>Edit</a></button></td>
                 <td><button type='button' class='btn btn-danger' onclick='deleteCalendar(${row.id})'> Delete </button></td>
                 </td>`;
             }
