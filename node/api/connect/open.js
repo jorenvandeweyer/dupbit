@@ -22,6 +22,8 @@ module.exports = express.Router()
                 identifier: sockets.get(key).identifier,
                 tokenInfo: sockets.get(key).owner,
             }));
+        } else {
+            sockets = [];
         }
 
         res.json({
