@@ -1,5 +1,6 @@
 const db = require("../../src/util/Database");
 const Token = require("../../src/util/Token");
+const ws = require("../../src/websocket/index");
 
 module.exports = async (req, res) => {
     const data = req.query;
@@ -8,7 +9,11 @@ module.exports = async (req, res) => {
         if (result.length) {
             const token = result[0];
             if (token.uid === req.auth.id) {
-                await Token.removeToken(token.id, token.uid);
+                const connection = ws.findConnection(token.id, token.uid);
+                if (connection) connection.close();
+
+                await Token.removeToken(token.id);
+
                 return res.json({
                     success: true
                 });
