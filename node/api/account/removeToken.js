@@ -9,7 +9,8 @@ module.exports = async (req, res) => {
         if (result.length) {
             const token = result[0];
             if (token.uid === req.auth.id) {
-                const connection = ws.findConnection(token.id, token.uid);
+                const connection = ws.findConnection(token.uid, token.id);
+                console.log(connection);
                 if (connection) connection.close();
 
                 await Token.removeToken(token.id);
