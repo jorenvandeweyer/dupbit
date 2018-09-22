@@ -1,4 +1,5 @@
 const db = require("../../src/util/Database");
+const Token = require("../../src/util/Token");
 
 module.exports = async (req, res) => {
     const data = req.query;
@@ -7,7 +8,7 @@ module.exports = async (req, res) => {
         if (result.length) {
             const token = result[0];
             if (token.uid === req.auth.id) {
-                await db.removeToken(token.id);
+                await Token.removeToken(token.id, token.uid);
                 return res.json({
                     success: true
                 });

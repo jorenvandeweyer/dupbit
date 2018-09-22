@@ -2,6 +2,7 @@ const jwt = require("jsonwebtoken");
 const NodeRSA = require("node-rsa");
 const fs = require("fs");
 const db = require("./Database");
+const WebSocket = require("../websocket/index");
 
 let privateKey, publicKey;
 
@@ -53,8 +54,11 @@ async function verifyToken(token) {
     return false;
 }
 
-function removeToken(tid) {
+function removeToken(tid, uid) {
     db.removeToken(tid);
+
+    const connection = WebSocket.findConnection(uid, tid);
+    if (connection) connection.close();
 }
 
 module.exports = {

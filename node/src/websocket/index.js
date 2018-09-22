@@ -91,7 +91,7 @@ function getClient(uid) {
 function handleMessage(ws, req, message) {
     message = JSON.parse(message);
     if (message.action === "logout") {
-        Token.removeToken(req.user.tid);
+        Token.removeToken(req.user.tid, req.user.id);
     } else if (message.action === "message") {
         console.log(message.content);
     } else {
