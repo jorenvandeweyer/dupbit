@@ -2,6 +2,7 @@
 <html lang="en">
     <head>
         <%- include ../components/head %>
+        <script src="https://cdn.jsdelivr.net/npm/vue"></script>
     </head>
     <body>
         <%- include ../components/header %>
@@ -22,7 +23,15 @@
                                 <th>Delete</th>
                             </tr>
 						</thead>
-						<tbody id="tokens">
+						<tbody>
+                            <tr v-for="token in tokens">
+                                <td>{{token.tid}}</td>
+                                <td>{{token.app_type}}</td>
+                                <td>{{token.info}}</td>
+                                <td>{{token.ip}}</td>
+                                <td>{{token.timestamp}}</td>
+                                <td><button type='button' class='btn btn-danger' @click='deleteToken(token.id)'>Revoke</button></td>
+                            </tr>
 						</tbody>
 					</table>
 				</div>
@@ -33,51 +42,29 @@
     </body>
 
     <script>
-    async function fetchDevices() {
-        return new Promise((resolve, reject) => {
-            $.get("/api/connect/devices", (data) => {
-                if (data.success) {
-                    resolve([data.data, data.tokens]);
-                } else {
-                    reject("error fetching devices");
-                }
-            });
-        });
-    }
-
     async function main() {
-        const [devices, tokens] = await fetchDevices()
-
-        const html_tokens = createHTMLTokens(tokens);
-
-        document.getElementById("tokens").innerHTML = html_tokens;
+        const result = await Request.GET("/api/connect/devices");
+        if (result && result.success) {
+            vm.tokens = result.tokens;
+        }
     }
 
-    function createHTMLTokens(tokens) {
-        console.log(tokens);
-        return tokens.map(createTokenRow).join("");
-    }
-
-    function createTokenRow(token) {
-        return `<tr id="token_${token.id}">
-                <td>${token.id}</td>
-                <td>${token.name}</td>
-                <td>${token.device}</td>
-                <td>${token.ip}</td>
-                <td>${token.timestamp}</td>
-                <td><button type='button' class='btn btn-danger' onclick='deleteToken(${token.id})'>Revoke</button></td>
-                </tr>`;
-    }
-
-    function deleteToken(tid) {
-        $.get(`/api/account/removeToken?tid=${tid}`, (data) => {
-            if (data.success) {
-                document.getElementById(`token_${tid}`).outerHTML = "";
-            } else {
-                alert(`Please take contact with the website owner and provide the error string\nError: removeToken?tid=${tid} success=false`);
+    const vm = new Vue({
+        container: ".container",
+        data: {
+            tokens: [],
+        },
+        methods: {
+            deleteToken: async function (tid) {
+                const result = Request.GET(`/api/account/removeToken?tid=${tid}`);
+                if (result && result.success) {
+                    this.tokens = this.tokens.filter(token => token.tid !== tid);
+                } else {
+                    alert(`Please take contact with the website owner and provide the error string\nError: removeToken?tid=${tid} success=false`);
+                }
             }
-        });
-    }
+        }
+    });
 
     main();
     </script>

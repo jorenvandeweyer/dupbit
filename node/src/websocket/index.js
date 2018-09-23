@@ -26,7 +26,7 @@ async function verifyClient(info, callback) {
         if (!clientInfo) {
             callback(false, 401, "Tokin invalid.");
         } else {
-            info.req.user = clientInfo.data;
+            info.req.user = clientInfo;
             callback(true);
         }
     }
@@ -56,7 +56,7 @@ function create(server) {
         }));
 
         ws.on("close", () => {
-            Clients.get(req.user.id).delete(req.user.tid);
+            Clients.get(req.user.uid).delete(req.user.tid);
             console.log("CLOSED");
         });
 
@@ -66,10 +66,10 @@ function create(server) {
 
 function addWS(ws, req) {
     const user = req.user;
-    if (!Clients.has(user.id)) {
-        Clients.set(user.id, new Map());
+    if (!Clients.has(user.uid)) {
+        Clients.set(user.uid, new Map());
     }
-    Clients.get(user.id).set(user.tid, ws);
+    Clients.get(user.uid).set(user.tid, ws);
 }
 
 function findConnection(uid, tid) {
@@ -91,7 +91,7 @@ function getClient(uid) {
 function handleMessage(ws, req, message) {
     message = JSON.parse(message);
     if (message.action === "logout") {
-        Token.removeToken(req.user.tid, req.user.id);
+        Token.removeToken(req.user.tid, req.user.uid);
     } else if (message.action === "message") {
         console.log(message.content);
     } else {

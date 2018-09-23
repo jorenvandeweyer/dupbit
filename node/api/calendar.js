@@ -17,8 +17,8 @@ module.exports = express.Router()
         const data = req.query;
 
         if (data.calendar) {
-            const urls = await db.getCalendarUrls(req.auth.id, data.calendar);
-            const courseNumbers = await db.getCalendarCourseNumbers(req.auth.id, data.calendar);
+            const urls = await db.getCalendarUrls(req.auth.uid, data.calendar);
+            const courseNumbers = await db.getCalendarCourseNumbers(req.auth.uid, data.calendar);
             res.json({
                 success: true,
                 data: {
@@ -27,7 +27,7 @@ module.exports = express.Router()
                 },
             });
         } else {
-            const tables = await db.getCalendarTable(req.auth.id);
+            const tables = await db.getCalendarTable(req.auth.uid);
             res.json({
                 success: true,
                 data: {
@@ -42,7 +42,7 @@ module.exports = express.Router()
         if (data.calendar) {
             if (data.info && data.data) {
                 const result = await db.query("SELECT uid FROM calendar.calendars WHERE id = ?", [data.calendar]);
-                if (result && result[0].uid === req.auth.id) {
+                if (result && result[0].uid === req.auth.uid) {
                     const result = await db.query(`INSERT INTO calendar.${data.sort} (data, cid, name) VALUES (?, ?, ?)`, [data.data, data.calendar, data.info]);
                     ICS.updateOne(data.calendar);
                     return res.json({
@@ -57,7 +57,7 @@ module.exports = express.Router()
             }
         } else {
             if (data.name) {
-                const result = await db.query("INSERT INTO calendar.calendars (uid, name) VALUES (?, ?)", [req.auth.id, data.name]);
+                const result = await db.query("INSERT INTO calendar.calendars (uid, name) VALUES (?, ?)", [req.auth.uid, data.name]);
                 ICS.updateOne(result.insertId);
                 return res.json({
                     success: true,
@@ -80,7 +80,7 @@ module.exports = express.Router()
             if (result.length) {
                 let id_check = result[0].uid;
                 let deleteId = result[0].sortId;
-                if (id_check === req.auth.id) {
+                if (id_check === req.auth.uid) {
                     await db.query(`DELETE FROM calendar.${data.sort} WHERE id = ?`, [deleteId]);
                     ICS.updateOne(result[0].id);
                     return res.json({
@@ -90,7 +90,7 @@ module.exports = express.Router()
             }
         } else if (data.id) {
             const result = await db.query("SELECT uid, id FROM calendar.calendars WHERE id = ?", [data.id]);
-            if (result.length && result[0].uid === req.auth.id) {
+            if (result.length && result[0].uid === req.auth.uid) {
                 await db.query("DELETE FROM calendar.calendars WHERE id = ?", [data.id]);
                 return res.json({
                     success: true,

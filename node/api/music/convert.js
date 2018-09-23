@@ -8,7 +8,7 @@ module.exports = async (req, res) => {
         res.set("Access-Control-Allow-Origin", req.headers.origin ? req.headers.origin : `chrome-extension://${data.origin}`);
         if (req.auth.level >= 2) {
             const downloader = await convert(
-                req.auth.id,
+                req.auth.uid,
                 data.provider ? data.provider : "unknown",
                 data.url,
                 data.title,

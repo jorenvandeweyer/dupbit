@@ -3,39 +3,30 @@ const Token = require("../../src/util/Token");
 
 module.exports = async (req, res) => {
     const data = req.body;
+    const ip = req.get("x-real-ip");
     if (data.username && data.password) {
         const login = await Database.verifyLogin(data.username, data.password);
 
         if (login) {
-            Database.addLoginAttempt(data.username, true, req.get("x-real-ip"));
+            Database.addLoginAttempt(data.username, true, ip);
             const id = await Database.getIDByUsername(data.username);
             const level = await Database.getLevelByID(id);
 
             if (level < 1) {
-                if (data.remote) {
-                    res.status(401).json({
-                        success: false,
-                        reason: "email not verified"
-                    });
-                } else {
-                    if (data.redirect) {
-                        res.redirect(`login?redirect=${data.redirect}&notActivated`);
-                    } else {
-                        res.redirect("login?notActivated");
-                    }
-                }
+                res.status(401).json({
+                    success: false,
+                    reason: "email not verified"
+                });
             } else {
                 const expires = data.expires ? parseInt(data.expires) : 365*10*24*60*60;
-                if (!data.remote) data.remote = "website";
+                if (!data.app_type) data.app_type = "unknown";
 
                 const token = await Token.createToken({
-                    isLoggedIn: true,
-                    id,
-                }, expires, {
-                    remote: data.remote,
-                    name: getInfo(req, data),
-                    ip: req.get("x-real-ip"),
-                });
+                    uid: id,
+                    info: data.info,
+                    app_type: data.app_type,
+                    ip,
+                }, expires);
                 res.cookie("sid", token, {
                     maxAge: expires*1000,
                     // secure: true,
@@ -43,37 +34,20 @@ module.exports = async (req, res) => {
                 res.set("Access-Control-Allow-Credentials", "true");
                 res.set("Access-Control-Allow-Origin", req.get("origin") ? req.get("origin") : "*");
 
-                if (data.remote === "website") {
-                    if (data.redirect) {
-                        if (data.redirect === "/index") data.redirect = "/welcome";
-                        res.redirect(data.redirect);
-                    } else {
-                        res.redirect("/welcome");
-                    }
-                } else {
-                    res.json({
-                        success: true,
-                        login: true,
-                        id,
-                        token,
-                    });
-                }
+                res.json({
+                    success: true,
+                    login: true,
+                    id,
+                    token,
+                });
             }
 
         } else {
-            Database.addLoginAttempt(data.username, false, req.get("x-real-ip"));
+            Database.addLoginAttempt(data.username, false, ip);
 
-            if (data.remote) {
-                res.json({
-                    success: false,
-                });
-            } else {
-                if (data.redirect) {
-                    res.redirect(`/login?redirect=${data.redirect}&fail`);
-                } else {
-                    res.redirect("/login?fail");
-                }
-            }
+            res.status(401).json({
+                success: false,
+            });
         }
 
     } else {
@@ -83,23 +57,3 @@ module.exports = async (req, res) => {
         });
     }
 };
-
-function getInfo(req, data) {
-    if (data.ua_overwrite) {
-        return JSON.stringify({
-            os: data.ua_os ? data.ua_os : "Other",
-            name: data.ua_name ? data.ua_name : "Other",
-        });
-    }
-    let object = {
-        family: req.ua_os.device.family,
-        os: req.ua_os.os.toString(),
-        ua: req.ua_os.ua.toString(),
-    };
-    if (object.os === "Other" && object.ua === "Other" && object.family === "Other") {
-        object = {
-            ua: req.ua_os.string,
-        };
-    }
-    return JSON.stringify(object);
-}

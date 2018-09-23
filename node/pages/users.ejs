@@ -109,7 +109,7 @@
 
         delete(user) {
             Request.DELETE("/api/admin/users", {
-                id
+                id: user,
             }).then(() => {
                 this.users[user].delete();
             });

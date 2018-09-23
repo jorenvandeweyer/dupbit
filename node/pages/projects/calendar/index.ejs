@@ -201,10 +201,9 @@
 				window.location.href = "/projects/calendar";
 			}
             async function setup() {
-                const calendar = getParameterByName("calendar");
-                if (calendar) {
+                if (query.has("calendar")) {
                     const result = await Request.GET("/api/calendar", {
-                        calendar,
+                        calendar: query.get("calendar"),
                     });
                     if (result) {
                         document.getElementById("calendar").style.display = "block";

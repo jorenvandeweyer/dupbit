@@ -5,13 +5,14 @@ const User = require("./util/User");
 module.exports = async (req, res, next) => {
     const decoded = await Token.verifyToken(req.headers.authorization || req.cookies.sid);
     if (decoded) {
-        const id = decoded.data.id;
+        const uid = decoded.uid;
         req.auth = {
-            ...decoded.data,
-            username: await Database.getUsernameByID(id),
-            level: await Database.getLevelByID(id)
+            ...decoded,
+            username: await Database.getUsernameByID(uid),
+            level: await Database.getLevelByID(uid),
+            isLoggedIn: true,
         };
-        req.locals.user = await new User(id).load();
+        req.locals.user = await new User(uid).load();
     } else {
         req.auth = {
             isLoggedIn: false
