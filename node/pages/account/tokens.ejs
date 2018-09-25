@@ -16,8 +16,8 @@
 						<thead>
                             <tr>
                                 <th>ID</th>
+                                <th>App_Type</th>
                                 <th>Info</th>
-                                <th>Device</th>
                                 <th>IP</th>
                                 <th>Created</th>
                                 <th>Delete</th>
@@ -27,7 +27,7 @@
                             <tr v-for="token in tokens">
                                 <td>{{token.tid}}</td>
                                 <td>{{token.app_type}}</td>
-                                <td>{{token.info}}</td>
+                                <td>{{parseInfo(token.info)}}</td>
                                 <td>{{token.ip}}</td>
                                 <td>{{token.timestamp}}</td>
                                 <td><button type='button' class='btn btn-danger' @click='deleteToken(token.id)'>Revoke</button></td>
@@ -50,7 +50,7 @@
     }
 
     const vm = new Vue({
-        container: ".container",
+        el: ".container",
         data: {
             tokens: [],
         },
@@ -62,7 +62,26 @@
                 } else {
                     alert(`Please take contact with the website owner and provide the error string\nError: removeToken?tid=${tid} success=false`);
                 }
-            }
+            },
+            parseInfo: function (info) {
+                try {
+                    const obj = JSON.parse(info);
+                    let browser, os, device;
+
+                    if (obj.os && obj.os.name && obj.os.version) {
+                        os = `${obj.os.name} ${obj.os.version}`;
+                    }
+                    if (obj.device && obj.device.name && obj.device.type) {
+                        device = `${obj.device.name} ${obj.device.type}`;
+                    }
+                    if (obj.browser && obj.browser.name && obj.browser.version) {
+                        browser = `${obj.browser.name} ${obj.browser.version}`;
+                    }
+                    return [browser, os, device].filter(line => line !== undefined).join("\n");
+                } catch(e) {
+                    return info;
+                }
+            },
         }
     });
 
