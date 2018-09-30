@@ -57,7 +57,7 @@
         <br>
         <div id="container" class="container">
             <div class="container">
-                <div class="btn-group btn-group" v-for="extension in extensions" v-show="!extension.online" v-cloak>
+                <div class="btn-group btn-group" v-for="extension in extensions" v-show="extension.online" v-cloak>
                     <button class="btn btn-danger"><i class="fab fa-youtube"></i> <b>Youtube</b></button>
                     <button type="button" class="btn btn-danger" @click="youtube.previousVideo(extension.tid)"><i class="fas fa-step-backward"></i></button>
                     <button type="button" class="btn btn-danger" @click="youtube.playVideo(extension.tid)"><i class="fas fa-play"></i></button>
@@ -157,23 +157,20 @@
                     token.info = false;
                 }
             });
-            setup(tokens);
+            vm.extensions = tokens.filter(token => token.app_type === "browser");
+            vm.desktop_apps = tokens.filter(token => token.app_type === "api-lib")
         }
     }
 
-    function setup(tokens) {
-        console.log(tokens);
-        const vm = new Vue({
-            el: '#container',
-            data () {
-                return {
-                    extensions: tokens.filter(token => token.app_type === "browser"),
-                    desktop_apps: tokens.filter(token => token.app_type === "api-lib"),
-                };
-            },
-        });
-
-    }
+    const vm = new Vue({
+        el: '#container',
+        data () {
+            return {
+                extensions: [],
+                desktop_apps: [],
+            };
+        },
+    });
 
     function openDeviceModal(tid) {
         modal.tid = tid;
@@ -386,7 +383,6 @@
             });
         },
     };
-
 
     main();
 

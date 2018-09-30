@@ -14,34 +14,28 @@ module.exports = async (req, res) => {
                 data.title,
                 data.artist);
 
-            if (data.remote) {
-                if (typeof downloader === "number") {
-                    const id = downloader;
-                    res.json({
-                        success: true,
-                        id,
-                        downloadUrl: `/api/music/song?id=${id}&download`,
-                        filename: createFilename(data.title, data.artist, data.url)+".mp3",
-                    });
-                } else {
-                    res.set("Connection", "Transfer-Encoding");
-                    res.set("Content-Type", "application/json; charset=utf-8");
-                    res.set("Transfer-Encoding", "chunked");
-                    res.write("{\"progress\":[\"0%\"");
-
-                    downloader.on("state-change", (data) => {
-                        res.write(`,${JSON.stringify(data)}`);
-                    });
-
-                    const id = await downloader._promise;
-
-                    res.write(`],"succes":true,"id":${id},"downloadUrl":"/api/music/song?id=${id}&download","filename":"${createFilename(data.title, data.artist, data.url)}.mp3"}`);
-                    res.end();
-                }
+            if (typeof downloader === "number") {
+                const id = downloader;
+                res.json({
+                    success: true,
+                    id,
+                    downloadUrl: `/api/music/song?id=${id}&download`,
+                    filename: createFilename(data.title, data.artist, data.url)+".mp3",
+                });
             } else {
+                downloader.on("state-change", (data) => {
+                    //maybe send through websocket?
+                });
+
                 const id = await downloader._promise;
-                res.redirect(`/api/music/song?id=${id}`);
+                res.json({
+                    success: true,
+                    id,
+                    downloadUrl: `/api/music/song?id=${id}&download`,
+                    filename: createFilename(data.title, data.artist, data.url) + ".mp3"
+                });
             }
+
         } else {
             const id = data.url.split("watch?v=")[1].split("&")[0];
 
