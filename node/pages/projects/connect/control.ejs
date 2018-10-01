@@ -177,9 +177,9 @@
         $('#device_modal').modal();
         modal.setTitle("Device x");
         volume.getVolume(tid).then((feedback) => {
-            slider.el.value = feedback.volume/5;
-            const volumeup = document.getElementById("volume-up").disabled = feedback.mute;
-            const volumedown = document.getElementById("volume-down").disabled = feedback.mute;
+            slider.el.value = feedback.response.volume/5;
+            const volumeup = document.getElementById("volume-up").disabled = feedback.response.mute;
+            const volumedown = document.getElementById("volume-down").disabled = feedback.response.mute;
         }).catch(() => {});
         slider.el.oninput = function() {
             volume.update(this.value*5);
@@ -267,57 +267,69 @@
         },
         setVolume: function() {
             this.last_value = this.value,
-            Request.POST("/api/connect/interact", {
-                name: "volume",
-                action: "set",
-                value: this.value,
+            Request.POST("/api/connect/open", {
                 tid: modal.tid,
+                call: `volume`, 
+                body: {
+                    action: "set",
+                    value: this.value
+                }
             }).then((data) => {
                 console.log(data);
             });
         },
         getVolume: (tid) => {
-            return Request.POST("/api/connect/interact", {
-                name: "volume",
-                action: "get",
+            return Request.POST("/api/connect/open", {
                 tid: modal.tid,
+                call: "volume",
+                body: {
+                    action: "get",
+                }
             });
         }
     };
 
     const device = {
         displaysleep: () => {
-            Request.POST("/api/connect/interact", {
-                name: "screen",
-                action: "displaysleep",
+            Request.POST("/api/connect/open", {
                 tid: modal.tid,
+                call: "screen",
+                body: {
+                    action: "displaysleep",
+                },
             }).then((data) => {
                 console.log(data);
             });
         },
         lock: () => {
-            Request.POST("/api/connect/interact", {
-                name: "screen",
-                action: "lock",
+            Request.POST("/api/connect/open", {
                 tid: modal.tid,
+                call: "screen",
+                body: {
+                    action: "lock",
+                },
             }).then((data) => {
                 console.log(data);
             });
         },
         unlock: () => {
-            Request.POST("/api/connect/interact", {
-                name: "screen",
-                action: "unlock",
+            Request.POST("/api/connect/open", {
                 tid: modal.tid,
+                call: "screen",
+                body: {
+                    action: "unlock",
+                },
             }).then((data) => {
                 console.log(data);
             });
         },
         shutdown: () => {
-            Request.POST("/api/connect/interact", {
-                name: "device",
-                action: "shutdown",
+            Request.POST("/api/connect/open", {
                 tid: modal.tid,
+                call: "device",
+                body: {
+                    action: "shutdown",
+                },
             }).then((data) => {
                 console.log(data);
             });
@@ -326,58 +338,50 @@
 
     const youtube = {
         muteVideo: (token_id) => {
-            Request.POST("/api/connect/interact", {
-                name: "youtube",
-                action: "setVolume",
-                value: "0",
+            Request.POST("/api/connect/open", {
                 tid: token_id,
+                call: "/youtube/setVolume/0",
             }).then((data) => {
                 console.log(data);
             });
         },
         unmuteVideo: (token_id) => {
-            Request.POST("/api/connect/interact", {
-                name: "youtube",
-                action: "setVolume",
-                value: "100",
+            Request.POST("/api/connect/open", {
                 tid: token_id,
+                call: "/youtube/setVolume/100",
             }).then((data) => {
                 console.log(data);
             });
         },
         pauseVideo: (token_id) => {
-            Request.POST("/api/connect/interact", {
-                name: "youtube",
-                action: "pauseVideo",
+            Request.POST("/api/connect/open", {
                 tid: token_id,
+                call: "/youtube/pauseVideo",
             }).then((data) => {
                 console.log(data);
             });
         },
         playVideo: (token_id) => {
             console.log("PLAY", token_id);
-            Request.POST("/api/connect/interact", {
-                name: "youtube",
-                action: "playVideo",
+            Request.POST("/api/connect/open", {
                 tid: token_id,
+                call: "youtube/playVideo",
             }).then((data) => {
                 console.log(data);
             });
         },
         nextVideo: (token_id) => {
-            Request.POST("/api/connect/interact", {
-                name: "youtube",
-                action: "nextVideo",
+            Request.POST("/api/connect/open", {
                 tid: token_id,
+                call: "/youtube/nextVideo",
             }).then((data) => {
                 console.log(data);
             });
         },
         previousVideo: (token_id) => {
-            Request.POST("/api/connect/interact", {
-                name: "youtube",
-                action: "previousVideo",
+            Request.POST("/api/connect/open", {
                 tid: token_id,
+                call: "/youtube/previousVideo",
             }).then((data) => {
                 console.log(data);
             });
