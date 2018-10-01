@@ -29,7 +29,7 @@
     "node-rsa": "^0.4.2",
     "nodemailer": "^4.6.8",
     "request": "^2.88.0",
-    "ua-parser": "^0.3.5",
+    "ua-parser-js": "^0.7.18",
     "ws": "^5.2.2"
   }
 }

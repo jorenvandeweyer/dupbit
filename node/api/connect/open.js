@@ -15,7 +15,7 @@ module.exports = express.Router()
         }
     })
     .get("*", async (req, res) => {
-        let sockets = await ws.getClient(req.auth.id);
+        let sockets = await ws.getClient(req.auth.uid);
         if (sockets.size) {
             sockets = Array.from(sockets.keys()).map(key => new Object({
                 id: key,
@@ -34,7 +34,7 @@ module.exports = express.Router()
     .post("*", async (req, res) => {
         const data = req.body;
         if (data.tid && data.call) {
-            const socket = ws.findConnection(req.auth.id, data.tid);
+            const socket = ws.findConnection(req.auth.uid, data.tid);
 
             if (socket) {
                 waitForResponse(socket, data).then((data) => {
@@ -44,7 +44,7 @@ module.exports = express.Router()
             } else {
                 res.status(401).json({
                     success: false,
-                    reason: "need to use a proper id",
+                    reason: "need to use a proper tid",
                 });
             }
         }

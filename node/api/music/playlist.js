@@ -16,14 +16,14 @@ module.exports = express.Router()
         const data = req.query;
 
         if (data.id) {
-            const songs = await db.getSongsSmart(data.id, req.auth.id);
+            const songs = await db.getSongsSmart(data.id, req.auth.uid);
 
             res.json({
                 success: true,
                 songs,
             });
         } else {
-            const playlists = await db.getPlaylistsOfSmart(req.auth.id);
+            const playlists = await db.getPlaylistsOfSmart(req.auth.uid);
             res.json({
                 success: true,
                 playlists,
@@ -36,7 +36,7 @@ module.exports = express.Router()
 
         if (data.id && data.name) {
             const uid = await db.getUserOfPlaylist(data.id);
-            if (uid === req.auth.id) {
+            if (uid === req.auth.uid) {
                 await db.setNamePlaylist(data.id, data.name);
                 return res.json({
                     success: true,
@@ -52,7 +52,7 @@ module.exports = express.Router()
         const data = req.body;
 
         if (data.name) {
-            const result = await db.addPlaylist(req.auth.id, data.name);
+            const result = await db.addPlaylist(req.auth.uid, data.name);
             return res.json({
                 success: true,
                 data: {
@@ -72,7 +72,7 @@ module.exports = express.Router()
 
         if (data.id) {
             const uid = await db.getUserOfPlaylist(data.id);
-            if (uid === req.auth.id) {
+            if (uid === req.auth.uid) {
                 await db.removePlaylist(data.id);
                 return res.json({
                     success: true,

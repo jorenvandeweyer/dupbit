@@ -2,6 +2,7 @@
 <html lang="en">
     <head>
         <%- include ../../components/head %>
+        <script src="https://cdn.jsdelivr.net/npm/vue"></script>
         <style>
             .slider {
                 -webkit-appearance: none;
@@ -54,81 +55,131 @@
     <body>
         <%- include ../../components/header %>
         <br>
-        <div class="container" id="youtube">
-
-        </div>
-        <div class="container" id="devices">
-
-        </div>
-
-        <div class="modal fade" id="device_modal" tabindex="-1" role="dialog" aria-labelledby="device_modal_label" aria-hidden="true">
-            <div class="modal-dialog modal-sm" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="device_modal_label">Modal title</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="slidecontainer d-flex justify-content-center">
-                            <i class="fas fa-volume-up volume-up-helper" style="margin:5px"> </i> <input type="range" min="0" max="20" value="10" class="slider" id="slider">
-                        </div>
-
-                        <div class="d-flex justify-content-center">
-                            <button type="button" class="btn btn-primary btn-sm volume-buttons" onclick="modal.toggleMute()">
-                                <i class="fas fa-volume-off"></i>
-                            </button>
-                            <button id="volume-down" type="button" class="btn btn-primary btn-sm volume-buttons" ontouchstart="slider.changeVolume(false)" onmousedown="slider.changeVolume(false)">
-                                <i class="fas fa-volume-down"></i>
-                            </button>
-                            <button id="volume-up"type="button" class="btn btn-primary btn-sm volume-buttons" ontouchstart="slider.changeVolume(true)" onmousedown="slider.changeVolume(true)">
-                                <i class="fas fa-volume-up"></i>
+        <div id="container" class="container">
+            <div class="container">
+                <div class="btn-group btn-group" v-for="extension in extensions" v-show="extension.online" v-cloak>
+                    <button class="btn btn-danger"><i class="fab fa-youtube"></i> <b>Youtube</b></button>
+                    <button type="button" class="btn btn-danger" @click="youtube.previousVideo(extension.tid)"><i class="fas fa-step-backward"></i></button>
+                    <button type="button" class="btn btn-danger" @click="youtube.playVideo(extension.tid)"><i class="fas fa-play"></i></button>
+                    <button type="button" class="btn btn-danger" @click="youtube.pauseVideo(extension.tid)"><i class="fas fa-pause"></i></button>
+                    <button type="button" class="btn btn-danger" @click="youtube.nextVideo(extension.tid)"><i class="fas fa-step-forward"></i></button>
+                    <button type="button" class="btn btn-danger" @click="youtube.muteVideo(extension.tid)"><i class="fas fa-volume-up"></i></button>
+                    <button type="button" class="btn btn-danger" @click="youtube.unmuteVideo(extension.tid)"><i class="fas fa-volume-off"></i></button>
+                    <button type="button" class="btn btn-danger"><input type="text"></input></button>
+                    <button type="button" class="btn btn-danger"><i class="fas fa-search"></i></button>
+                </div>
+            </div>
+            </br>
+            <div class="container row">
+                <div class="col" v-for="app in desktop_apps" v-cloak>
+                    <div v-bind:class='[app.online ? "device-online" : "device-offline"]' class="card device">
+                        <img class="card-img-top" src="/images/connect/linux.png" alt="Card image cap" />
+                        <div class="card-header" v-bind:style="[app.online?{backgroundColor:'#67e570'} : {backgroundColor:'#e83535'}]">
+                            <b style="color:black;">{{app.identifier}}</b>
+                            <button type="button" class="btn btn-info" @click="openDeviceModal(app.tid)" v-bind:disabled="!app.online">
+                                Open Device
                             </button>
                         </div>
-
-                        <hr/>
-                        <div><button type="button" class="btn btn-outline-dark action-buttons" onclick="device.displaysleep()">
-                            <i class="fas fa-desktop text-primary"></i> Turn Off Screen
-                        </button></div>
-                        <div><button type="button" class="btn btn-outline-dark action-buttons" onclick="device.lock()">
-                            <i class="fas fa-lock text-primary"></i> Lock Device</a>
-                        </button></div>
-                        <div><button type="button" class="btn btn-outline-dark action-buttons" onclick="device.unlock()">
-                            <i class="fas fa-lock-open text-primary"></i> Unlock Device</a>
-                        </button></div>
-                        <hr/>
-                        <div><button type="button" class="btn btn-outline-dark" onclick="device.shutdown()">
-                            <i class="fas fa-power-off text-primary"></i> Power Off Machine
-                        </button></div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                     </div>
                 </div>
             </div>
-        </div>
 
-        </br>
+            <div class="modal fade" id="device_modal" tabindex="-1" role="dialog" aria-labelledby="device_modal_label" aria-hidden="true">
+                <div class="modal-dialog modal-sm" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="device_modal_label">Modal title</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="slidecontainer d-flex justify-content-center">
+                                <i class="fas fa-volume-up volume-up-helper" style="margin:5px"> </i> <input type="range" min="0" max="20" value="10" class="slider" id="slider">
+                            </div>
+    
+                            <div class="d-flex justify-content-center">
+                                <button type="button" class="btn btn-primary btn-sm volume-buttons" onclick="modal.toggleMute()">
+                                    <i class="fas fa-volume-off"></i>
+                                </button>
+                                <button id="volume-down" type="button" class="btn btn-primary btn-sm volume-buttons" ontouchstart="slider.changeVolume(false)" onmousedown="slider.changeVolume(false)">
+                                    <i class="fas fa-volume-down"></i>
+                                </button>
+                                <button id="volume-up"type="button" class="btn btn-primary btn-sm volume-buttons" ontouchstart="slider.changeVolume(true)" onmousedown="slider.changeVolume(true)">
+                                    <i class="fas fa-volume-up"></i>
+                                </button>
+                            </div>
+    
+                            <hr/>
+                            <div><button type="button" class="btn btn-outline-dark action-buttons" onclick="device.displaysleep()">
+                                <i class="fas fa-desktop text-primary"></i> Turn Off Screen
+                            </button></div>
+                            <div><button type="button" class="btn btn-outline-dark action-buttons" onclick="device.lock()">
+                                <i class="fas fa-lock text-primary"></i> Lock Device</a>
+                            </button></div>
+                            <div><button type="button" class="btn btn-outline-dark action-buttons" onclick="device.unlock()">
+                                <i class="fas fa-lock-open text-primary"></i> Unlock Device</a>
+                            </button></div>
+                            <hr/>
+                            <div><button type="button" class="btn btn-outline-dark" onclick="device.shutdown()">
+                                <i class="fas fa-power-off text-primary"></i> Power Off Machine
+                            </button></div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-        <div class="container">
-            <a class="btn btn-primary" href="/account/tokens">
-                Manage tokens
-            </a>
+            </br>
+
+            <div class="container">
+                <a class="btn btn-primary" href="/account/tokens">
+                    Manage tokens
+                </a>
+            </div>
         </div>
 
         <%- include ../../components/footer %>
     </body>
 
     <script>
+    async function main() {
+        const result = await Request.GET("/api/connect/devices");
+
+        if (result && result.success) {
+            const tokens = result.tokens;
+            tokens.forEach(token => {
+                try {
+                    token.info = JSON.parse(token.info);
+                } catch (e) {
+                    token.info = false;
+                }
+            });
+            vm.extensions = tokens.filter(token => token.app_type === "browser");
+            vm.desktop_apps = tokens.filter(token => token.app_type === "api-lib")
+        }
+    }
+
+    const vm = new Vue({
+        el: '#container',
+        data () {
+            return {
+                extensions: [],
+                desktop_apps: [],
+            };
+        },
+    });
+
     function openDeviceModal(tid) {
         modal.tid = tid;
         $('#device_modal').modal();
         modal.setTitle("Device x");
         volume.getVolume(tid).then((feedback) => {
-            slider.el.value = feedback.volume/5;
-            const volumeup = document.getElementById("volume-up").disabled = feedback.mute;
-            const volumedown = document.getElementById("volume-down").disabled = feedback.mute;
+            slider.el.value = feedback.response.volume/5;
+            const volumeup = document.getElementById("volume-up").disabled = feedback.response.mute;
+            const volumedown = document.getElementById("volume-down").disabled = feedback.response.mute;
         }).catch(() => {});
         slider.el.oninput = function() {
             volume.update(this.value*5);
@@ -192,65 +243,6 @@
         },
     };
 
-    const youtube = {
-        muteVideo: (token_id) => {
-            Request.POST("/api/connect/interact", {
-                name: "youtube",
-                action: "setVolume",
-                value: "0",
-                tid: token_id,
-            }).then((data) => {
-                console.log(data);
-            });
-        },
-        unmuteVideo: (token_id) => {
-            Request.POST("/api/connect/interact", {
-                name: "youtube",
-                action: "setVolume",
-                value: "100",
-                tid: token_id,
-            }).then((data) => {
-                console.log(data);
-            });
-        },
-        pauseVideo: (token_id) => {
-            Request.POST("/api/connect/interact", {
-                name: "youtube",
-                action: "pauseVideo",
-                tid: token_id,
-            }).then((data) => {
-                console.log(data);
-            });
-        },
-        playVideo: (token_id) => {
-            Request.POST("/api/connect/interact", {
-                name: "youtube",
-                action: "playVideo",
-                tid: token_id,
-            }).then((data) => {
-                console.log(data);
-            });
-        },
-        nextVideo: (token_id) => {
-            Request.POST("/api/connect/interact", {
-                name: "youtube",
-                action: "nextVideo",
-                tid: token_id,
-            }).then((data) => {
-                console.log(data);
-            });
-        },
-        previousVideo: (token_id) => {
-            Request.POST("/api/connect/interact", {
-                name: "youtube",
-                action: "previousVideo",
-                tid: token_id,
-            }).then((data) => {
-                console.log(data);
-            });
-        },
-    };
-
     const volume = {
         fire: false,
         value: null,
@@ -275,139 +267,126 @@
         },
         setVolume: function() {
             this.last_value = this.value,
-            Request.POST("/api/connect/interact", {
-                name: "volume",
-                action: "set",
-                value: this.value,
+            Request.POST("/api/connect/open", {
                 tid: modal.tid,
+                call: `volume`, 
+                body: {
+                    action: "set",
+                    value: this.value
+                }
             }).then((data) => {
                 console.log(data);
             });
         },
         getVolume: (tid) => {
-            return Request.POST("/api/connect/interact", {
-                name: "volume",
-                action: "get",
+            return Request.POST("/api/connect/open", {
                 tid: modal.tid,
+                call: "volume",
+                body: {
+                    action: "get",
+                }
             });
         }
     };
 
     const device = {
         displaysleep: () => {
-            Request.POST("/api/connect/interact", {
-                name: "screen",
-                action: "displaysleep",
+            Request.POST("/api/connect/open", {
                 tid: modal.tid,
+                call: "screen",
+                body: {
+                    action: "displaysleep",
+                },
             }).then((data) => {
                 console.log(data);
             });
         },
         lock: () => {
-            Request.POST("/api/connect/interact", {
-                name: "screen",
-                action: "lock",
+            Request.POST("/api/connect/open", {
                 tid: modal.tid,
+                call: "screen",
+                body: {
+                    action: "lock",
+                },
             }).then((data) => {
                 console.log(data);
             });
         },
         unlock: () => {
-            Request.POST("/api/connect/interact", {
-                name: "screen",
-                action: "unlock",
+            Request.POST("/api/connect/open", {
                 tid: modal.tid,
+                call: "screen",
+                body: {
+                    action: "unlock",
+                },
             }).then((data) => {
                 console.log(data);
             });
         },
         shutdown: () => {
-            Request.POST("/api/connect/interact", {
-                name: "device",
-                action: "shutdown",
+            Request.POST("/api/connect/open", {
                 tid: modal.tid,
+                call: "device",
+                body: {
+                    action: "shutdown",
+                },
             }).then((data) => {
                 console.log(data);
             });
         }
     }
 
-    async function fetchDevices() {
-        return await Request.GET("/api/connect/devices").then(data => [data.data, data.tokens]);
-    }
-
-    async function main() {
-        const [devices, tokens] = await fetchDevices()
-
-        const sessions = devices.website;
-        const desktop_app = devices.desktop_app;
-        const extension = devices.extension;
-
-        const html_youtube = createHTMLYoutube(extension);
-        const html_devices = createHTMLDevices(desktop_app);
-        const html_sessions = createHTMLSessions(sessions);
-
-        document.getElementById("youtube").innerHTML = html_youtube;
-        document.getElementById("devices").innerHTML = html_devices;
-    }
-
-    function createHTMLYoutube(extension) {
-        const youtube_arr = [];
-
-        for(let tid in extension) {
-            const html = createYoutube(tid);
-            youtube_arr.push(html);
-        }
-
-        return youtube_arr.join("");
-    }
-
-    function createHTMLSessions(sessions) {
-
-    }
-
-    function createHTMLDevices(devices) {
-        devices_arr = [];
-
-        for(let app in devices) {
-            const token = devices[app];
-            const html = createDevice(token);
-            devices_arr.push(html);
-        }
-
-        return `<div class="row">${devices_arr.join("</br>")}</div>`;
-    }
-
-    function createYoutube(token_id) {
-        return `<div class="btn-group btn-group">
-          <button class="btn btn-danger"><i class="fab fa-youtube"></i> <b>Youtube</b></button>
-          <button type="button" class="btn btn-danger" onclick="youtube.previousVideo(${token_id})"><i class="fas fa-step-backward"></i></button>
-          <button type="button" class="btn btn-danger" onclick="youtube.playVideo(${token_id})"><i class="fas fa-play"></i></button>
-          <button type="button" class="btn btn-danger" onclick="youtube.pauseVideo(${token_id})"><i class="fas fa-pause"></i></button>
-          <button type="button" class="btn btn-danger" onclick="youtube.nextVideo(${token_id})"><i class="fas fa-step-forward"></i></button>
-          <button type="button" class="btn btn-danger" onclick="youtube.muteVideo(${token_id})"><i class="fas fa-volume-up"></i></button>
-          <button type="button" class="btn btn-danger" onclick="youtube.unmuteVideo(${token_id})"><i class="fas fa-volume-off"></i></button>
-          <button type="button" class="btn btn-danger"><input type="text"></input></button>
-          <button type="button" class="btn btn-danger"><i class="fas fa-search"></i></button>
-        </div>`;
-    }
-
-    function createDevice(token) {
-        const status = token.online ? "device-online" : "device-offline";
-        const color_background = token.online ? "#67e570" : "#e83535";
-        const disabled = token.online ? "" : "disabled";
-        return `<div class="col">
-            <div id=${token.id} class="card device ${status}">
-            <img class="card-img-top" src="/images/connect/${token.info.os_parsed}.png" alt="Card image cap">
-            <div class="card-header" style="background-color:${color_background};">
-            <b style="color:black;">${token.info.name}</b>
-            <button type="button" class="btn btn-info" onclick="openDeviceModal(${token.id})" ${disabled}>
-                Open Device
-            </button>
-            </div>
-            </div>
-            </div>`;
-    }
+    const youtube = {
+        muteVideo: (token_id) => {
+            Request.POST("/api/connect/open", {
+                tid: token_id,
+                call: "/youtube/setVolume/0",
+            }).then((data) => {
+                console.log(data);
+            });
+        },
+        unmuteVideo: (token_id) => {
+            Request.POST("/api/connect/open", {
+                tid: token_id,
+                call: "/youtube/setVolume/100",
+            }).then((data) => {
+                console.log(data);
+            });
+        },
+        pauseVideo: (token_id) => {
+            Request.POST("/api/connect/open", {
+                tid: token_id,
+                call: "/youtube/pauseVideo",
+            }).then((data) => {
+                console.log(data);
+            });
+        },
+        playVideo: (token_id) => {
+            console.log("PLAY", token_id);
+            Request.POST("/api/connect/open", {
+                tid: token_id,
+                call: "youtube/playVideo",
+            }).then((data) => {
+                console.log(data);
+            });
+        },
+        nextVideo: (token_id) => {
+            Request.POST("/api/connect/open", {
+                tid: token_id,
+                call: "/youtube/nextVideo",
+            }).then((data) => {
+                console.log(data);
+            });
+        },
+        previousVideo: (token_id) => {
+            Request.POST("/api/connect/open", {
+                tid: token_id,
+                call: "/youtube/previousVideo",
+            }).then((data) => {
+                console.log(data);
+            });
+        },
+    };
 
     main();
 

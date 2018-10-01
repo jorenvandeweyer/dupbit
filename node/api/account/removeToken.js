@@ -8,11 +8,11 @@ module.exports = async (req, res) => {
         const result = await db.getToken({tid: data.tid});
         if (result.length) {
             const token = result[0];
-            if (token.uid === req.auth.id) {
-                const connection = ws.findConnection(token.uid, token.id);
+            if (token.uid === req.auth.uid) {
+                const connection = ws.findConnection(token.uid, token.tid);
                 if (connection) connection.close();
 
-                await Token.removeToken(token.id);
+                await Token.removeToken(token.tid);
 
                 return res.json({
                     success: true

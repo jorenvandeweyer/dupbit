@@ -18,7 +18,7 @@ module.exports = express.Router()
 
         if (data.id) {
             const song = await db.getSong(data.id);
-            if (song.uid === req.auth.id) {
+            if (song.uid === req.auth.uid) {
                 if ("download" in data) {
                     const download = await Music.download(song);
                     res.set("Content-disposition", `attachment; filename=${download.name}.mp3`);
@@ -37,8 +37,8 @@ module.exports = express.Router()
                 });
             }
         } else {
-            const songs = await db.getSongsOf(req.auth.id);
-            const playlistInfo = await db.getSongsInPlaylistsOf(req.auth.id);
+            const songs = await db.getSongsOf(req.auth.uid);
+            const playlistInfo = await db.getSongsInPlaylistsOf(req.auth.uid);
             res.json({
                 success: true,
                 songs,
@@ -51,12 +51,12 @@ module.exports = express.Router()
 
         if (data.sid) {
             const uid = await db.getUserOfSong(data.sid);
-            if (uid === req.auth.id) {
+            if (uid === req.auth.uid) {
                 if (data.sid && data.artist && data.title && data.pids) {
                     await db.setArtist(data.sid, data.artist);
                     await db.setTitle(data.sid, data.title);
 
-                    const playlists = await db.getPlaylistsOf(req.auth.id);
+                    const playlists = await db.getPlaylistsOf(req.auth.uid);
 
                     for (let i = 0; i < playlists.length; i++) {
                         await db.removeSongFromPlaylist(data.sid, playlists[i].id);
@@ -95,7 +95,7 @@ module.exports = express.Router()
 
         if (data.sid) {
             const uid = await db.getUserOfSong(data.sid);
-            if (uid === req.auth.id) {
+            if (uid === req.auth.uid) {
                 await db.removeSong(data.sid);
                 return res.json({
                     success: true,

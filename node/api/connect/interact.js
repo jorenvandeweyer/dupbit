@@ -4,11 +4,11 @@ const db = require("../../src/util/Database");
 module.exports = async (req, res) => {
     const data = req.body;
     if (req.auth.isLoggedIn && data.tid) {
-        const uid = req.auth.id;
+        const uid = req.auth.uid;
         const token = await getToken(uid, data.tid);
 
         if (token) {
-            const socket = await ws.findConnection(uid, token.id);
+            const socket = await ws.findConnection(uid, token.tid);
             if (socket) {
                 socket.send(JSON.stringify({
                     action: {

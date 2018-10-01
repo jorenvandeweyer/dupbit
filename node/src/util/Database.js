@@ -74,10 +74,10 @@ async function checkTables() {
     });
 
     await query(`CREATE TABLE IF NOT EXISTS users.tokens (
-        id INT NOT NULL UNIQUE AUTO_INCREMENT,
+        tid INT NOT NULL UNIQUE AUTO_INCREMENT,
         uid INT NOT NULL,
-        name VARCHAR(255),
-        device VARCHAR(255) NOT NULL,
+        info JSON,
+        app_type VARCHAR(32),
         ip CHAR(40),
         timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (uid) REFERENCES users.users(id)
@@ -85,6 +85,17 @@ async function checkTables() {
     )`).then((result) => {
         if (result.warningCount == 0) {
             console.log("Created table \"users.tokens\".");
+        }
+    });
+
+    await query(`CREATE TABLE IF NOT EXISTS users.token_identifier(
+        tid INT NOT NULL UNIQUE,
+        identifier VARCHAR(64),
+        FOREIGN KEY (tid) REFERENCES users.tokens(tid)
+            ON DELETE CASCADE
+    )`).then((result) => {
+        if (result.warningCount == 0) {
+            console.log("Created table \"users.token_identifier\"");
         }
     });
 
@@ -330,8 +341,10 @@ async function setLevel(id, level) {
 
 
 // Add a token
-async function addToken(uid, name, device, ip) {
-    return await query("INSERT INTO users.tokens (uid, name, device, ip) VALUES (?, ?, ?, ?)", [uid, name, device, ip]);
+async function addToken(uid, info, app_type, ip, name="unknown") {
+    const result = await query("INSERT INTO users.tokens (uid, info, app_type, ip) VALUES (?, ?, ?, ?)", [uid, info, app_type, ip]);
+    query("INSERT INTO users.token_identifier (tid, identifier) VALUES (?, ?)", [result.insertId, name]);
+    return result;
 }
 
 // Get tokens
@@ -339,14 +352,22 @@ async function getToken(object) {
     if (object.uid) {
         return await query("SELECT * FROM users.tokens WHERE uid=?", [object.uid]);
     } else if (object.tid) {
-        return await query("SELECT * FROM users.tokens WHERE id=?", [object.tid]);
+        return await query("SELECT * FROM users.tokens WHERE tid=?", [object.tid]);
     }
     return false;
 }
 
+async function getTokenSafe(token) {
+    return await query("SELECT * FROM users.tokens WHERE uid=? AND tid=?", [token.uid, token.tid]);
+}
+
 // Remove a token
 async function removeToken(tid) {
-    return await query("DELETE FROM users.tokens WHERE id=?", [tid]);
+    return await query("DELETE FROM users.tokens WHERE tid=?", [tid]);
+}
+
+async function setTokenIdentifier(tid, identifier) {
+    return await query("UPDATE users.token_identifier SET identifier=? WHERE tid=?", [identifier, tid]);
 }
 
 // Register the client's IP and the current timestamp of login attempt with the given username
@@ -753,7 +774,9 @@ module.exports = {
     setLevel,
     addToken,
     getToken,
+    getTokenSafe,
     removeToken,
+    setTokenIdentifier,
     addLoginAttempt,
     addLoginAttemptByID,
     getLoginAttempts,

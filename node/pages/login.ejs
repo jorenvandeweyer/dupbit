@@ -1,9 +1,9 @@
-<% if(!("redirect" in query)) {query.redirect = "/welcome"} %>
 <!DOCTYPE html>
 <html lang="en">
 
 	<head>
 		<%- include ./components/head %>
+		<script src="https://cdn.jsdelivr.net/npm/ua-parser-js@0/dist/ua-parser.min.js"></script>
 	</head>
 
 	<body>
@@ -14,45 +14,79 @@
 			<div class="card mx-auto" style="max-width: 400px;">
 				<div class="card-header"><b>Login</b></div>
 				<div class="card-body">
-					<% if("fail" in query) { %>
-					<div class="alert alert-danger alert-dismissable">
+					<div id="fail" class="alert alert-danger alert-dismissable" style="display:none;">
 						<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
 						<strong>Wrong password or username!</strong> Try again.
 					</div>
-					<% } %>
-					<% if("notActivated" in query) { %>
-					<div class="alert alert-danger alert-dismissable">
+					<div id="notActivated" class="alert alert-danger alert-dismissable" style="display:none;">
 						<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
 						<strong>Account not activated!</strong> Please activate your account first.
 					</div>
-					<% } %>
-					<form action="api/account/login" method="post">
-						<div class="form-group">
-							<div class="input-group">
-                                <div class="input-group-prepend">
-                                    <span class="input-group-text"><i class="fas fa-user"></i></span>
-                                </div>
-								<input id="username" class="form-control" name="username" type="text" placeholder="Username">
+					<div class="form-group">
+						<div class="input-group">
+							<div class="input-group-prepend">
+								<span class="input-group-text"><i class="fas fa-user"></i></span>
 							</div>
+							<input id="username" class="form-control" type="text" placeholder="Username">
 						</div>
-						<div class="form-group">
-							<div class="input-group">
-                                <div class="input-group-prepend">
-                                    <span class="input-group-text"><i class="fas fa-lock"></i></span>
-                                </div>
-								<input id="password" class="form-control" name="password" type="password" placeholder="Password">
+					</div>
+					<div class="form-group">
+						<div class="input-group">
+							<div class="input-group-prepend">
+								<span class="input-group-text"><i class="fas fa-lock"></i></span>
 							</div>
+							<input id="password" class="form-control" type="password" placeholder="Password">
 						</div>
-						<div class="form-group float-right">
-							<div class="input-group">
-								<input class="btn btn-primary" type="submit" value="Login"/>
-							</div>
+					</div>
+					<div class="form-group float-right">
+						<div class="input-group">
+							<button class="btn btn-primary" onclick="login()"> Login </button>
 						</div>
-						<input name="redirect" type="hidden" value="<%= query.redirect %>"/>
-					</form>
+					</div>
 				</div>
 			</div>
 		</div>
+		<script>
+		const parser = new UAParser();
+		let redirect;
+
+		if (query.has("fail")) {
+			document.getElementById("fail").style.display = "block";
+		}
+
+		if (query.has("notActivated")) {
+			document.getElementById("notActivated").style.display = "block";
+		}
+
+		if (query.has("redirect")) {
+			redirect = query.get("redirect");
+		} else {
+			redirect = "/welcome";
+		}
+
+		async function login() {
+			const username = document.getElementById("username").value;
+			const password = document.getElementById("password").value;
+			const result = await Request.POST("/api/account/login", {
+				username,
+				password,
+				app_type: "browser",
+				info: {
+					os: parser.getOS(),
+					device: parser.getDevice(),
+					browser: parser.getBrowser(),
+				},
+			});
+
+			if (result && result.success) {
+				location.href = location.protocol + "//" + location.host + redirect;
+			} else if (result && result.reason === "email not verified") {
+				location.search = `redirect=${redirect}&notActivated`;
+			} else {
+				location.search += `redirect=${redirect}&fail`;
+			} 
+		}
+		</script>
         <%- include ./components/footer %>
 	</body>
 </html>

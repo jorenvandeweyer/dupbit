@@ -19,11 +19,12 @@ if (fs.existsSync("./data/secrets/private.key")) {
     console.log("[+]Keypair saved");
 }
 
-async function createToken(data, expire=60*60*24, info) { //expire=1day
-    let result = await db.addToken(data.id, info.name, info.remote, info.ip);
+async function createToken(data, expire=60*60*24) { //expire=1day
+    let result = await db.addToken(data.uid, JSON.stringify(data.info), data.app_type, data.ip);
     data.tid = result.insertId;
     return jwt.sign({
-        data,
+        tid: data.tid,
+        uid: data.uid,
         exp: Math.floor(Date.now() / 1000) + expire
     }, privateKey, {algorithm: "RS256"});
 }
@@ -31,18 +32,16 @@ async function createToken(data, expire=60*60*24, info) { //expire=1day
 async function verifyToken(token) {
     try {
         let decoded = jwt.verify(token, publicKey, {algorithm: "RS256"});
-        let tokenId = await db.getToken({tid: decoded.data.tid});
+        let tokenData = await db.getTokenSafe(decoded);
 
-        if (tokenId.length) {
-            Object.assign(decoded.data, {
-                device: tokenId[0].device,
-                name: tokenId[0].name,
-                ip: tokenId[0].ip
+        if (tokenData.length) {
+            let result = tokenData[0];
+            Object.assign(result, {
+                isLoggedIn: true,
             });
-            return decoded;
+            return result;
         }
     } catch(e) {
-        // console.log(e);
         if(e.name === "TokenExpiredError") {
             console.log("TokenExpired");
             // return false;
