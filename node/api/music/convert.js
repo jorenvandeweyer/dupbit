@@ -1,4 +1,5 @@
 const { convert, createFilename } = require("../../src/music/index");
+const ws = require("../../src/websocket/index");
 
 module.exports = async (req, res) => {
     const data = req.body;
@@ -23,9 +24,19 @@ module.exports = async (req, res) => {
                     filename: createFilename(data.title, data.artist, data.url)+".mp3",
                 });
             } else {
-                downloader.on("state-change", (data) => {
-                    //maybe send through websocket?
-                });
+                const socket = ws.findConnection(req.auth.uid, req.auth.tid);
+                const qid = data.qid;
+                if (socket && typeof qid != "undefined") {
+                    downloader.on("state-change", (data) => {
+                        socket.send(JSON.stringify({
+                            update: {
+                                qid,
+                                data,
+                            }
+                        }));
+                    });
+                }
+
 
                 const id = await downloader._promise;
                 res.json({
