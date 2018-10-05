@@ -73,7 +73,7 @@
             <div class="container row">
                 <div class="col" v-for="app in desktop_apps" v-cloak>
                     <div v-bind:class='[app.online ? "device-online" : "device-offline"]' class="card device">
-                        <img class="card-img-top" src="/images/connect/linux.png" alt="Card image cap" />
+                        <img class="card-img-top" v-bind:src="getSource(app)" alt="Card image cap" />
                         <div class="card-header" v-bind:style="[app.online?{backgroundColor:'#67e570'} : {backgroundColor:'#e83535'}]">
                             <b style="color:black;">{{app.identifier}}</b>
                             <button type="button" class="btn btn-info" @click="openDeviceModal(app.tid)" v-bind:disabled="!app.online">
@@ -170,6 +170,29 @@
                 desktop_apps: [],
             };
         },
+        methods: {
+            getSource: function (app) {
+                if (app.info && app.info.os && app.info.os.platform) {
+                    const platform = app.info.os.platform;
+                    switch (platform) {
+                        case "darwin":
+                            return "/images/connect/apple.png";
+                            break;
+                        case "linux":
+                            return "/images/connect/linux.png";
+                            break;
+                        case "win32":
+                            return "/images/connect/windows.png";
+                            break;
+                        default:
+                            return "/images/connect/unknown.png";
+                            break;
+                    }
+                }
+                console.log(app);
+                return "/images/connect/linux.png";
+            }
+        }
     });
 
     function openDeviceModal(tid) {
