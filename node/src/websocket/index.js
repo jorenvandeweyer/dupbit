@@ -42,6 +42,7 @@ function create(server) {
     setInterval(ping, 30000);
 
     wss.on("connection", (ws, req) => {
+        console.log("CONNECTED", req.user.uid, req.user.tid);
         ws.isAlive = true;
         ws.identifier = req.headers.identifier || "unkown";
         ws.owner = req.user;
@@ -57,7 +58,7 @@ function create(server) {
 
         ws.on("close", () => {
             Clients.get(req.user.uid).delete(req.user.tid);
-            console.log("CLOSED");
+            console.log("CLOSED", req.user.uid, req.user.tid);
         });
 
         ws.on("pong", heartbeat);
@@ -89,8 +90,14 @@ function getClient(uid) {
 }
 
 function handleMessage(ws, req, message) {
-    message = JSON.parse(message);
-    if (message.action === "logout") {
+    try {
+        message = JSON.parse(message);
+    } catch(e) {
+
+    }
+    if (message.action === "pong") {
+        ws.isAlive = true;
+    } else if (message.action === "logout") {
         Token.removeToken(req.user.tid, req.user.uid);
     } else if (message.action === "message") {
         console.log(message.content);
@@ -102,10 +109,14 @@ function handleMessage(ws, req, message) {
 function ping() {
     wss.clients.forEach((ws) => {
         if (!ws.isAlive) {
+            console.log("terminated");
             return ws.terminate();
         }
         ws.isAlive = false;
-        ws.ping();
+        ws.send(JSON.stringify({
+            action: "ping",
+        }));
+        ws.ping(); // should I remove this?
     });
 }
 
