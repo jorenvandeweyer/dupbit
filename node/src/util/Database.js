@@ -1,8 +1,5 @@
 const mysql = require("mysql");
 const settings = require("../../config.json");
-const bcrypt = require("bcrypt");
-const lang = require("../../lang/en.json");
-const Mail = require("./Mail");
 
 const pool = mysql.createPool({
     host: settings.MYSQL_HOST,
@@ -227,25 +224,7 @@ function query(query, options) {
 
 // Register a user with the given username, password, email and level
 async function register(username, password, email, level=0) {
-    const hash = bcrypt.hashSync(password, 10);
-    const emailhash = bcrypt.hashSync(hash, 10);
-
-    const q = await query("INSERT INTO users.users (username, password, email, level) VALUES (?, ?, ?, ?)", [username, hash, email, level]);
-
-    const id = await getIDByUsername(username);
-
-    await Mail.sendTemplate({
-        subject: `Welcome to Dupbit! Confirm your email ${username}!`,
-        sender: "noreply@dupbit.com",
-        receiver: email,
-        title: `Welcome to Dupbit! Confirm your email ${username}!`,
-        message_title: "Thanks for registering at Dupbit!",
-        message_content: "To complete your registration click the button below. If you did not register to Dupbit, you can just ignore this email.",
-        button_title: "Confirm Email",
-        button_url: `https://dupbit.com/api/account/validate?id=${id}&hash=${emailhash}`,
-
-    });
-    return q;
+    return await query("INSERT INTO users.users (username, password, email, level) VALUES (?, ?, ?, ?)", [username, password, email, level]);
 }
 
 async function unregister(id) {
@@ -599,152 +578,6 @@ function recoverAccount(){
 
 }
 
-// Verify if the given username, password and email make a valid user instance
-async function verifyRegistration(username, password, confirmpassword, email) {
-    let errorCode = 0;
-    errorCode += await verifyUsername(username);
-    errorCode += verifyPassword(password);
-    errorCode += verifyPasswordMatch(password, confirmpassword);
-    errorCode += await verifyEmail(email);
-    return errorCode;
-}
-
-// Verify if the given username is valid for registration
-async function verifyUsername(username) {
-    let errorCode = 0;
-    if (await isRegistered(username)) {
-        errorCode += 2 ** 0;
-    }
-    if (username.length < 3) {
-        errorCode += 2 ** 1;
-    }
-    if (username.length > 20) {
-        errorCode += 2 ** 2;
-    }
-    if (!verifyUsernameChars(username)) {
-        errorCode += 2 ** 3;
-    }
-    return errorCode;
-}
-
-// Verify if the given username is valid for registration
-function verifyPassword(password) {
-    let errorCode = 0;
-    if (password.length < 8) {
-        errorCode += 2 ** 4;
-    }
-    if (password.length > 30) {
-        errorCode += 2 ** 5;
-    }
-    if (!verifyPasswordChars(password)) {
-        errorCode += 2 ** 6;
-    }
-    return errorCode;
-}
-
-// Check if passwords match
-function verifyPasswordMatch(password, confirmpassword) {
-    let errorCode = 0;
-    if (password !== confirmpassword) {
-        errorCode += 2 ** 7;
-    }
-    return errorCode;
-}
-
-// Verify if the email is valid
-async function verifyEmail(email) {
-    let errorCode = 0;
-    if (await isInUse(email)) {
-        errorCode += 2 ** 8;
-    }
-    // if (!filter_var(email, FILTER_VALIDATE_EMAIL)) {
-    //   errorCode += 2 ** 9;
-    // }
-    var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-    if(!re.test(email)) {
-        errorCode += 2 ** 9;
-    }
-    return errorCode;
-}
-
-// Verify string for valid chars
-function verifyUsernameChars(string) {
-    return !string.match(/[^A-Za-z0-9._-]/);
-    // return !preg_match('/[^A-Za-z0-9._-]/', string);
-}
-
-// Verify string for valid chars
-function verifyPasswordChars(string) {
-    return !string.match(/[^A-Za-z0-9!"#$%&'()*+,-./:;<=>?@[\]^_`{|}~]/);
-    // return !preg_match('/[^A-Za-z0-9!"#$%&\'()*+,-.\/:;<=>?@[\]^_`{|}~]/', $string);
-}
-
-// Get the error message of this errorCode
-function getErrorMessage(errorCode) {
-    let errorMessage;
-    switch(errorCode) {
-        case 0:
-            errorMessage = lang["username.availability"];
-            break;
-        case 1:
-            errorMessage = lang["username.tooshort"];
-            break;
-        case 2:
-            errorMessage = lang["username.toolong"];
-            break;
-        case 3:
-            errorMessage = lang["username.invalidchars"];
-            break;
-        case 4:
-            errorMessage = lang["password.tooshort"];
-            break;
-        case 5:
-            errorMessage = lang["password.toolong"];
-            break;
-        case 6:
-            errorMessage = lang["password.invalidchars"];
-            break;
-        case 7:
-            errorMessage = lang["password.match"];
-            break;
-        case 8:
-            errorMessage = lang["email.availability"];
-            break;
-        case 9:
-            errorMessage = lang["email.format"];
-            break;
-    }
-    return errorMessage;
-}
-
-// Decode errorCode
-function decodeErrorCode(errorCode) {
-    let errorMessageList = [];
-    let binErrorCode = dec2bin(errorCode);
-    for (let i = 1; i <= binErrorCode.length; i++) {
-        if (binErrorCode.charAt(binErrorCode.length - i) == "1") {
-            errorMessageList.push(getErrorMessage(i-1));
-        }
-    }
-    return errorMessageList;
-}
-
-function dec2bin(dec) {
-    return (dec >>> 0).toString(2);
-}
-
-// Verify if the given username and password make a valid login
-async function verifyLogin(username, password) {
-    let id = await getIDByUsername(username);
-
-    if (id) {
-        let hash = await getPasswordByID(id);
-        return bcrypt.compareSync(password, hash.replace("$2y$", "$2a$"));
-    } else {
-        return false;
-    }
-}
-
 // Return if the user with given id can do a namechange
 async function canDoUsernameChange(id) {
     let data = await getLatestUsernameChange(id);
@@ -808,15 +641,5 @@ module.exports = {
     getSongsSmart,
     filename,
     recoverAccount,
-    verifyRegistration,
-    verifyUsername,
-    verifyPassword,
-    verifyPasswordMatch,
-    verifyEmail,
-    verifyUsernameChars,
-    verifyPasswordChars,
-    getErrorMessage,
-    decodeErrorCode,
-    verifyLogin,
     canDoUsernameChange
 };

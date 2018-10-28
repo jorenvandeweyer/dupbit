@@ -1,18 +1,18 @@
-const Database = require("../../src/util/Database");
+const verifyUser = require("../../src/util/verifyUser");
 
 module.exports = async (req, res) => {
     const data = req.body;
 
     if ("username" in data && "password" in data && "confirmpassword" in data && "email" in data) {
-        let usernameErrorCode = await Database.verifyUsername(data.username);
-        let passwordErrorCode = Database.verifyPassword(data.password);
-        let confirmPasswordErrorCode = Database.verifyPasswordMatch(data.password, data.confirmpassword);
-        let emailErrorCode = await Database.verifyEmail(data.email);
+        let usernameErrorCode = await verifyUser.verifyUsername(data.username);
+        let passwordErrorCode = verifyUser.verifyPassword(data.password);
+        let confirmPasswordErrorCode = verifyUser.verifyPasswordMatch(data.password, data.confirmpassword);
+        let emailErrorCode = await verifyUser.verifyEmail(data.email);
 
-        let usernameError = Database.decodeErrorCode(usernameErrorCode).join(" ");
-        let passwordError = Database.decodeErrorCode(passwordErrorCode).join(" ");
-        let confirmPasswordError = Database.decodeErrorCode(confirmPasswordErrorCode).join(" ");
-        let emailError = Database.decodeErrorCode(emailErrorCode).join(" ");
+        let usernameError = verifyUser.decodeErrorCode(usernameErrorCode).join(" ");
+        let passwordError = verifyUser.decodeErrorCode(passwordErrorCode).join(" ");
+        let confirmPasswordError = verifyUser.decodeErrorCode(confirmPasswordErrorCode).join(" ");
+        let emailError = verifyUser.decodeErrorCode(emailErrorCode).join(" ");
 
         res.json({
             username: usernameError,

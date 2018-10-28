@@ -10,6 +10,8 @@ const Cookie = require("./src/util/Cookie");
 const auth = require("./src/auth");
 const api = require("./src/api");
 const html = require("./src/html");
+const errors = require("./src/errors");
+
 require("./src/cron");
 
 process.on("unhandledRejection", (reason, p) => {
@@ -33,6 +35,7 @@ app.use((req, res, next) => {
     next();
 });
 
+app.use("*", errors);
 app.use("*", auth);
 app.use("/ics", express.static("pages/ics"));
 app.use("/api", api);

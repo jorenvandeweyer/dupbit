@@ -1,59 +1,45 @@
 const Database = require("../../src/util/Database");
 const Token = require("../../src/util/Token");
+const bcrypt = require("bcrypt");
 
 module.exports = async (req, res) => {
     const data = req.body;
-    const ip = req.get("x-real-ip");
-    if (data.username && data.password) {
-        const login = await Database.verifyLogin(data.username, data.password);
+    if (!data.username || !data.password) return res.errors.incomplete();
 
-        if (login) {
-            Database.addLoginAttempt(data.username, true, ip);
-            const id = await Database.getIDByUsername(data.username);
-            const level = await Database.getLevelByID(id);
+    const id = await Database.getIDByUsername(data.username);
+    if (!id) return res.errors.wrongCredentials(true);
 
-            if (level < 1) {
-                res.status(401).json({
-                    success: false,
-                    reason: "email not verified"
-                });
-            } else {
-                const expires = data.expires ? parseInt(data.expires) : 365*10*24*60*60;
-                if (!data.app_type) data.app_type = "unknown";
+    const hash = await Database.getPasswordByID(id);
+    const match = await bcrypt.compare(data.password, hash);
+    if (!match) return res.errors.wrongCredentials(true);
 
-                const token = await Token.createToken({
-                    uid: id,
-                    info: data.info,
-                    app_type: data.app_type,
-                    ip,
-                }, expires);
-                res.cookie("sid", token, {
-                    maxAge: expires*1000,
-                    // secure: true,
-                });
-                res.set("Access-Control-Allow-Credentials", "true");
-                res.set("Access-Control-Allow-Origin", req.get("origin") ? req.get("origin") : "*");
+    Database.addLoginAttempt(data.username, true, req.get("x-real-ip"));
+    
+    const level = await Database.getLevelByID(id);
+    if (level < 1) res.errors.verifyEmail();
 
-                res.json({
-                    success: true,
-                    login: true,
-                    id,
-                    token,
-                });
-            }
+    const expires = data.expires ? parseInt(data.expires) : 365*10*24*60*60;
+    if (!data.app_type) data.app_type = "unknown";
 
-        } else {
-            Database.addLoginAttempt(data.username, false, ip);
+    const token = await Token.createToken({
+        uid: id,
+        info: data.info,
+        app_type: data.app_type,
+        ip: req.get("x-real-ip"),
+    }, expires);
 
-            res.status(401).json({
-                success: false,
-            });
-        }
+    res.cookie("sid", token, {
+        maxAge: expires*1000,
+        secure: true,
+    });
 
-    } else {
-        res.status(400).json({
-            success: false,
-            reason: "missing parameters"
-        });
-    }
+    res.set("Access-Control-Allow-Credentials", "true");
+    res.set("Access-Control-Allow-Origin", req.get("origin") ? req.get("origin") : "*");
+
+    res.json({
+        success: true,
+        login: true,
+        id,
+        token,
+    });
 };
