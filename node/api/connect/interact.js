@@ -38,7 +38,7 @@ module.exports = async (req, res) => {
 };
 
 async function getToken(uid, tid) {
-    let tokens = await db.getToken({ uid });
+    let tokens = await db.getTokens(uid);
     const token = tokens.filter(token => token.id === parseInt(tid));
     return token.length ? token[0] : null;
 }

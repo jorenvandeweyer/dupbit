@@ -15,7 +15,7 @@ module.exports = express.Router()
         }
     })
     .get("*", async (req, res) => {
-        const tokens = await db.getToken({uid: req.auth.uid});
+        const tokens = await db.getTokens(req.auth.uid);
         const sockets = await ws.getClient(req.auth.uid);
 
         tokens.forEach(token => {
@@ -30,7 +30,7 @@ module.exports = express.Router()
     .post("*", async (req, res) => {
         const data = req.body;
         if (data.tid && data.identifier) {
-            const token = await db.getToken({tid: data.tid});
+            const token = await db.getToken(data.tid);
             if (token && token[0].uid === req.auth.uid) {
                 db.setTokenIdentifier(data.tid, data.identifier);
             } else {
