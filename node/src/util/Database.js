@@ -578,11 +578,10 @@ function recoverAccount(){
 }
 
 // Return if the user with given id can do a namechange
-async function canDoUsernameChange(id) {
-    let data = await getLatestUsernameChange(id);
-    let old = new Date(data.timestamp);
-    let now = Date.now();
-    return (now - old >= 30 * 24 * 60 * 60 * 1000);
+async function canDoUsernameChange(id, days=30) {
+    const data = await getLatestUsernameChange(id);
+    const old = new Date(data[0].timestamp);
+    return (Date.now() - old >= days * 24 * 60 * 60 * 1000);
 }
 
 module.exports = {

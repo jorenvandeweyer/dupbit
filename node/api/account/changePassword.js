@@ -4,7 +4,7 @@ const bcrypt = require("bcrypt");
 const Mail = require("../../src/util/Mail");
 
 module.exports = async (req, res) => {
-    const data = req.query;
+    const data = req.body;
 
     if (!req.auth.isLoggedIn) return res.errors.needAuth();
 

@@ -3,7 +3,7 @@ const db = require("../../src/util/Database");
 const destoryToken = require("../../src/util/destroyToken");
 
 module.exports = async (req, res) => {
-    const data = req.query;
+    const data = req.body;
 
     if (!req.auth.isLoggedIn) return res.errors.needAuth();
     
@@ -18,7 +18,5 @@ module.exports = async (req, res) => {
         await destoryToken(token.tid, token.uid);
     }
 
-    res.json({
-        success: "busy",
-    });
+    res.redirect("/login");
 };

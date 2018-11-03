@@ -10,9 +10,9 @@ async function verifyRegistration(username, password, confirmpassword, email) {
     return errorCode;
 }
 
-async function verifyUsername(username) {
+async function verifyUsername(username, oldname=false) {
     let errorCode = 0;
-    if (await db.isRegistered(username)) {
+    if (await db.isRegistered(username) && username !== oldname) {
         errorCode += 2 ** 0;   
     }
     if (username.length < 3) {
@@ -22,7 +22,11 @@ async function verifyUsername(username) {
         errorCode += 2 ** 2;
     }
     if (!verifyUsernameChars(username)) {
+        console.log(username, "non valid");
         errorCode += 2 ** 3;
+    }
+    if (oldname && username === oldname) {
+        errorCode += 2 ** 11;
     }
     return errorCode;
 }
@@ -107,6 +111,8 @@ function getErrorMessage(errorCode) {
             return lang["email.format"];
         case 10:
             return lang["password.same"];
+        case 11:
+            return lang["username.same"];
     }
 }
 

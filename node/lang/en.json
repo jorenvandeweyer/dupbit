@@ -5,6 +5,7 @@
 	"username.tooshort":		"Username must contain at least 3 characters.",
 	"username.toolong":			"Username can contain at most 20 characters.",
 	"username.invalidchars":	"Username contains invalid characters.",
+	"username.same":			"Username can't be the same as old one.",
 	"password.label":			"Password:",
 	"password.help":			"Please choose a password.",
 	"password.confirmlabel":	"Confirm password:",
