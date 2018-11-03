@@ -52,12 +52,7 @@ async function verifyToken(token) {
     return false;
 }
 
-function removeToken(tid) {
-    db.removeToken(tid);
-}
-
 module.exports = {
     createToken,
     verifyToken,
-    removeToken,
 };

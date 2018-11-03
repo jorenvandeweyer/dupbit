@@ -326,14 +326,13 @@ async function addToken(uid, info, app_type, ip, name="unknown") {
     return result;
 }
 
-// Get tokens
-async function getToken(object) {
-    if (object.uid) {
-        return await query("SELECT * FROM users.tokens WHERE uid=?", [object.uid]);
-    } else if (object.tid) {
-        return await query("SELECT * FROM users.tokens WHERE tid=?", [object.tid]);
-    }
-    return false;
+// Get token
+function getToken(tid) {
+    return query("SELECT * FROM users.tokens WHERE tid=?", [tid]);
+}
+
+function getTokens(uid) {
+    return query("SELECT * FROM users.tokens WHERE uid=?", [uid]);
 }
 
 async function getTokenSafe(token) {
@@ -607,6 +606,7 @@ module.exports = {
     setLevel,
     addToken,
     getToken,
+    getTokens,
     getTokenSafe,
     removeToken,
     setTokenIdentifier,

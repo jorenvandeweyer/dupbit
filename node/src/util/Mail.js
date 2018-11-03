@@ -30,7 +30,6 @@ async function send(from, to, subject, html) {
     });
 }
 
-
 async function sendTemplate(obj) {
     return await send(obj.sender, obj.receiver, obj.subject, templates.create(obj));
 }

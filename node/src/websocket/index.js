@@ -1,6 +1,7 @@
 const WebSocket = require("ws");
 const Token = require("../util/Token");
 const Cookie = require("../util/Cookie");
+const db = require("../util/Database");
 
 let wss;
 const Clients = new Map([[0, new Map()]]);
@@ -98,7 +99,7 @@ function handleMessage(ws, req, message) {
     if (message.action === "pong") {
         ws.isAlive = true;
     } else if (message.action === "logout") {
-        Token.removeToken(req.user.tid, req.user.uid);
+        db.removeToken(req.user.tid);
     } else if (message.action === "message") {
         console.log(message.content);
     } else {
