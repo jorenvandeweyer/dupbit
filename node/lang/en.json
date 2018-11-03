@@ -13,6 +13,7 @@
 	"password.toolong":			"Password can contain at most 30 characters.",
 	"password.invalidchars":	"Password contains invalid characters.",
 	"password.match":			"Passwords do not match.",
+	"password.same":			"New password can't be the same as old one.",
 	"email.label":				"Email:",
 	"email.help":				"Please enter your email.",
 	"email.availability":		"E-mail address is already in use.",

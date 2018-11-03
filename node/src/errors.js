@@ -8,6 +8,18 @@ module.exports = async (req, res, next) => {
                 reason: "missing params",
             });
         },
+        invalid: () => {
+            res.status(400).json({
+                success: false,
+                reason: "invalid params",
+            });
+        },
+        custom: (reason="custom") => {
+            res.status(400).json({
+                success: false,
+                reason,
+            });
+        },
         wrongCredentials: (logTry=false) => {
             if (logTry) addLoginAttempt(req, false);
             
@@ -20,6 +32,12 @@ module.exports = async (req, res, next) => {
             res.status(401).json({
                 success: false,
                 reason: "Verify email first",
+            });
+        },
+        needAuth: () => {
+            res.status(401).json({
+                success: false,
+                reason: "Need to be authenticated",
             });
         },
 

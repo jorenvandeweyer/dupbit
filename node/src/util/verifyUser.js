@@ -27,7 +27,7 @@ async function verifyUsername(username) {
     return errorCode;
 }
 
-function verifyPassword(password) {
+function verifyPassword(password, newpassword=false) {
     let errorCode = 0;
     if (password.length < 8) {
         errorCode += 2 ** 4;
@@ -37,6 +37,9 @@ function verifyPassword(password) {
     }
     if (!verifyPasswordChars(password)) {
         errorCode += 2 ** 6;
+    }
+    if (newpassword && newpassword === password) {
+        errorCode += 2 ** 10;
     }
     return errorCode;
 }
@@ -81,40 +84,30 @@ function decodeErrorCode(errorCode) {
 }
 
 function getErrorMessage(errorCode) {
-    let errorMessage;
     switch(errorCode) {
         case 0:
-            errorMessage = lang["username.availability"];
-            break;
+            return lang["username.availability"];
         case 1:
-            errorMessage = lang["username.tooshort"];
-            break;
+            return lang["username.tooshort"];
         case 2:
-            errorMessage = lang["username.toolong"];
-            break;
+            return lang["username.toolong"];
         case 3:
-            errorMessage = lang["username.invalidchars"];
-            break;
+            return lang["username.invalidchars"];
         case 4:
-            errorMessage = lang["password.tooshort"];
-            break;
+            return lang["password.tooshort"];
         case 5:
-            errorMessage = lang["password.toolong"];
-            break;
+            return lang["password.toolong"];
         case 6:
-            errorMessage = lang["password.invalidchars"];
-            break;
+            return lang["password.invalidchars"];
         case 7:
-            errorMessage = lang["password.match"];
-            break;
+            return lang["password.match"];
         case 8:
-            errorMessage = lang["email.availability"];
-            break;
+            return lang["email.availability"];
         case 9:
-            errorMessage = lang["email.format"];
-            break;
+            return lang["email.format"];
+        case 10:
+            return lang["password.same"];
     }
-    return errorMessage;
 }
 
 function dec2bin(dec) {
