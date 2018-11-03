@@ -1,11 +1,7 @@
-const Token = require("../../src/util/Token");
-const ws = require("../../src/websocket/index");
+const destroyToken = require("../../src/util/destroyToken");
 
 module.exports = async (req, res) => {
-    const connection = ws.findConnection(req.auth.uid, req.auth.tid);
-    if (connection) connection.close();
-
-    await Token.removeToken(req.auth.tid);
+    await destroyToken(req.auth.tid, req.auth.uid);
 
     res.clearCookie("sid", {
         // secure: true

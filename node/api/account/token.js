@@ -1,6 +1,4 @@
-const Token = require("../../src/util/Token");
-const ws = require("../../src/websocket/index");
-
+const destroyToken = require("../../src/util/destroyToken");
 const express = require("express");
 
 module.exports = express.Router()
@@ -36,11 +34,8 @@ module.exports = express.Router()
             res.json({
                 success: false,
             });
-        } else {
-            const connection = ws.findConnection(req.auth.uid, req.auth.tid);
-            if (connection) connection.close();
-        
-            await Token.removeToken(req.auth.tid);
+        } else {        
+            await destroyToken(req.auth.tid, req.auth.uid);
         
             res.clearCookie("sid", {
                 // secure: true
