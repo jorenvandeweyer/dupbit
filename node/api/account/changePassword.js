@@ -4,7 +4,7 @@ const bcrypt = require("bcrypt");
 const Mail = require("../../src/util/Mail");
 
 module.exports = async (req, res) => {
-    const data = req.body;
+    const data = req.query;
 
     if (!req.auth.isLoggedIn) return res.errors.needAuth();
 
@@ -15,7 +15,7 @@ module.exports = async (req, res) => {
     const match = await bcrypt.compare(data.oldpassword, hash);
     if (!match) return res.errors.wrongCredentials();
 
-    const errorCode = verifyUser.verifyPassword(data.newpassword);
+    const errorCode = verifyUser.verifyPassword(data.newpassword, data.oldpassword);
     const errorCodeConfirm = verifyUser.verifyPasswordMatch(data.newpassword, data.newpasswordconfirm);
     
     if (errorCode !== 0 || errorCodeConfirm !== 0) {
@@ -27,11 +27,9 @@ module.exports = async (req, res) => {
     }
 
     const newhash = await bcrypt.hash(data.newpassword, 10);
-    db.setPassword(req.auth.uid, newhash);
+    const destroySessionHash = await bcrypt.hash(newhash, 10);
 
-    res.json({
-        success: true,
-    });
+    await db.setPassword(req.auth.uid, newhash);
 
     const email = await db.getEmailByID(req.auth.uid);
 
@@ -44,5 +42,10 @@ module.exports = async (req, res) => {
         message_content: `Your password got changed at ${new Date().toString()}. If this was not you please change your password with the password recovery option`,
         button_title: "This was not me",
         button_url: `https://dupbit.com/account/edit`,
+    });
+
+    res.json({
+        success: true,
+        hash: destroySessionHash,
     });
 }
