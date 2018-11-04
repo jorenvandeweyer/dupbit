@@ -13,13 +13,16 @@ module.exports = async (req, res) => {
     
     const hash = await db.getPasswordByID(req.auth.uid);
     const match = await bcrypt.compare(data.oldpassword, hash);
-    if (!match) return res.errors.wrongCredentials();
+    if (!match) return res.json({
+        success: false,
+        password_old: ["Invalid password"],
+    });
 
     const errorCode = verifyUser.verifyPassword(data.newpassword, data.oldpassword);
     const errorCodeConfirm = verifyUser.verifyPasswordMatch(data.newpassword, data.newpasswordconfirm);
     
     if (errorCode !== 0 || errorCodeConfirm !== 0) {
-        return res.status(400).json({
+        return res.json({
             success: false,
             password: verifyUser.decodeErrorCode(errorCode),
             confirmpassword: verifyUser.decodeErrorCode(errorCodeConfirm),

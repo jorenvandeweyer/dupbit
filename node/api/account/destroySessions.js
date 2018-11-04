@@ -18,5 +18,7 @@ module.exports = async (req, res) => {
         await destoryToken(token.tid, token.uid);
     }
 
-    res.redirect("/login");
+    res.json({
+        success: true,
+    });
 };

@@ -8,14 +8,16 @@ module.exports = async (req, res) => {
     
     if (!data.name) return res.errors.incomplete();
 
-    const canChange = await db.canDoUsernameChange(req.auth.uid);
-    if (!canChange) return res.errors.custom("You can only change your username once a month.")
+    const canChange = await db.canDoUsernameChange(req.auth.uid, 30);
+    if (!canChange) return res.json({
+        success: false,
+        username: ["You can only change your username once a month."],
+    });
     
     const errorCode = await verifyUser.verifyUsername(data.name, req.auth.username);
 
     if (errorCode !== 0) {
-        console.log(data.name, errorCode);
-        return res.status(400).json({
+        return res.json({
             success: false,
             username: verifyUser.decodeErrorCode(errorCode),
         });
@@ -23,9 +25,9 @@ module.exports = async (req, res) => {
 
     db.addUsernameChange(req.auth.uid, data.name);
     db.setUsername(req.auth.uid, data.name);
-    console.log("change:", canChange);
 
     res.json({
-        success: "busy",
+        success: "true",
+        new_username: data.name,
     });
 }
