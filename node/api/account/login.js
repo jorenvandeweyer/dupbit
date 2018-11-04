@@ -6,7 +6,8 @@ module.exports = async (req, res) => {
     const data = req.body;
     if (!data.username || !data.password) return res.errors.incomplete();
 
-    const id = await Database.getIDByUsername(data.username);
+    const id = await resolveUsername(data.username);
+    console.log(id);
     if (!id) return res.errors.wrongCredentials(true);
 
     const hash = await Database.getPasswordByID(id);
@@ -43,3 +44,11 @@ module.exports = async (req, res) => {
         token,
     });
 };
+
+function resolveUsername(username) {
+    if (username.includes("@")) {
+        return Database.getIdByEmail(username);
+    } else {
+        return Database.getIDByUsername(username);
+    }
+}

@@ -253,6 +253,15 @@ async function getIDByUsername(username) {
     }
 }
 
+async function getIdByEmail(email) {
+    let result = await query("SELECT id FROM users.users WHERE email=?", [email]);
+    if (result.length) {
+        return result[0].id;
+    } else {
+        return null;
+    }
+}
+
 // Return the username of the user with given id
 async function getUsernameByID(id) {
     let result = await query("SELECT username FROM users.users WHERE id=?", [id]);
@@ -594,6 +603,7 @@ module.exports = {
     isRegistered,
     isInUse,
     getIDByUsername,
+    getIdByEmail,
     getUsernameByID,
     setUsername,
     getPasswordByID,
