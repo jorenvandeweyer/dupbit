@@ -37,7 +37,7 @@ module.exports = async (req, res) => {
     const email = await db.getEmailByID(req.auth.uid);
 
     await Mail.sendTemplate({
-        subject: `Security update: password change for ${req.auth.username}`,
+        subject: `Dupbit | Security update: password change for ${req.auth.username}`,
         sender: "noreply@dupbit.com",
         receiver: email,
         title: `Security update: password change for ${req.auth.username}`,

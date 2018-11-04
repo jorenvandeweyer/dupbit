@@ -7,7 +7,6 @@ module.exports = async (req, res) => {
     if (!data.username || !data.password) return res.errors.incomplete();
 
     const id = await resolveUsername(data.username);
-    console.log(id);
     if (!id) return res.errors.wrongCredentials(true);
 
     const hash = await Database.getPasswordByID(id);
