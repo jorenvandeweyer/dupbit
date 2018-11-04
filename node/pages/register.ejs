@@ -85,7 +85,7 @@
 
 					if(input.val().length) {
 
-						if (error) {
+						if (error && error.length) {
 							inputGroup.removeClass("has-success");
 							feedback.removeClass("glyphicon-ok");
 							inputGroup.addClass("has-error");
