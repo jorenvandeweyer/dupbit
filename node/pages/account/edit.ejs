@@ -3,7 +3,6 @@
 
 	<head>
 		<%- include /usr/src/app/pages/components/head %>
-        <script src="https://cdn.jsdelivr.net/npm/vue"></script>
 	</head>
 
 	<body>
@@ -347,9 +346,7 @@ const vm = new Vue({
 
 			if (!result || !result.success)
 				return;
-
-
-			
+		
 			if (result.password) {
 				if (result.password.length) {
 					this.password_new.state = "has-error";

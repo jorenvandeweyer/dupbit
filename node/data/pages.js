@@ -95,4 +95,9 @@ module.exports = {
         currentPage: "/account/tokens",
         requireLogin: true,
     },
+    "/account/recovery": {
+        title: "Dupbit - Forgot Password",
+        currentPage: "/account/recovery",
+        requireLogout: true,
+    }
 };

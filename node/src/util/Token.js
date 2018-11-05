@@ -55,4 +55,6 @@ async function verifyToken(token) {
 module.exports = {
     createToken,
     verifyToken,
+    privateKey,
+    publicKey,
 };
