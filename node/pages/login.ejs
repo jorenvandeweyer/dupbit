@@ -1,13 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
-
 	<head>
 		<%- include ./components/head %>
 		<script src="https://cdn.jsdelivr.net/npm/ua-parser-js@0/dist/ua-parser.min.js"></script>
 	</head>
-
 	<body>
-
 		<%- include ./components/header %>
         </br>
 		<div class="container">
@@ -22,70 +19,134 @@
 						<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
 						<strong>Account not activated!</strong> Please activate your account first.
 					</div>
-					<div class="form-group">
-						<div class="input-group">
-							<div class="input-group-prepend">
-								<span class="input-group-text"><i class="fas fa-user"></i></span>
-							</div>
-							<input id="username" class="form-control" type="text" placeholder="Username">
+					<div class="input-group mb-3">
+						<div class="input-group-prepend">
+							<span class="input-group-text"><i class="fas fa-user"></i></span>
 						</div>
+						<input
+						 id="username"
+						 class="form-control" 
+						 type="text" 
+						 placeholder="Username"
+						 v-model="username"
+						 @keydown.enter="login()"
+						>
 					</div>
-					<div class="form-group">
-						<div class="input-group">
-							<div class="input-group-prepend">
-								<span class="input-group-text"><i class="fas fa-lock"></i></span>
-							</div>
-							<input id="password" class="form-control" type="password" placeholder="Password">
+					<div class="input-group mb-3">
+						<div class="input-group-prepend">
+							<span class="input-group-text"><i class="fas fa-lock"></i></span>
 						</div>
+						<input 
+						 id="password"
+						 class="form-control" 
+						 type="password" 
+						 placeholder="Password"
+						 v-model="password"
+						 @keydown.enter="login()"
+						>
 					</div>
-					<div class="form-group float-right">
-						<div class="input-group">
-							<button class="btn btn-primary" onclick="login()"> Login </button>
+					<div class="input-group">
+						<button
+						 class="btn btn-link"
+						 @click="openForgotPassword()"
+						>
+							Forgot password
+						</button>
+						<button 
+						 class="btn btn-primary" 
+						 @click="login()"
+						 style="margin-left: auto;"
+						> 
+							Login 
+						</button>
+					</div>
+				</div>
+			</div>
+			<div class="modal fade" role="dialog">
+				<div class="modal-dialog">
+					<div class="modal-content" style="max-width: 500px;">
+						<div class="modal-header">
+							<h4 class="modal-title">Request new password</h4>
+							<button type="button" class="close" data-dismiss="modal">&times;</button>
+						</div>
+						<div class="modal-body">
+							<p>Enter the email adress of your account here and press submit.</p>
+							<div class="input-group">
+								<div class="input-group-prepend">
+									<span class="input-group-text"><i class="fas fa-envelope"></i></span>
+								</div>
+								<input 
+								type="text"
+								class="form-control"
+								v-model="email"
+							   >
+							</div>
+						</div>
+						<div class="modal-footer">
+							<button class="btn btn-link" data-dismiss="modal">Cancel</button>
+							<button 
+							 class="btn btn-light"
+							 data-dismiss="modal"
+							 @click="forgotPassword()"
+							>
+								Submit
+							</button>
 						</div>
 					</div>
 				</div>
 			</div>
 		</div>
 		<script>
-		const parser = new UAParser();
-		let redirect;
+const parser = new UAParser();
 
-		if (query.has("fail")) {
-			document.getElementById("fail").style.display = "block";
-		}
-
-		if (query.has("notActivated")) {
-			document.getElementById("notActivated").style.display = "block";
-		}
-
-		if (query.has("redirect")) {
-			redirect = query.get("redirect");
-		} else {
-			redirect = "/welcome";
-		}
-
-		async function login() {
-			const username = document.getElementById("username").value;
-			const password = document.getElementById("password").value;
+const vm = new Vue({
+	el: ".container",
+	data: {
+		redirect: query.get("redirect") || "/welcome",
+		username: document.querySelector("#username").value,
+		password: document.querySelector("#password").value,
+		email: "",
+	},
+	methods: {
+		login: async function() {
 			const result = await Request.POST("/api/account/login", {
-				username,
-				password,
+				username: this.username,
+				password: this.password,
 				app_type: "browser",
 				info: {
 					os: parser.getOS(),
 					device: parser.getDevice(),
 					browser: parser.getBrowser(),
-				},
+				}
 			});
 
 			if (result && result.success) {
-				location.href = location.protocol + "//" + location.host + redirect;
-			} else if (result && result.reason === "email not verified") {
-				location.search = `redirect=${redirect}&notActivated`;
+				location.href = `${location.protocol}//${location.host}${this.redirect}`;
+			} else if (result && result.verifyEmail) {
+				document.getElementById("notActivated").style.display = "block";
 			} else {
-				location.search += `redirect=${redirect}&fail`;
-			} 
-		}
+				document.getElementById("fail").style.display = "block";
+			}
+
+			// this.username = "";
+			this.password = "";
+		},
+		openForgotPassword: function() {
+			$(".modal").modal("show");
+		},
+		forgotPassword: async function() {
+			if (!this.email) return;
+
+			const result = await Request.POST("/api/account/forgotPassword", {
+				email: this.email,
+			});
+
+			if (result) {
+				alert(result.message);
+			}
+		},
+	}
+});
 		</script>
         <%- include ./components/footer %>
 	</body>

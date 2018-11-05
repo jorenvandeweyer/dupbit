@@ -175,11 +175,11 @@
 					</div>
 				</div>
 			</div>
-			<div class="modal fade show" role="dialog">
+			<div class="modal fade" role="dialog">
 				<div class="modal-dialog">
 					<div class="modal-content">
 						<div class="modal-header">
-							<h4 class="modal-title">Password changed! Destroy sessions?</h4>
+							<h4 class="modal-title">Password changed!</h4>
 							<button 
 							 type="button" 
 							 class="close" 
@@ -196,16 +196,16 @@
 						</div>
 						<div class="modal-footer">
 							<button 
-							 class="btn btn-link" 
-							 data-dismiss="modal"
-							 @click="cancelDestroySessions()"
+							class="btn btn-error" 
+							data-dismiss="modal"
+							@click="destroySessions()"
 							> 
-								Cancel 
+								Destroy 
 							</button>
 							<button 
 							 class="btn btn-light" 
 							 data-dismiss="modal"
-							 @click="destroySessions()"
+							 @click="cancelDestroySessions()"
 							> 
 								Confirm 
 							</button>

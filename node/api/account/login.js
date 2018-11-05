@@ -13,10 +13,16 @@ module.exports = async (req, res) => {
     const match = await bcrypt.compare(data.password, hash);
     if (!match) return res.errors.wrongCredentials(true);
 
-    Database.addLoginAttempt(data.username, true, req.get("x-real-ip"));
+    const username = await Database.getUsernameByID(id);
+
+    Database.addLoginAttempt(username, true, req.get("x-real-ip"));
     
     const level = await Database.getLevelByID(id);
-    if (level < 1) res.errors.verifyEmail();
+    if (level < 1) return res.json({
+        success: false,
+        verifyEmail: true,
+        reason: "Must verify email first",
+    });
 
     const expires = data.expires ? parseInt(data.expires) : 365*10*24*60*60;
     if (!data.app_type) data.app_type = "unknown";
