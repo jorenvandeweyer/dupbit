@@ -183,4 +183,12 @@ function displayClass(c, type) {
         elements[i].style.display = type;
     }
 }
+
+function gotoPath(path) {
+    window.location.href = `${window.location.protocol}//${window.location.host}${path}`;
+}
+
+function gotoPathSearch(path) {
+    window.location.pathname = path;
+}
 </script>

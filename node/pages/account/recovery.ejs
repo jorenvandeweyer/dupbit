@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<%- include /usr/src/app/pages/components/head %>
+	</head>
+	<body>
+		<%- include /usr/src/app/pages/components/header %>
+        </br>
+		<div class="container">
+			<div class="card mx-auto" style="max-width:500px;">
+				<div class="card-header"><b>Change Password</b></div>
+				<div class="card-body">
+                    <span 
+                     class="help-block float-right has-feedback" 
+                     v-bind:class="[password.state]" 
+                     v-cloak
+                    >
+                        {{password.label}}
+                    </span>
+                    <div
+                     class="input-group has-feedback mb-3"
+					 v-bind:class="[password.state]"
+                    >
+                        <div class="input-group-prepend">
+							<span class="input-group-text"><i class="fas fa-lock"></i></span>
+                        </div>
+                        <input 
+                         type="password" 
+                         class="form-control" 
+                         placeholder="Password" 
+                         v-model="password.data" 
+                         @input="checkPassword()"
+                       >
+                    </div>
+                    <span 
+                     class="help-block float-right has-feedback" 
+                     v-bind:class="[password_confirm.state]" 
+                     v-cloak
+                    >
+                        {{password_confirm.label}}
+                    </span>
+                    <div
+                     class="input-group has-feedback mb-3"
+					 v-bind:class="[password_confirm.state]"
+                    >
+                        <div class="input-group-prepend">
+							<span class="input-group-text"><i class="fas fa-lock"></i></span>
+                        </div>
+                        <input 
+                         type="password" 
+                         class="form-control" 
+                         placeholder="Password" 
+                         v-model="password_confirm.data" 
+                         @input="checkPassword()"
+                       >
+                    </div>
+                    <div class="input-group">
+                        <button
+                         class="btn btn-primary"
+                         @click="changePassword()"
+                         :disabled="!showPasswordButton()"
+                         style="margin-left: auto"
+                        >
+                            Confirm
+                        </button>
+                    </div>                
+                </div>
+			</div>
+            </br>
+            <div class="modal fade" role="dialog">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title">Password changed!</h4>
+                            <button 
+                                type="button" 
+                                class="close" 
+                                data-dismiss="modal"
+                                @click="cancelDestroySessions()"
+                            >
+                                &times;
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <p>Your password got changed succesfully.</p>
+                            <p>Do you want to destroy <b>all</b> sessions? This means that you need to login again on each device and that all API keys will be revoked.</p>
+                            <p>You can also delete each access token individually <a href="/account/tokens">here</a></p>
+                        </div>
+                        <div class="modal-footer">
+                            <button 
+                            class="btn btn-error" 
+                            data-dismiss="modal"
+                            @click="destroySessions()"
+                            > 
+                                Destroy 
+                            </button>
+                            <button 
+                                class="btn btn-light" 
+                                data-dismiss="modal"
+                                @click="cancelDestroySessions()"
+                            > 
+                                Confirm 
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+		</div>
+        </br>
+        <%- include /usr/src/app/pages/components/footer %>
+        <script>
+const labels = {
+	"password.help": "<%= lang['password.help'] %>",
+	"password.confirmhelp": "<%= lang['password.confirmhelp'] %>",
+};
+const vm = new Vue({
+    el: ".container",
+    data: {
+        password: {
+            data: "",
+            label: labels["password.help"],
+            icon: "",
+            state: "",
+        },
+        password_confirm: {
+            data: "",
+            label: labels["password.confirmhelp"],
+            icon: "",
+            state: "",
+        },
+    },
+    methods: {
+        checkPassword: async function() {
+            const result = await Request.POST("/api/account/verify", {
+                password: this.password.data,
+                confirmpassword: this.password_confirm.data,
+            });
+
+            if (!result || !result.success)
+                return;
+            
+            if (result.password) {
+                if (result.password.length) {
+                    this.password.state = "has-error";
+                    this.password.label = result.password.join(" ");
+                } else {
+                    this.password.state = "has-success";
+                    this.password.label = labels["password.help"];
+                }
+            } else {
+                this.password.state = "";
+                this.password.label = labels["password.help"];
+            }
+
+            if (result.confirmpassword) {
+                if (result.confirmpassword.length) {
+                    this.password_confirm.state = "has-error";
+                    this.password_confirm.label = result.confirmpassword.join(" ");
+                } else {
+                    this.password_confirm.state = "has-success";
+                    this.password_confirm.label = labels["password.confirmhelp"];
+                }
+            } else {
+                this.password_confirm.state = "";
+                this.password_confirm.label = labels["password.confirmhelp"];
+            }
+        },
+        changePassword: async function() {
+            const result = await Request.PUT("/api/account/forgotPassword", {
+                token: query.get("token"),
+                password: this.password.data,
+                password_confirm: this.password_confirm.data,
+            });
+
+            if (result && result.success) {
+                this.password.data = "";
+                this.password.state = "";
+                this.password.label = labels["password.help"];
+                this.password_confirm.data = "";
+                this.password_confirm.state = "";
+                this.password_confirm.label = labels["password.confirmhelp"];
+				this.destroyHash = result.hash;
+                this.showDestroySessions();
+            } else {
+                if (result.password && result.password.length) {
+                    this.password.state = "has-error";
+                    this.password.label = result.password.join(" ");
+                }
+                if (result.passwordconfirm && result.passwordconfirm.length) {
+                    this.password.state = "has-error";
+                    this.password.label = result.passwordconfirm.join(" ");
+                }
+                if (result.expired) {
+                    alert("This link is not valid anymore, redirecting...");
+                    gotoPath("/");
+                }
+            }
+        },
+        showPasswordButton: function () {
+            if (!this.password.data.length || !this.password_confirm.data.length)
+                return false;
+            if (this.password.state !== "has-success" || this.password_confirm.state !== "has-success")
+                return false;
+            return true;
+        },
+		destroySessions: async function() {
+			const result = await Request.POST("/api/account/destroySessions", {
+				hash: this.destroyHash,
+			});
+
+			if (result) {
+				gotoPath("/login");
+			} else {
+				//fail
+			}
+		},
+		showDestroySessions: function() {
+			$(".modal").modal("show");
+		},
+		cancelDestroySessions: function () {
+            this.destoryHash = "";
+            alert("Password changed, redirecting...");
+            gotoPath("/login");
+		},
+    }
+});
+
+$(".modal").on("hidden.bs.modal", function () {
+    vm.cancelDestroySessions();
+});
+
+async function init() {
+    if (!query.has("token")) return false;
+
+    const token = query.get("token");
+    const result = await Request.GET("/api/account/forgotPassword", {
+        token,
+    });
+
+    if (!result || !result.success) return false;
+
+    return true;
+}
+
+init().then((valid) => {
+    if (!valid) {
+        alert("Token not valid, redirecting..");
+        gotoPath("/");
+    }
+});
+        </script>
+	</body>
+</html>
