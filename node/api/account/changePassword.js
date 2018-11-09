@@ -33,7 +33,8 @@ module.exports = async (req, res) => {
     const destroySessionHash = await bcrypt.hash(newhash, 10);
 
     await db.setPassword(req.auth.uid, newhash);
-
+    db.addPasswordChange(req.auth.uid, req.get("x-real-ip"));
+    
     const email = await db.getEmailByID(req.auth.uid);
 
     await Mail.sendTemplate({

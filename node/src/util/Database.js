@@ -70,6 +70,45 @@ async function checkTables() {
         }
     });
 
+    await query(`CREATE TABLE IF NOT EXISTS users.emailChanges (
+        uid INT NOT NULL,
+        email VARCHAR(255) NOT NULL,
+		ip CHAR(40),
+		timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (uid) REFERENCES users.users(id) ON DELETE CASCADE
+    )`).then((result) => {
+        if (result.warningCount == 0) {
+            console.log("Created table \"users.emailChanges\".");
+        }
+    });
+
+    await query(`CREATE TABLE IF NOT EXISTS users.passwordChanges (
+        uid INT NOT NULL,
+		ip CHAR(40),
+        timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (uid) REFERENCES  users.users(id) ON DELETE CASCADE
+    )`).then((result) => {
+        if (result.warningCount == 0) {
+            console.log("CReated table \"users.passwordChanges\".");
+        }
+    });
+
+    await query(`CREATE TABLE IF NOT EXISTS users.passwordForgot (
+        id INT NOT NULL UNIQUE AUTO_INCREMENT,
+        uid INT NOT NULL,
+        completed BOOLEAN DEFAULT 0,
+        timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        timestamp_completed TIMESTAMP,
+        ip CHAR(40),
+		ip_completed CHAR(40),        
+        FOREIGN KEY (uid) REFERENCES users.users(id) ON DELETE CASCADE,
+        PRIMARY KEY(id)
+    )`).then((result) => {
+        if (result.warningCount == 0) {
+            console.log("Created table \"users.passwordForgot\".");
+        }
+    });
+
     await query(`CREATE TABLE IF NOT EXISTS users.tokens (
         tid INT NOT NULL UNIQUE AUTO_INCREMENT,
         uid INT NOT NULL,
@@ -394,6 +433,45 @@ async function getLatestUsernameChange(id) {
     return await query("SELECT * FROM users.usernameChanges WHERE uid=? ORDER BY Timestamp DESC LIMIT 1", [id]);
 }
 
+function addEmailChange(uid, email, ip) {
+    return query("INSERT INTO users.emailChanges (uid, email, ip) VALUES (?, ?, ?)", [uid, email, ip]);
+}
+
+function getEmailChangeHistory(uid) {
+    return query("SELECT * FROM users.emailChanges WHERE uid=?", [uid]);
+}
+
+function getLatestEmailChange(uid) {
+    return query("SELECT * FROM users.emailChanges WHERE uid=? ORDER BY Timestamp DESC LIMIT 1", [uid]);
+}
+
+function addPasswordChange(uid, ip) {
+    return query("INSERT INTO users.passwordChanges (uid, ip) VALUES (?, ?)", [uid, ip]);
+}
+
+function getPasswordChangeHistory(uid) {
+    return query("SELECT * FROM users.passwordChanges WHERE uid=?", [uid]);
+}
+
+function getLatestPasswordChange(uid) {
+    return query("SELECT * FROM users.passwordChanges WHERE uid=? ORDER BY timestamp DESC LIMIT 1", [uid]);
+}
+
+function addPasswordForgot(uid, ip) {
+    return query("INSERT INTO users.passwordForgot (uid, ip) VALUES (?, ?)", [uid, ip]);
+}
+
+function confirmPasswordForgot(id, ip) {
+    return query("UPDATE users.passwordForgot SET completed=1, ip_completed=?, timestamp_completed=CURRENT_TIMESTAMP WHERE id=?", [ip, id]);
+}
+
+function getPasswordForgotHistory(uid) {
+    return query("SELECT * FROM users.passwordForgot WHERE uid=?", [uid]);
+}
+
+function getLatestPasswordForgot(uid) {
+    return query("SELECT * FROM users.passwordForgot WHERE uid=? ORDER BY timestamp DESC LIMIT 1", [uid]);
+}
 //add pointer to certain song not related to a user
 async function addSongRaw(filename, url, provider, cached=false) {
     return await query("INSERT INTO music.songs_raw (filename, url, provider, cached) VALUES (?, ?, ?, ?)", [filename, url, provider, cached]);
@@ -573,17 +651,9 @@ async function checkCalendarOwner(userId, calendarId) {
     }
 }
 
-/*********************************************/
-/*these commands need to be in seperate files*/
-/*********************************************/
-
 // Return string without illegal chars for filename
 function filename(string) {
     return string.replace("/[\\\\/:*?\"<>|]/", "");
-}
-
-function recoverAccount(){
-
 }
 
 // Return if the user with given id can do a namechange
@@ -626,6 +696,16 @@ module.exports = {
     addUsernameChange,
     getUsernameChangeHistory,
     getLatestUsernameChange,
+    addEmailChange,
+    getEmailChangeHistory,
+    getLatestEmailChange,
+    addPasswordChange,
+    getPasswordChangeHistory,
+    getLatestPasswordChange,
+    addPasswordForgot,
+    confirmPasswordForgot,
+    getPasswordForgotHistory,
+    getLatestPasswordForgot,
     addSongRaw,
     getSongRaw,
     getSongRawByName,
@@ -649,6 +729,5 @@ module.exports = {
     getSongsInPlaylistsOf,
     getSongsSmart,
     filename,
-    recoverAccount,
     canDoUsernameChange
 };

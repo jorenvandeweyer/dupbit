@@ -5,6 +5,7 @@ const Mail = require("../../src/util/Mail");
 
 module.exports = async (req, res) => {
     const data = req.body;
+    const ip = req.get("x-real-ip");
 
     if (!data.username || !data.password || !data.confirmpassword || !data.email)
         return res.errors.incomplete();
@@ -16,11 +17,11 @@ module.exports = async (req, res) => {
     const hash = await bcrypt.hash(data.password, 10);
     const emailhash = await bcrypt.hash(hash, 10);
 
-    await Database.register(data.username, hash, data.email);
+    const result = await Database.register(data.username, hash, data.email);
+    const id = result.insertId;
 
-    const id = await Database.getIDByUsername(data.username);
-    
-    await Database.addUsernameChange(id, data.username);
+    Database.addUsernameChange(id, data.username);
+    Database.addEmailChange(id, data.email, ip);
 
     res.redirect("/index");
 

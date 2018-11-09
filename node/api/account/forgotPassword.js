@@ -42,13 +42,16 @@ module.exports = express.Router()
             const password = await db.getPasswordByID(id);
             const hash = await bcrypt.hash(password, 10);
 
+            const result = await db.addPasswordForgot(id, req.get("x-real-ip"));
+
             const token = jwt.sign({
                 id,
                 hash,
+                db_id: result.insertId,
                 exp: Math.floor(Date.now() / 1000) + 60*60,
             }, privateKey, {algorithm: "RS256"});
 
-            await Mail.sendTemplate({
+            Mail.sendTemplate({
                 subject: `Dupbit | Password recovery`,
                 sender: "noreply@dupbit.com",
                 receiver: email,
@@ -94,17 +97,19 @@ module.exports = express.Router()
 
         await db.setPassword(result.id, newhash);
 
-        const email = await db.getEmailByID(result.id);
-
-        await Mail.sendTemplate({
-            subject: `Dupbit | Security update: password change for ${result.username}`,
-            sender: "noreply@dupbit.com",
-            receiver: email,
-            title: `Security update: password change for ${result.username}`,
-            message_title: `Security update: password change for ${result.username}`,
-            message_content: `Your password got changed at ${new Date().toString()}. If this was not you please change your password with the password recovery option`,
-            button_title: "This was not me",
-            button_url: `https://dupbit.com/account/edit`,
+        db.confirmPasswordForgot(result.db_id, req.get("x-real-ip"));
+        db.addPasswordChange(result.db_id, req.get("x-real-ip"));
+        db.getEmailByID(result.id).then(email => {
+            Mail.sendTemplate({
+                subject: `Dupbit | Security update: password change for ${result.username}`,
+                sender: "noreply@dupbit.com",
+                receiver: email,
+                title: `Security update: password change for ${result.username}`,
+                message_title: `Security update: password change for ${result.username}`,
+                message_content: `Your password got changed at ${new Date().toString()}. If this was not you please change your password with the password recovery option`,
+                button_title: "This was not me",
+                button_url: `https://dupbit.com/account/edit`,
+            });
         });
 
         res.json({
@@ -132,6 +137,7 @@ async function validateToken(token) {
         return {
             id,
             username,
+            db_id: decoded.db_id,
         }
     } catch(e) {
         return false;
