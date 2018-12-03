@@ -6,7 +6,8 @@ module.exports = express.Router()
         if (req.auth.isLoggedIn) {
             next();
         } else {
-            return res.errors.needAuth();
+            next();
+            // return res.errors.needAuth();
         }
     })
     .get("*", async (req, res) => {
