@@ -13,6 +13,7 @@ const html = require("./src/html");
 const errors = require("./src/errors");
 
 require("./src/cron");
+require("./src/util/mqtt");
 
 process.on("unhandledRejection", (reason, p) => {
     /*eslint no-console: 0*/
