@@ -6,8 +6,6 @@ const client = mqtt.connect('mqtt://dupbit.com', {
     password: MQTT_PASS,
 });
 
-console.log("started mqtt");
-
 client.on('connect', () => {
     client.subscribe('presence', (err) => {
         if (!err) {
