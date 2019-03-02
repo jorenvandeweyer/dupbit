@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Dupbit</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="shortcut icon" type="image/png" href="favicon.png"/>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js"></script>
+  <style>
+  @font-face {
+    font-family: 'Muli-Bold';
+    src: url('Muli-Bold.ttf') format('truetype');
+  }
+  .fakeimg {
+    height: 200px;
+    background: #aaa;
+  }
+  .container {
+    margin-top: 60px;
+    margin-bottom: 60px;
+  }
+  body {
+    font-family: Muli-Bold;
+    background: 
+    linear-gradient(
+      rgba(0, 0, 30, 0.8), 
+      rgba(0, 0, 30, 0.8)
+    ),
+    url('wallpaper3.png') top center;
+    background-size:cover;
+    background-color: rgb(0,3,30);
+  }
+  .white {
+      color:white;
+  }
+  .bold {
+    font-weight: bold;
+  }
+  .navbarr {
+    background: 
+    linear-gradient(
+      rgba(0, 0, 0, 0.5), 
+      rgba(0, 0, 0, 0.5)
+    );
+  }
+  .navbar .container {
+      margin-top :20px;
+      margin-bottom: 0px;
+  }
+  .navbar-brand {
+      font-weight: bold;
+      font-size: 30px;
+  }
+  .nav-item {
+      padding: 0 25px;
+      font-weight: bold;
+  }
+  .nav-link {
+      color: white;
+  }
+  .back {
+    position: absolute;
+    bottom: -50px;
+    left: -200px;
+    width: 300%;
+    height: 550px;
+    background-color: white;
+    transform: rotate(-10deg);
+  }
+  </style>
+</head>
+<body>
+
+<div class="back"></div>
+
+<nav class="navbar navbar-expand-sm navbar-dark">
+    <div class="container">
+        <a class="navbar-brand" href="#"><img style="margin-right:10px" width= "50px" src="logo2.png"/> Dupbit</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="collapsibleNavbar">
+            <ul class="navbar-nav ml-auto">
+            <li class="nav-item">
+                <a class="nav-link" href="#">Home</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">Projects</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">About</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">Contact</a>
+            </li>    
+            <li class="nav-item">
+                <a class="nav-link" href="#">Account</a>
+            </li>  
+            </ul>
+        </div>
+    </div> 
+</nav>
+
+<div class="container">
+  <div class="row">
+    <div class="col-sm-6">
+      <div>
+        <h1 class="white">Where an idea meets reality.</h1>
+        <p class="white bold">Dupbit is a personal platform used to experiment and develop hobby projects. These projects usually start with an idea of one of our developers
+        to make life little easier, more enjoyable and more convenient. All our projects are free to use and can be found <a href="projects">here</a></p>
+        <p class="white">Some examples of these projects are Dupbit Connect, Dupbit Music downloader, etc</p>
+        <button type="button" class="btn btn-danger btn-lg bold">Sign Up Now!</button>
+      </div>
+    </div>
+    <div class="col-sm-1">
+    </div>
+    <div class="col-sm-5" style="text-align:center">
+      <img src="app.png" alt="Card image">
+    </div>
+  </div>
+</div>
+</div>
+
+</body>
+</html>

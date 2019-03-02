@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <style>
+        :root {
+            --ratio-a: 60%;
+            --ratio-b: 40%;
+        }
+
+        body {
+            margin: 0;
+            background:     
+                linear-gradient(
+                rgba(0, 0, 0, 0.6), 
+                rgba(0, 0, 0, 0.6)
+                ),
+                url('https://fm.cnbc.com/applications/cnbc.com/resources/img/editorial/2017/06/20/104540684-GettyImages-530874379.1910x1000.jpg');
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        /* SHOWCASE */
+        .showcase {
+            display: flex;
+            margin: 30px 0;
+        }
+        .showcase:nth-child(2n) .showcase-left {
+            outline: 1px solid black;
+            display: inline-block;
+            width: var(--ratio-a);
+        }
+        .showcase:nth-child(2n) .showcase-right {
+            outline: 1px solid black;
+            display: inline-block;
+            width: var(--ratio-b);
+        }
+        .showcase:nth-child(2n+1) .showcase-left {
+            outline: 1px solid black;
+            display: inline-block;
+            width: var(--ratio-b);
+        }
+        .showcase:nth-child(2n+1) .showcase-right {
+            outline: 1px solid black;
+            display: inline-block;
+            width: var(--ratio-a);
+        }
+
+        /* HEADER */
+        .header {
+            height: 50px;
+            line-height: 50px;
+            background: rgba(0,0,0,0.5);
+        }
+        .brand {
+            color: white;
+            font-size: 20px;
+            font-weight: bold;
+            display: inline-block;
+        }
+        .nav {
+            float: right;
+        }
+        .nav-item {
+            display: inline-block;
+            color: rgba(255,255,255,0.75);
+            text-decoration: none;
+            padding: 0 30px;
+        }
+        </style>
+    </head>
+    <body> 
+        <div class="header">
+            <div class="container">
+                <div class="brand">Dupbit</div>
+                <div class="nav">
+                    <a class="nav-item" href="#">Home</a>
+                    <a class="nav-item">Projects</a>
+                    <a class="nav-item">About</a>
+                    <a class="nav-item">Contact</a>
+                </div>
+            </div>
+        </div>
+        <div class="content container">
+            <div class="showcase">
+                <div class="showcase-left">
+                    Links
+                </div>
+                <div class="showcase-right">
+                    Rechts
+                </div>
+            </div>
+            <div class="showcase">
+                <div class="showcase-left">
+                    Links
+                </div>
+                <div class="showcase-right">
+                    Rechts
+                </div>
+            </div>
+        </div>
+    </body>
+</html>
