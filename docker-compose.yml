@@ -6,7 +6,8 @@ services:
             - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf
             - ./.logs/:/etc/logs/
             - ./secrets/:/etc/secrets/
-            - /var/www/html/:/var/www/html/
+            - ./nginx/static/boerzoektbier.be/:/var/www/boerzoektbier.be/
+            - ./nginx/static/cycling4helchteren.be/:/var/www/cycling4helchteren.be/
         depends_on:
             - web
         restart: always
