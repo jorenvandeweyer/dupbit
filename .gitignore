@@ -1,5 +1,11 @@
 .database/
+.database.old/
 .logs/
 secrets
 files/
 design/
+.env*
+.certs/
+
+node_modules/
+package-lock.json

@@ -1,0 +1,25 @@
+{
+  "name": "dupbit-test",
+  "version": "1.0.0",
+  "description": "test code",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jorenvandeweyer/Dupbit.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jorenvandeweyer/Dupbit/issues"
+  },
+  "homepage": "https://github.com/jorenvandeweyer/Dupbit#readme",
+  "devDependencies": {
+    "@types/jest": "^24.0.18",
+    "@types/node": "^12.7.3",
+    "dotenv": "^8.1.0",
+    "jest": "^24.9.0"
+  }
+}

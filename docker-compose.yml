@@ -1,53 +1,64 @@
-version: "3"
+version: "3.7"
 services:
     nginx:
         build: ./nginx
         volumes:
             - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf
             - ./.logs/:/etc/logs/
-            - ./secrets/:/etc/secrets/
-            - ./nginx/static/boerzoektbier.be/:/var/www/boerzoektbier.be/
-            - ./nginx/static/cycling4helchteren.be/:/var/www/cycling4helchteren.be/
+            - ./.certs/:/etc/certs/
         restart: always
         ports:
             - "80:80"
             - "443:443"
         networks:
-            - prime
-    web:
-        build: ./node
+            - dupbit-network
+    api:
+        build: ./api
         env_file:
-            - ./node/.env
+            - ./.env
         volumes:
-            - ./node/config.json:/usr/src/app/config.json
-            - ./node/pages/:/usr/src/app/pages/
-            - ./node/api/:/usr/src/app/api/
-            - ./node/src/:/usr/src/app/src/
-            - ./node/scripts/:/usr/src/app/scripts/
-            - ./files/youtube-dl/:/usr/src/app/data/music/
-            - ./node/data/secrets/:/usr/src/app/data/secrets/
+            - ./api/src/:/usr/src/app/src/
+            - ./.certs/:/etc/certs/
+        restart: always
         depends_on:
             - database
-        restart: always
         networks:
-            - prime
-    youtube-dl:
-        build: ./youtube-dl
-        volumes:
-          - ./files/youtube-dl/:/usr/src/app/files/
-        networks:
-          - prime
+            - dupbit-network
+    # web:
+    #     build: ./node
+    #     env_file:
+    #         - ./node/.env
+    #     volumes:
+    #         - ./node/config.json:/usr/src/app/config.json
+    #         - ./node/pages/:/usr/src/app/pages/
+    #         - ./node/api/:/usr/src/app/api/
+    #         - ./node/src/:/usr/src/app/src/
+    #         - ./node/scripts/:/usr/src/app/scripts/
+    #         - ./files/youtube-dl/:/usr/src/app/data/music/
+    #         - ./node/data/secrets/:/usr/src/app/data/secrets/
+    #     depends_on:
+    #         - database
+    #     restart: always
+    #     networks:
+    #         - prime
+    # youtube-dl:
+    #     build: ./youtube-dl
+    #     volumes:
+    #       - ./files/youtube-dl/:/usr/src/app/files/
+    #     networks:
+    #       - prime
     database:
-        image: mariadb:10.3.5
-        environment:
-            - MYSQL_RANDOM_ROOT_PASSWORD=1
+        image: mariadb:latest
+        env_file:
+            - ./.env
         ports:
             - "3306:3306"
         volumes:
             - ./.database/:/var/lib/mysql
         restart: always
         networks:
-            - prime
+            - dupbit-network
 networks:
-    prime:
+    dupbit-network:
+        name: dupbit-network
         driver: bridge
