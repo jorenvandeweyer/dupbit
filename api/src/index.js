@@ -4,7 +4,7 @@ const cookie = require('cookie');
 
 const router = require('./calls/router');
 
-const db = require('./database');
+require('./database');
 
 const app = express();
 const port = 8080;
@@ -30,3 +30,5 @@ app.use(require('./auth'));
 app.use(router);
 
 app.listen(port, () => console.log(`Running ${process.env.SERVER_ENV} in: ${process.env.NODE_ENV} on api.${process.env.HOST}:${port}`));
+
+module.exports = app;

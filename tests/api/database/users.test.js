@@ -1,22 +1,11 @@
-process.env.MYSQL_HOST = '127.0.0.1';
-
 const crypto = require('crypto');
-const db = require('../../api/src/database');
+const db = require('../../../api/src/database');
 
 const options = {
     req: {
         ip: '0.0.0.0',
     },
 };
-
-beforeEach(() => {}); 
-afterEach(() => {});
-beforeAll(async () => {
-    await db.state;
-});
-afterAll(async () => {
-    await db.close();
-});
 
 describe('testing database user', () => {
     const username = crypto.randomBytes(8).toString('hex');

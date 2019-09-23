@@ -4,7 +4,8 @@
   "description": "test code",
   "main": "index.js",
   "scripts": {
-    "test": "jest"
+    "test": "jest --silent",
+    "test-ns": "jest"
   },
   "repository": {
     "type": "git",
@@ -20,6 +21,7 @@
     "@types/jest": "^24.0.18",
     "@types/node": "^12.7.3",
     "dotenv": "^8.1.0",
-    "jest": "^24.9.0"
+    "jest": "^24.9.0",
+    "supertest": "^4.0.2"
   }
 }

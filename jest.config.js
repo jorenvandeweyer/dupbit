@@ -1,6 +1,7 @@
 module.exports = {
     'roots': [
-        '<rootDir>/test'
+        '<rootDir>/tests'
     ],
-    setupFiles: ['dotenv/config'],
+    globalSetup: '<rootDir>/tests/setup.js',
+    globalTeardown: '<rootDir>/tests/teardown.js',
 };

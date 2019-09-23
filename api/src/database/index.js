@@ -20,13 +20,19 @@ const state = sequelize
 
 const Users = require('./models/user')(sequelize);
 const Logs = require('./models/logs')(sequelize);
+const Tokens = require('./models/token')(sequelize);
 
 Users.hasMany(Logs, {
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE',
 });
 
-sequelize.sync({force: true}).then(async() => {
+Users.hasMany(Tokens, {
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+});
+
+sequelize.sync({force: false}).then(async() => {
     Logs.create({
         action: 'DEBUG',
         value: 'test',
@@ -35,9 +41,10 @@ sequelize.sync({force: true}).then(async() => {
 
 module.exports = {
     close: () => sequelize.close(),
+    state,
     Users,
     Logs,
-    state,
+    Tokens,
     Op: Sequelize.Op,
 };
 

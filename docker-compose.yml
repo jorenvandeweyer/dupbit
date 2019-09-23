@@ -19,6 +19,7 @@ services:
         volumes:
             - ./api/src/:/usr/src/app/src/
             - ./.certs/:/etc/certs/
+            - ./.certs/:/usr/src/app/.certs/
         restart: always
         depends_on:
             - database
