@@ -11,7 +11,13 @@ const sequelize = new Sequelize(process.env.MYSQL_DATABASE, process.env.MYSQL_US
   
 const state = sequelize
     .authenticate()
-    .then(() => {
+    .then(async () => {
+        await sequelize.sync();
+        Logs.create({
+            action: 'DEBUG',
+            value: 'test',
+        });
+    
         // console.log('Connection has been established successfully.');
     })
     .catch(err => {
@@ -32,15 +38,10 @@ Users.hasMany(Tokens, {
     onUpdate: 'CASCADE',
 });
 
-sequelize.sync({force: false}).then(async() => {
-    Logs.create({
-        action: 'DEBUG',
-        value: 'test',
-    });
-});
 
 module.exports = {
     close: () => sequelize.close(),
+    sync: (force) => sequelize.sync({force}),
     state,
     Users,
     Logs,

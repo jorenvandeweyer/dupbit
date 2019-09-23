@@ -22,7 +22,14 @@ module.exports = (sequelize) => {
             autoIncrement: true,
             allowNull: false,
             primaryKey: true,
-        }
+        },
+        toe: {
+            type: Sequelize.DATE,
+            allowNull: false,
+            defaultValue: () => {
+                return Date.now() + 60*1000;
+            }
+        },
     }, {
         sequelize,
         modelName: 'token',

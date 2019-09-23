@@ -4,8 +4,10 @@
   "description": "test code",
   "main": "index.js",
   "scripts": {
+    "pretest": "node scripts/rebuild-db.js test",
     "test": "jest --silent",
-    "test-ns": "jest"
+    "test-ns": "jest",
+    "rebuild-db": "node scripts/rebuild-db.js"
   },
   "repository": {
     "type": "git",

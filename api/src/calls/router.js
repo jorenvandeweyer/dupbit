@@ -6,7 +6,7 @@ module.exports =  express.Router()
         next();
     })
     .all('*', (req, res) => {
-        res.status(404).json({
+        res.status(404).jsonf({
             reason: 'api call not found',
         });
     });
