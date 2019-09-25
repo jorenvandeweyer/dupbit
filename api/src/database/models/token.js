@@ -1,7 +1,20 @@
 const Sequelize = require('sequelize');
 
 const Model = Sequelize.Model;
-class Token extends Model {}
+class Token extends Model {
+    async refresh() {
+        this.toe = Date.now() + 60*1000;
+        await this.save();
+        return this;
+    }
+    get seconds() {
+        const obj = this.get();
+        obj.iat = Math.floor(this.iat / 1000);
+        obj.exp = Math.floor(this.exp / 1000);
+        obj.toe = Math.floor(this.toe / 1000);
+        return obj;
+    }
+}
 
 module.exports = (sequelize) => {
     Token.init({

@@ -26,6 +26,6 @@ describe('testing database token', () => {
         const user = await db.Users.findOne({where: {username}});
         const token = await user.createToken();
 
-        expect(token.get().userId).toBe(user.get().id);
+        expect(token.get().uid).toBe(user.get().id);
     });
 });
