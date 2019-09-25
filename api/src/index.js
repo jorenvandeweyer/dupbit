@@ -29,6 +29,8 @@ app.use(require('./auth'));
 
 app.use(router);
 
-app.listen(port, () => console.log(`Running ${process.env.SERVER_ENV} in: ${process.env.NODE_ENV} on api.${process.env.HOST}:${port}`));
+if (process.env.NODE_ENV !== 'test') {
+    app.listen(port, () => console.log(`Running ${process.env.SERVER_ENV} in: ${process.env.NODE_ENV} on api.${process.env.HOST}:${port}`));
+}
 
 module.exports = app;
