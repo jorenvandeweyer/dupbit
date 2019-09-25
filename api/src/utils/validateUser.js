@@ -12,6 +12,9 @@ const errorMessages = {
     'password.nomatch': 1 << 8,
     'email.used': 1 << 9,
     'email.format': 1 << 10,
+    'username.required': 1 << 11,
+    'email.required': 1 << 12,
+    'password.required': 1 << 13,
 };
 
 module.exports = {
@@ -35,6 +38,8 @@ async function registration(data) {
 async function username(username, oldname=false) {
     let errorCode = 0;
 
+    if (!username) return errorMessages['username.required'];
+
     const user = await db.Users.findOne({where: {username}});
 
     if (user) errorCode += errorMessages['username.used'];
@@ -49,6 +54,8 @@ async function username(username, oldname=false) {
 function password(password, confirm=false) {
     let errorCode = 0;
 
+    if (!password) return errorMessages['password.required'];
+
     if (password.length < 8) errorCode += errorMessages['password.tooshort'];
     if (password.length > 30) errorCode += errorMessages['password.toolong'];
     if (!passwordChars(password)) errorCode += errorMessages['password.invalidchars'];
@@ -59,6 +66,9 @@ function password(password, confirm=false) {
 
 async function email(email) {
     let errorCode = 0;
+
+    if (!email) return errorMessages['email.required'];
+    
     const re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
     const user = await db.Users.findOne({where: {email}});
