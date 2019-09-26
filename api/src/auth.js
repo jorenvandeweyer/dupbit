@@ -63,12 +63,19 @@ async function decode(req, res) {
 
         return {
             ...decoded,
+            raw: function() {
+                return string;
+            },
             user: async function() {
                 if (this.cuser) return this.cuser;
                 this.cuser = await db.Users.findByPk(this.uid);
                 return this.cuser;
             },
             destroy: async function() {
+                res.clearCookie('sid', {
+                    domain: '.dupbit.com',
+                    secure: true
+                });
                 return await db.Tokens.destroy({where: {jti: this.jti}});
             }
         };
