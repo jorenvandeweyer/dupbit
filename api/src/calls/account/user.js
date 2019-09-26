@@ -47,6 +47,19 @@ module.exports = express.Router()
         }
 
         return res.errors.incomplete();
+    })
+    .delete('/', async (req, res) => {
+        const data = req.body;
+        const user = await req.auth.user();
+        if (!data.password) return res.errors.incomplete();
+
+        const match = await user.matchPassword(data.password, {req});
+        if (!match) return res.errors.wrongCredentials();
+
+        await req.auth.destroy();
+        await user.destroy();
+
+        res.jsons();
     });
 
 async function verificationMail(user, res) {

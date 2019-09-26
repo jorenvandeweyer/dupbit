@@ -29,6 +29,7 @@ describe('testing account user call', () => {
 
     let emailToken;
     let sid;
+    let sidForDestroy;
 
     test('create account false', async () => {
         const res = await request(app).post('/account')
@@ -98,6 +99,8 @@ describe('testing account user call', () => {
 
         const cookies = parseCookies(res.get('Set-Cookie'));
         expect(cookies.has('sid')).toBeTruthy();
+
+        sidForDestroy = cookies.get('sid').value;
     });
 
     test('login email', async () => {
@@ -214,6 +217,18 @@ describe('testing account user call', () => {
         const tokens = await user.getTokens();
 
         expect(tokens.length).toBe(1);
+    });
+
+    test('delete account', async() => {
+        const res = await request(app).delete('/account')
+            .set('Cookie', `sid=${sidForDestroy}`)
+            .send({password: password_new})
+            .expect(200);
+
+        expect(res.body.success).toBeTruthy();
+
+        const user = await db.Users.findOne({where: {username: username_new}});
+        expect(user).toBeNull();
     });
 });
 
