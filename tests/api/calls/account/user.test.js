@@ -195,6 +195,33 @@ describe('testing account user call', () => {
         expect(send).toBeCalledTimes(1);
     });
 
+    test('get token', async() => {
+        const res = await request(app).get('/account/token')
+            .set('Cookie', `sid=${sid}`)
+            .expect(200);
+
+        expect(res.body.success).toBeTruthy();
+        expect(res.body.jti).not.toBeUndefined(); 
+    });
+
+    test('get token', async() => {
+        const res = await request(app).get('/account/token/raw')
+            .set('Cookie', `sid=${sid}`)
+            .expect(200);
+
+        expect(res.body.success).toBeTruthy();
+        expect(res.body.token).not.toBeUndefined(); 
+    });
+
+    test('get token', async() => {
+        const res = await request(app).get('/account/token/all')
+            .set('Cookie', `sid=${sid}`)
+            .expect(200);
+
+        expect(res.body.success).toBeTruthy();
+        expect(res.body.tokens.length).toBe(2); 
+    });
+
     test('logout', async() => {
         const res = await request(app).post('/account/logout')
             .expect(200);
