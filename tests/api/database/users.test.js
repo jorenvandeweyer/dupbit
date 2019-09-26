@@ -77,6 +77,23 @@ describe('testing database user', () => {
         expect(logs.length).toBe(1);
     });
 
+    test('reverse hash user', async() => {
+        const user = await db.Users.findOne({where: {username}});
+
+        const result = await user.reverseMatch('dddd');
+
+        expect(result).toBeFalsy();
+    });
+
+    test('reverse hash user', async() => {
+        const user = await db.Users.findOne({where: {username}});
+
+        const hash = await user.hash;
+        const result = await user.reverseMatch(hash);
+
+        expect(result).toBeTruthy();
+    });
+
     test('log loginattempt', async () => {
         const result = await db.Logs.create({
             action: 'LOGIN_ATTEMPT',

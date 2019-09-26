@@ -35,6 +35,9 @@ class User extends Model {
 
         return result;
     }
+    async reverseMatch(hash) {
+        return await bcrypt.compare(this.password, hash);
+    }
 
     getPermissions() {
         return permissions.parse(this.permissions, user_perms);
