@@ -66,6 +66,9 @@ async function decode(req, res) {
             raw: function() {
                 return string;
             },
+            hasPermissions: function(...perm) {
+                return db.Users.checkPermissions(this.upm, ...perm);
+            },
             user: async function() {
                 if (this.cuser) return this.cuser;
                 this.cuser = await db.Users.findByPk(this.uid);
@@ -84,7 +87,7 @@ async function decode(req, res) {
     }
 }
 
-async function createToken(obj={cookie: false, token: false, user: false, content: {}}) {
+async function createToken(obj={cookie: false, token: false, user: false}) {
     if (obj.token)
         obj.user = obj.token.uid;
     
@@ -93,8 +96,11 @@ async function createToken(obj={cookie: false, token: false, user: false, conten
     
     const token = obj.token || (await obj.user.createToken());
 
+    console.log(obj.user.get());
+
     const string = jwt.sign({
         ...token.seconds,
+        upm: obj.user.get().permissions,
     }, privateKey, {algorithm: 'RS256'});
 
     if (obj.cookie) 
@@ -106,7 +112,10 @@ async function createToken(obj={cookie: false, token: false, user: false, conten
         });
 
     return {
-        token: token.get(),
+        token: {
+            ...token.get(),
+            upm: obj.user.get().permissions,
+        },
         string,
     };
 }

@@ -13,6 +13,11 @@ class User extends Model {
         return user_perms;
     }
 
+    static checkPermissions(int, ...perm) {
+        permissions.exists(perm, user_perms);
+        return permissions.has(int, perm, user_perms);
+    }
+
     get safe() {
         const obj = this.get();
         obj.password = undefined;
