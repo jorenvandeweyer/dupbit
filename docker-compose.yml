@@ -25,6 +25,17 @@ services:
             - database
         networks:
             - dupbit-network
+    web:
+        build: ./web
+        env_file:
+            - ./.env
+        volumes:
+            - ./web/src/:/usr/src/app/src/
+            - ./web/public/:/usr/src/app/public/
+            - ./web/views/:/usr/src/app/views/
+        restart: always
+        networks:
+            - dupbit-network
     # youtube-dl:
     #     build: ./youtube-dl
     #     volumes:
