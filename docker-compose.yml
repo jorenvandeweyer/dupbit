@@ -25,23 +25,6 @@ services:
             - database
         networks:
             - dupbit-network
-    # web:
-    #     build: ./node
-    #     env_file:
-    #         - ./node/.env
-    #     volumes:
-    #         - ./node/config.json:/usr/src/app/config.json
-    #         - ./node/pages/:/usr/src/app/pages/
-    #         - ./node/api/:/usr/src/app/api/
-    #         - ./node/src/:/usr/src/app/src/
-    #         - ./node/scripts/:/usr/src/app/scripts/
-    #         - ./files/youtube-dl/:/usr/src/app/data/music/
-    #         - ./node/data/secrets/:/usr/src/app/data/secrets/
-    #     depends_on:
-    #         - database
-    #     restart: always
-    #     networks:
-    #         - prime
     # youtube-dl:
     #     build: ./youtube-dl
     #     volumes:
