@@ -96,8 +96,6 @@ async function createToken(obj={cookie: false, token: false, user: false}) {
     
     const token = obj.token || (await obj.user.createToken());
 
-    console.log(obj.user.get());
-
     const string = jwt.sign({
         ...token.seconds,
         upm: obj.user.get().permissions,
