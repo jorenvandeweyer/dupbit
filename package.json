@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "pretest": "node scripts/rebuild-db.js test",
-    "test": "jest --silent",
-    "test-ns": "jest",
+    "test": "jest --silent --runInBand",
+    "test-ns": "jest --runInBand",
     "rebuild-db": "node scripts/rebuild-db.js"
   },
   "repository": {

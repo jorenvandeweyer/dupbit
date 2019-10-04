@@ -2,11 +2,6 @@ const express = require('express');
 const db = require('../../database');
 
 module.exports = express.Router()
-    .use((req, res, next) => {
-        if (!req.auth || !req.auth.hasPermissions('ADMIN')) 
-            return res.errors.needAuth();
-        next();
-    })
     .get('/', async (req, res) => {
         const data = req.query;
 

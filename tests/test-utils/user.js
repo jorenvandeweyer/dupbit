@@ -41,7 +41,7 @@ async function createUser(...permissions) {
 }
 
 async function destroyUser(user) {
-    await user.destroy();
+    await user.user.destroy();
 }
 
 module.exports = {
