@@ -5,6 +5,8 @@ const permissions = require('../permissions');
 const user_perms = {
     'EMAIL.VALID': 1 << 0,
     'ADMIN': 1 << 1,
+    'PROJECTS.MUSIC': 1 << 2,
+    'PROJECTS.CONNECT': 1 << 3,
 };
 
 const Model = Sequelize.Model;

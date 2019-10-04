@@ -22,6 +22,7 @@ const Users = require('./models/user')(sequelize);
 const Logs = require('./models/logs')(sequelize);
 const Tokens = require('./models/token')(sequelize);
 const [Calendars, CalendarUrls, CalendarCourses] = require('./models/calendar')(sequelize);
+const [SongsRaw, Songs, Playlists, SongsInPlaylist] = require('./models/music')(sequelize);
 
 Users.hasMany(Logs, {
     onDelete: 'CASCADE',
@@ -40,6 +41,18 @@ Users.hasMany(Calendars, {
     foreignKey: 'uid',
 });
 
+Users.hasMany(Songs, {
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+    foreignKey: 'uid',
+});
+
+Users.hasMany(Playlists, {
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+    foreignKey: 'uid',
+});
+
 module.exports = {
     close: () => sequelize.close(),
     sync: (force) => sequelize.sync({force}),
@@ -50,6 +63,10 @@ module.exports = {
     Calendars,
     CalendarUrls,
     CalendarCourses,
+    SongsRaw,
+    Songs,
+    Playlists,
+    SongsInPlaylist,
     Op: Sequelize.Op,
 };
 
