@@ -1,9 +1,8 @@
 const jwt = require('jsonwebtoken');
 const fs = require('fs');
 const db = require('./database');
-
-const privateKey = fs.readFileSync('./.certs/private.key', 'utf8');
-const publicKey = fs.readFileSync('./.certs/public.key', 'utf8');
+const privateKey = fs.readFileSync(`${process.env.CERTS_PATH}/private.key`, 'utf8');
+const publicKey = fs.readFileSync(`${process.env.CERTS_PATH}/public.key`, 'utf8');
 
 module.exports = async (req, res, next) => {
     res.createToken = createToken;
