@@ -48,6 +48,10 @@ module.exports = (sequelize) => {
             type: Sequelize.STRING,
             allowNull: false,
         },
+        error: {
+            type: Sequelize.BOOLEAN,
+            default: false,
+        }
     }, {
         sequelize,
         modelName: 'calendarCourse',
@@ -63,5 +67,5 @@ module.exports = (sequelize) => {
         onUpdate: 'CASCADE',
     });
 
-    return Calendar;
+    return [Calendar, CalendarUrl, CalendarCourse];
 };

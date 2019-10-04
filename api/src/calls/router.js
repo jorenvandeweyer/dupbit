@@ -6,6 +6,7 @@ module.exports =  express.Router()
         next();
     })
     .use('/account', require('./account/router'))
+    .use('/calendar', require('./calendar'))
     .use('/admin', require('./admin/router'))
     .use('/pdf', require('./pdf'))
     .all('*', (req, res) => {

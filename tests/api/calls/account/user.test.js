@@ -2,6 +2,7 @@ const request = require('supertest');
 const crypto = require('crypto');
 const app = require('../../../../api/src/index');
 const db = require('../../../../api/src/database');
+const parseCookies = require('../../../test-utils/parseCookies');
 
 const {send, html} = require('../../../../api/src/utils/mail');
 
@@ -258,29 +259,3 @@ describe('testing account user call', () => {
         expect(user).toBeNull();
     });
 });
-
-function parseCookies(cookies) {
-    const result = new Map();
-
-    for (const cookie of cookies) {
-        const parts = cookie.split('; ');
-        const first = parts.shift().split('=');
-
-        const content = {
-            value: first[1],
-        };
-
-        for (let part of parts) {
-            if (part.includes('=')) {
-                const values = part.split('=');
-                content[values[0]] = values[1];
-            } else {
-                content[part] = true;
-            }    
-        }
-
-        result.set(first[0], content);
-    }
-
-    return result;
-}

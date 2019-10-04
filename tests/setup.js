@@ -1,8 +1,4 @@
-process.env.MYSQL_HOST = '127.0.0.1';
-process.env.MYSQL_DATABASE = 'test';
-process.env.NODE_ENV = 'test';
-
-require('dotenv').config();
+require('dotenv').config({path: './.env.test'});
 
 const db = require('../api/src/database');
 

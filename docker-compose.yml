@@ -18,7 +18,8 @@ services:
             - ./.env
         volumes:
             - ./api/src/:/usr/src/app/src/
-            - ./.certs/:/etc/certs/
+            - ./api/scripts/:/usr/src/app/scripts/
+            - ./.files/:/usr/src/app/.files/
             - ./.certs/:/usr/src/app/.certs/
         restart: always
         depends_on:

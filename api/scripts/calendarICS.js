@@ -1,12 +1,7 @@
 const db = require('../src/database');
 const ical = require('ical');
 const http = require('http');
-const fs = require('fs');
-const util = require('util');
-
-const stat = util.promisify(fs.stat);
-const mkdir = util.promisify(fs.mkdir);
-const writeFile = util.promisify(fs.writeFile);
+const fs = require('fs').promises;
 
 class Calendar {
     constructor(name, id) {
@@ -43,7 +38,7 @@ class Calendar {
             const event = calendar[e];
             for (let filter of filters) {
                 const is_valid = obj => obj &&
-                    (obj.includes(filter.name) || obj.includes(filter.value));
+                    (obj.includes(filter.get().name) || obj.includes(filter.get().value));
                 if (is_valid(event.summary) || is_valid(event.description)) {
                     this.addEvent(new Event(event));
                     break;
@@ -58,13 +53,19 @@ class Calendar {
             + this.footer;
     }
 
-    async save(path=__dirname + '/../pages/ics') {
-        const s = await stat(path).catch(() => null);
+    async save() {
+        const path = __dirname + '/' + process.env.FILES_PATH + '/ics';
+        const s = await fs.stat(path).catch(() => null);
         if (!s || !s.isDirectory()) {
-            mkdir(path);
+            await fs.mkdir(path);
         }
-        await writeFile(`${path}/calendar_${this.id}.ics`, this.toString());
+        await fs.writeFile(`${path}/calendar_${this.id}.ics`, this.toString());
     }
+
+    static async remove(id) {
+        const path = __dirname + '/' + process.env.FILES_PATH + '/ics';
+        await fs.unlink(`${path}/calendar_${id}.ics`).catch((e) => console.log(e));
+    } 
 }
 
 class Event {
@@ -76,13 +77,13 @@ class Event {
         return 'BEGIN:VEVENT\n'
             + `DTSTART:${formatDate(this.start)}\n`
             + `DTEND:${formatDate(this.end)}\n`
-            + (this.sequence) ? `SEQUENCE:${this.sequence}\n` : ''
+            + ((this.sequence) ? `SEQUENCE:${this.sequence}\n` : '')
             + `SUMMARY:${this.summary}\n`
             + `DESCRIPTION:${this.description}\n`
             + `UID:${this.uid}\n`
             + `DTSTAMP:${this.dtstamp}\n`
-            + (this.class) ? `CLASS:${this.class}\n` : ''
-            + (this.location) ? `LOCATION:${this.location}\n` : ''
+            + ((this.class) ? `CLASS:${this.class}\n` : '')
+            + ((this.location) ? `LOCATION:${this.location}\n` : '')
             + 'END:VEVENT\n';
     }
 }
@@ -99,11 +100,14 @@ async function main() {
     for (const calendar of calenders) {
         await createCalendar(calendar);
     }
+    await busy.resolve();
 }
 
 async function updateOne(id) {
     const calendar = await db.Calendars.findOne({where: {id}});
     if (calendar) await createCalendar(calendar);
+    else await Calendar.remove(id);
+    await busy.resolve();
 }
 
 async function createCalendar(calendar) {
@@ -161,7 +165,26 @@ if (require.main === module) {
     main();
 }
 
+class Busy {
+    constructor() {
+        this.r;
+        this.p;
+        this.reset();
+    }
+
+    reset() {
+        this.p = new Promise((resolve) => this.r = resolve);
+    }
+
+    async resolve() {
+        await this.r();
+    }
+}
+
+const busy = new Busy();
+
 module.exports = {
     update: main,
     updateOne,
+    busy,
 };

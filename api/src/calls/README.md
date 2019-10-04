@@ -43,3 +43,55 @@ fetch('https://api.dev.dupbit.com/account', {
 
 ## Calls /account/...
 
+### POST /account
+ 
+```
+username: String
+email: String
+password: String
+```
+
+### POST /account/login
+
+```
+username: String
+password: String
+```
+
+## Calls /calendar/...
+
+### GET /calendar
+returns all calendars
+
+### GET /calendar/:calendar
+returns calendar with all courses and urls
+
+### POST /calendar
+create calendar
+
+```
+name: String
+```
+
+### POST /calendar/:calendar/url
+create url for calendar
+```
+name: String
+value: String
+```
+
+### POST /calendar/:calendar/course
+create course for calendar
+```
+name: String
+value: String
+```
+
+### DELETE /calendar/:calendar
+delete calendar
+
+### DELETE /calendar/:calendar/url/:url
+delete calendar url
+
+### DELETE /calendar/:calendar/course/:course
+delete calendar course

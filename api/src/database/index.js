@@ -21,7 +21,7 @@ const state = sequelize
 const Users = require('./models/user')(sequelize);
 const Logs = require('./models/logs')(sequelize);
 const Tokens = require('./models/token')(sequelize);
-const Calendars = require('./models/calendar')(sequelize);
+const [Calendars, CalendarUrls, CalendarCourses] = require('./models/calendar')(sequelize);
 
 Users.hasMany(Logs, {
     onDelete: 'CASCADE',
@@ -48,6 +48,8 @@ module.exports = {
     Logs,
     Tokens,
     Calendars,
+    CalendarUrls,
+    CalendarCourses,
     Op: Sequelize.Op,
 };
 
