@@ -1,5 +1,6 @@
 const WebSocket = require('ws');
 const auth = require('../auth');
+const uuidv1 = require('uuid/v1');
 
 let wss;
 
@@ -9,6 +10,7 @@ class WebSocketServer {
         this._wss = new WebSocket.Server({ noServer: true});
 
         this.clients = new Map([[0, new Map()]]);
+        this.waiting = new Map();
 
         this._setup();
     }
@@ -21,6 +23,8 @@ class WebSocketServer {
             ws.idtf = req.headers.identifier || 'unknown';
 
             this._addWS(ws, req);
+
+            ws.sendR = sendR;
 
             ws.on('message', (message) => {
                 this._handle(ws, req, message);
@@ -51,7 +55,7 @@ class WebSocketServer {
 
         });
 
-        setInterval(this._ping, 30000);
+        setInterval(() => {this._ping();}, 30000);
     }
 
     _addWS(ws, req) {
@@ -71,29 +75,29 @@ class WebSocketServer {
     _handle(ws, req, message) {
         try {
             message = {
-                raw: false,
+                _raw: false,
                 ...JSON.parse(message)
             };
         } catch (e) {
             message = {
-                raw: true,
-                value: message,
+                _raw: true,
+                _value: message,
             };
         }
 
-        if (message.raw) return;
+        if (message._raw) return console.log('raw socket message:', message._value);
 
-        if (message.system) {
-            console.log('to system', message.msg);
+        if (message._uuid) {
+            if (this.waiting.has(message._uuid)) {
+                const resolve = this.waiting.get(message._uuid);
+                resolve(message);
+                this.waiting.delete(message._uuid);
+            }
         }
 
-        if (message.action === 'pong') {
-            ws.isAlive = true;
-        }
-
-        if (message.action === 'logout') {
-            //remove token from db
-        }
+        if (message._system) console.log('to system', message.msg);
+        if (message._ping)  ws.isAlive = true;
+        if (message._logout) console.log('logout implement me pls');
     }
 
     _ping() {
@@ -120,6 +124,17 @@ function findConnection(uid, jti) {
     if (!jti) return wss.clients.get(uid);
     if (!wss.clients.get(uid).has(jti)) return false;
     return wss.clients.get(uid).get(jti);
+}
+
+async function sendR(object) {
+    object._uuid = uuidv1();
+    const string = JSON.stringify(object);
+    const promise = new Promise((resolve) => {
+        wss.waiting.set(object._uuid, resolve);
+    });
+
+    this.send(string);
+    return promise;
 }
 
 module.exports = {
