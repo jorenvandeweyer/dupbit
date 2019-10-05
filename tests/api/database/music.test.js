@@ -21,7 +21,7 @@ describe('testing database token', () => {
     });
 
     afterAll(async () => {
-        // await user.destroy();
+        await user.destroy();
     });
 
     test('create songraw', async () => {

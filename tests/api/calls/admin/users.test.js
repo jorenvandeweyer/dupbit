@@ -10,7 +10,6 @@ describe('testing calendars', () => {
     beforeAll(async () => {
         admin = await createUser('EMAIL.VALID', 'ADMIN');
         user = await createUser('EMAIL.VALID', 'ADMIN');
-
     });
 
     afterAll(async () => {

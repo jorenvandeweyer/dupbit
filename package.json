@@ -6,7 +6,7 @@
   "scripts": {
     "pretest": "node scripts/rebuild-db.js test",
     "test": "jest --silent --runInBand",
-    "test-ns": "jest --runInBand",
+    "test-ns": "npm run pretest && jest --runInBand",
     "rebuild-db": "node scripts/rebuild-db.js"
   },
   "repository": {
