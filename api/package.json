@@ -20,8 +20,12 @@
     "jsonwebtoken": "^8.5.1",
     "mailgun-js": "^0.22.0",
     "mariadb": "^2.1.0",
+    "node-id3": "^0.1.11",
+    "node-ipc": "^9.1.1",
     "nodemon": "^1.19.1",
     "puppeteer": "^1.20.0",
+    "request": "^2.88.0",
+    "request-promise": "^4.2.4",
     "sequelize": "^5.18.0"
   },
   "devDependencies": {}

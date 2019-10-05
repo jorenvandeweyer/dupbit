@@ -54,7 +54,7 @@ class Calendar {
     }
 
     async save() {
-        const path = __dirname + '/' + process.env.FILES_PATH + '/ics';
+        const path = process.env.FILES_PATH + '/ics';
         const s = await fs.stat(path).catch(() => null);
         if (!s || !s.isDirectory()) {
             await fs.mkdir(path);
@@ -63,7 +63,7 @@ class Calendar {
     }
 
     static async remove(id) {
-        const path = __dirname + '/' + process.env.FILES_PATH + '/ics';
+        const path = process.env.FILES_PATH + '/ics';
         await fs.unlink(`${path}/calendar_${id}.ics`).catch((e) => console.log(e));
     } 
 }

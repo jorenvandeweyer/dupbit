@@ -37,12 +37,12 @@ services:
         restart: always
         networks:
             - dupbit-network
-    # youtube-dl:
-    #     build: ./youtube-dl
-    #     volumes:
-    #       - ./files/youtube-dl/:/usr/src/app/files/
-    #     networks:
-    #       - prime
+    youtube-dl:
+        build: ./youtube-dl
+        volumes:
+          - ./.files/youtube-dl/:/usr/src/app/files/
+        networks:
+          - dupbit-network
     database:
         image: mariadb:latest
         env_file:

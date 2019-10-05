@@ -30,7 +30,7 @@ fetch('https://api.dev.dupbit.com/account', {
     credentials: 'include',
     body: JSON.stringify({
         username: 'joren',
-        email: 'jorenvandewEyer@gmail.com',
+        email: 'jorenvandeweyer@gmail.com',
         password: 'password',
     }),
     headers: {
