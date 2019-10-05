@@ -11,6 +11,7 @@ module.exports =  express.Router()
     .use('/connect', require('./connect/router'))
     .use('/admin', require('./admin/router'))
     .use('/pdf', require('./pdf'))
+    .use('/ip', require('./ip'))
     .all('*', (req, res) => {
         res.status(404).jsonf({
             reason: 'api call not found',
