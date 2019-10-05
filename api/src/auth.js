@@ -38,7 +38,6 @@ function simpleToken(obj={user: false}) {
 
 async function decode(req, res) {
     const string = req.headers.authorization || req.cookies.sid;
-
     if (!string) return false;
 
     try {

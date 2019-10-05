@@ -1,10 +1,10 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const cookie = require('cookie');
+const { createServer } = require('http');
+const websocket = require('./websocket');
 
 const router = require('./calls/router');
-
-require('./database');
 
 const app = express();
 const port = 8080;
@@ -27,10 +27,15 @@ app.use(require('./cors'));
 app.use(require('./errors'));
 app.use(require('./auth'));
 
+app.use('/ics', express.static(`${process.env.FILES_PATH}/ics`));
+
 app.use(router);
 
 if (process.env.NODE_ENV !== 'test') {
-    app.listen(port, () => console.log(`Running ${process.env.SERVER_ENV} in: ${process.env.NODE_ENV} on api.${process.env.HOST}:${port}`));
+    const server = createServer(app);
+    websocket.create(server);
+    
+    server.listen(port, () => console.log(`Running ${process.env.SERVER_ENV} in: ${process.env.NODE_ENV} on api.${process.env.HOST}:${port}`));
 }
 
 module.exports = app;
