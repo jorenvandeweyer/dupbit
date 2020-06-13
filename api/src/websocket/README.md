@@ -3,6 +3,9 @@
 `_uuid`
 `_system`
 `_raw`
+`_ping`
+`_logout`
+`_value`
 
 ## public 
 

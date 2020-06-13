@@ -1,6 +1,6 @@
 const WebSocket = require('ws');
 const auth = require('../auth');
-const uuidv1 = require('uuid/v1');
+const uuidv1 = require('uuid').v1;
 
 let wss;
 

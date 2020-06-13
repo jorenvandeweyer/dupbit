@@ -16,7 +16,7 @@
     toe: Date,
     uid: Number,
     raw(), //raw token
-    destory(), //async //removes session and logs out
+    destroy(), //async //removes session and logs out
     user(), //async //returns user from db
     hasPermissions([perm, ...]) // check if user has certain permission(s)
 }

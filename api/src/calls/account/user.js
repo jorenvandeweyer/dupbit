@@ -122,9 +122,5 @@ async function changeUsername(req, res) {
     }, {req});
 
     res.jsons(user.save);
-
-    mail.send({
-        from: 0
-    });
 }
 

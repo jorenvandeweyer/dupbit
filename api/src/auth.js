@@ -1,8 +1,9 @@
+/* eslint-disable require-atomic-updates */
 const jwt = require('jsonwebtoken');
-const fs = require('fs');
 const db = require('./database');
-const privateKey = fs.readFileSync(`${process.env.CERTS_PATH}/private.key`, 'utf8');
-const publicKey = fs.readFileSync(`${process.env.CERTS_PATH}/public.key`, 'utf8');
+
+const privateKey = process.env.KEY_PRIVATE;
+const publicKey = process.env.KEY_PUBLIC;
 
 module.exports = async (req, res, next) => {
     res.createToken = createToken;
@@ -68,9 +69,9 @@ async function decode(req, res) {
                 return db.Users.checkPermissions(this.upm, ...perm);
             },
             user: async function() {
-                if (this.cuser) return this.cuser;
-                this.cuser = await db.Users.findByPk(this.uid);
-                return this.cuser;
+                if (this._user) return this._user;
+                this._user = await db.Users.findByPk(this.uid);
+                return this._user;
             },
             destroy: async function() {
                 res.clearCookie('sid', {
