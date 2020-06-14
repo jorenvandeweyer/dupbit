@@ -2,8 +2,8 @@
 const jwt = require('jsonwebtoken');
 const db = require('./database');
 
-const privateKey = process.env.KEY_PRIVATE;
-const publicKey = process.env.KEY_PUBLIC;
+const privateKey = process.env.KEY_PRIVATE.replace(/\\n/gm, '\n');
+const publicKey = process.env.KEY_PUBLIC.replace(/\\n/gm, '\n');
 
 module.exports = async (req, res, next) => {
     res.createToken = createToken;
@@ -46,7 +46,8 @@ async function decode(req, res) {
 
         if (!decoded) return false;
 
-        if (decoded.toe*1000 < Date.now()) {
+        // eslint-disable-next-line no-constant-condition
+        if (decoded.toe*1000 < Date.now() && false) {
             const token = await db.Tokens.findByPk(decoded.jti);
 
             const newToken = await token.refresh();
