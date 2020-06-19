@@ -31,6 +31,7 @@ export default {
 
             if (result && result.success) {
                 this.$root.auth = null;
+                this.$router.go();
             }
         }
     }
