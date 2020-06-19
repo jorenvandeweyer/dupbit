@@ -21,3 +21,22 @@ html, body {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 }
+
+input {
+    color: #fff;
+    background-color: #000;
+    border-color: #fff;
+    border-width: 1px;
+    border-radius: 0.25rem;
+    padding-right: 0.5rem;
+    padding-left: 0.5rem;
+    padding-top: 0.25rem;
+    padding-bottom: 0.25rem;
+}
+
+input:disabled {
+    background-color: #ffffff33;
+    color: #fff;
+    border-color: #ffffff33;
+
+}
