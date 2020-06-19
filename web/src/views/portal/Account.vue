@@ -1,6 +1,7 @@
 <template>
   <div class="flex flex-col items-center pt-20 px-4">
     <h1 class="text-4xl font-semi text-white">Your account</h1>
+    <router-link to="/portal/security" class="hover:underline">(Security)</router-link>
     <div class="flex flex-row flex-wrap w-full mt-8 md:w-1/2 lg:w-1/3 border border-white rounded p-4">
 
       <div v-if="errors[0]" class="w-full text-red-500">{{ errors[0] }}</div>

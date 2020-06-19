@@ -43,6 +43,21 @@ const routes = [
     meta: {
       login: true,
     }
+  }, {
+    path: '/portal/security',
+    name: 'Security',
+    component: () => import('@/views/portal/Security.vue'),
+    meta: {
+      login: true,
+    }
+  }, {
+    path: '/portal/connect',
+    name: 'Connect',
+    component: () => import('@/views/portal/Connect.vue'),
+    meta: {
+      login: true,
+      permissions: ['PROJECTS.CONNECT'],
+    }
   }
 ]
 
