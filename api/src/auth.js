@@ -28,9 +28,9 @@ function simpleToken(obj={user: false}) {
         uid,
         exp: Math.floor(Date.now()/1000) + 7*24*60*60
     };
-    
+
     const string = jwt.sign(token, privateKey, {algorithm: 'RS256'});
-    
+
     return {
         token,
         string,
@@ -46,13 +46,16 @@ async function decode(req, res) {
 
         if (!decoded) return false;
 
-        // eslint-disable-next-line no-constant-condition
-        if (decoded.toe*1000 < Date.now() && false) {
+        // if toe has passed validate token by checking db
+        // if token does not exists anymore session invalidated
+        // if token exists a new token is sended to skip this function
+        // untill next toe (faster) but not required
+        if (decoded.toe*1000 < Date.now()) {
             const token = await db.Tokens.findByPk(decoded.jti);
 
             const newToken = await token.refresh();
             if (!token) return false;
-            
+
             const result = await res.createToken({
                 token: newToken,
                 cookie: true,
@@ -76,8 +79,8 @@ async function decode(req, res) {
             },
             destroy: async function() {
                 res.clearCookie('sid', {
-                    domain: '.dupbit.com',
-                    secure: true
+                    domain: process.env.HOST,
+                    secure: process.env.NODE_ENV === 'production',
                 });
                 return await db.Tokens.destroy({where: {jti: this.jti}});
             }
@@ -90,10 +93,10 @@ async function decode(req, res) {
 async function createToken(obj={cookie: false, token: false, user: false}) {
     if (obj.token)
         obj.user = obj.token.uid;
-    
-    if (typeof obj.user !== 'object') 
+
+    if (typeof obj.user !== 'object')
         obj.user = await db.Users.findByPk(obj.user);
-    
+
     const token = obj.token || (await obj.user.createToken());
 
     const string = jwt.sign({
@@ -101,13 +104,15 @@ async function createToken(obj={cookie: false, token: false, user: false}) {
         upm: obj.user.get().permissions,
     }, privateKey, {algorithm: 'RS256'});
 
-    if (obj.cookie) 
+    if (obj.cookie) {
         this.cookie('sid', string, {
             maxAge: token.get().exp - token.get().iat,
-            secure: true,
-            domain: '.dupbit.com',
+            secure: process.env.NODE_ENV === 'production',
+            domain: process.env.HOST,
             httpOnly: true,
         });
+    }
+
 
     return {
         token: {

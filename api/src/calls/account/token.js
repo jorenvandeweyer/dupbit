@@ -25,7 +25,25 @@ module.exports = express.Router()
     // .put('/', async (req, res) => {
     // })
     .delete('/:jti', async (req, res) => {
-        res.jsonf();
+        const token = await db.Tokens.findByPk(req.params.jti);
+
+        if (!token) {
+            return res.jsonf();
+        }
+
+        await token.destroy();
+
+        const user = await req.auth.user();
+
+        user.createLog({
+            username: req.auth.user.username,
+            action: db.Logs.ACTIONS.TOKEN_REMOVED,
+            value: token.jti,
+            ip: req.ip,
+            success: true,
+        });
+
+        res.jsons();
     })
     .delete('/all', async (req, res) => {
         const data = req.body;

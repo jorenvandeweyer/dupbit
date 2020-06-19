@@ -4,6 +4,7 @@
   "description": "",
   "main": "src/index.js",
   "scripts": {
+    "serve": "npm run local",
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "nodemon src/index.js",
     "local": "nodemon -r dotenv/config src/index.js dotenv_config_path=../.env.local"

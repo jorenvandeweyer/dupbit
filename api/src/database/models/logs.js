@@ -1,22 +1,25 @@
 const Sequelize = require('sequelize');
 
 const Model = Sequelize.Model;
-class Logs extends Model {}
-
-const ACTIONS = [
-    'DEBUG',
-    'ERROR',
-    'CHANGED_USERNAME',
-    'CHANGED_EMAIL',
-    'CHANGED_PASSWORD',
-    'CHANGED_PERMISSIONS',
-    'LOGIN_ATTEMPT',
-];
+class Logs extends Model {
+    static get ACTIONS() {
+        return {
+            'DEBUG': 'debug',
+            'ERROR': 'error',
+            'CHANGED_USERNAME': 'changed_username',
+            'CHANGED_EMAIL': 'changed_email',
+            'CHANGED_PASSWORD': 'changed_password',
+            'CHANGED_PERMISSIONS': 'changed_permisssions',
+            'LOGIN_ATTEMPT': 'login_attempt',
+            'TOKEN_REMOVED': 'token_removed',
+        };
+    }
+}
 
 module.exports = (sequelize) => {
     Logs.init({
         action: {
-            type: Sequelize.ENUM(...ACTIONS),
+            type: Sequelize.STRING,
             allowNull: false,
         },
         username: {
