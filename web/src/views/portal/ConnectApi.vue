@@ -8,12 +8,18 @@
             <div
                 v-for="socket in sockets"
                 :key="socket.uuid"
-                clas="w-full md:w-1/2 lg:w-1/3 p-4"
+                class="w-full md:w-1/2 lg:w-1/3 p-4"
             >
                 <div class="p-4 border border-white rounded">
                     <h2 class="text-2xl">{{ socket.name || 'Socket'}}</h2>
                     <div>{{ socket.uuid }}</div>
                     <div @click="test(socket)" class="bg-white text-black rounded py-1 px-2 mt-4 hover:bg-gray-400 cursor-pointer">Test</div>
+                </div>
+            </div>
+            <div class="w-full md:w-1/2 lg:w-1/3 p-4">
+                <div class="p-4 border border-white rounded">
+                    <h2 class="text-2xl">SELF</h2>
+                    <div>{{ $root.wsc.data}}</div>
                 </div>
             </div>
         </div>

@@ -3,7 +3,8 @@ const wss = require('../../websocket');
 
 module.exports =  express.Router()
     .get('/', async (req, res) => {
-        const sockets = await wss.list(req.auth.uid);
+        const sockets = wss.listSafe(req.auth.uid)
+            .map(socket => socket.data);
 
         res.jsons({
             sockets,
@@ -14,7 +15,7 @@ module.exports =  express.Router()
 
         if (!req.hasParams('uuid', 'action')) return;
 
-        const socket = wss.find(req.auth.uid, data.uuid);
+        const socket = wss.findSafe(req.auth.uid, data.uuid);
 
         try {
             const response = await socket.send({
