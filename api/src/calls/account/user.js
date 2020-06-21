@@ -38,7 +38,7 @@ module.exports = express.Router()
         const data = req.body;
 
         try {
-            if (data.password && data.password_new) 
+            if (data.password && data.password_new)
                 return changePassword(req, res);
             if (data.username)
                 return changeUsername(req, res);
@@ -76,7 +76,7 @@ async function verificationMail(user, res) {
             title: 'Active your account',
             message_title: 'Active your account',
             message_content: `Hello ${user.get().username}, welcome to Dupbit!`,
-            button_url: `https://api.${process.env.HOST}/account/verify?token=${token.string}`, 
+            button_url: `https://api.${process.env.HOST}/account/verify?token=${token.string}`,
             button_title: 'Active your account'
         })
     });
@@ -86,7 +86,7 @@ async function changePassword(req, res) {
     const data = req.body;
     const user = await req.auth.user();
 
-    if (!await user.matchPassword(data.password, {req})) 
+    if (!await user.matchPassword(data.password, {req}))
         return res.errors.wrongCredentials();
 
     const error = await validate.password(data.password_new);
@@ -97,8 +97,8 @@ async function changePassword(req, res) {
     await user.update({
         password: data.password_new,
     }, {req});
-    
-    res.jsons(user.save);
+
+    res.jsons(user.safe);
 
     mail.send({
         from: 'Dupbit <noreply@dupbit.com>',
@@ -121,6 +121,6 @@ async function changeUsername(req, res) {
         username: data.username
     }, {req});
 
-    res.jsons(user.save);
+    res.jsons(user.safe);
 }
 
