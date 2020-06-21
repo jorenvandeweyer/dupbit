@@ -59,5 +59,22 @@ module.exports = async (req, res, next) => {
             });
         }
     };
+    req.hasParams = async (...params) => {
+        const data = (req.method === 'GET') ? req.query : req.body;
+
+        const missing = [];
+
+        for (let key of params) {
+            if (key in data) continue;
+            missing.push(key);
+        }
+
+        if (missing.length) {
+            res.errors.missing(missing);
+            return false;
+        }
+
+        return true;
+    };
     next();
 };

@@ -2,75 +2,95 @@ import Vue from 'vue'
 import App from './App.vue'
 import router from './router'
 import NavigationGuard from './router/navigationGuard';
-import moment from 'moment'
+import moment from 'moment';
+import WebSocketClient from './websocket';
 
 import './assets/styles/index.scss';
 
 Vue.config.productionTip = false;
+
 Vue.prototype.moment = (date, format) => {
   return moment(date).format(format || 'YYYY-MM-DD HH:mm');
 };
 
-const store = {
-  host: process.env.VUE_APP_API_HOST,
-  auth: null,
-};
-
-router.beforeEach(NavigationGuard.bind(store));
-
 async function init() {
-  const response = await fetch(`${store.host}/account`, {
-    method: 'GET',
-    credentials: 'include',
-    headers: { 'Accept': 'application/json' }
-  });
+    const store = await createStore();
 
-  const result = await response.json();
+    store.auth = await getAuth(store);
+    store.wsc = new WebSocketClient(store);
 
-  if (result && result.success) {
-    store.auth = result;
-  }
+    store.wsc.on('connected', console.log);
 
-  new Vue({
-    router,
-    data: store,
-    computed: {
-      authenticated() { return !!this.auth; }
-    },
-    methods: {
-      request: async function(options) {
-        const response = await fetch(`${this.host}${options.path}`, {
-          credentials: 'include',
-          method: options.method,
-          headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json',
-          },
-          body: (options.body ? JSON.stringify(options.body) : undefined),
-        });
+    createVueInstance(store);
+}
 
-        return response.json();
-      },
-      validateSession: async function() {
-        const result = await this.request({
-          method: 'GET',
-          path: '/account',
-        });
+async function createStore() {
+    const store = {
+        host: process.env.VUE_APP_API_HOST,
+        ws_host: process.env.VUE_APP_WS_HOST,
+        auth: null,
+        wsc: null,
+    };
 
-        if (result?.success) {
-          this.auth = result;
-          console.log('authenticated', this.auth);
-        }
+    router.beforeEach(NavigationGuard.bind(store));
 
-        if (result?.success === false) {
-          this.auth = null;
-        }
-        //else server down?
-      },
-      configureWebhook: async function() { }
-    },
-    render: h => h(App)
-  }).$mount('#app')
+    return store;
+}
+
+async function getAuth(store) {
+    const response = await fetch(`${store.host}/account`, {
+        method: 'GET',
+        credentials: 'include',
+        headers: { 'Accept': 'application/json' }
+    });
+
+    const result = await response.json();
+
+    if (result && result.success) {
+        return result;
+    } else {
+        return false;
+    }
+}
+
+function createVueInstance(store) {
+    new Vue({
+        router,
+        data: store,
+        computed: {
+            authenticated() { return !!this.auth; }
+        },
+        methods: {
+            request: async function(options) {
+                const response = await fetch(`${this.host}${options.path}`, {
+                credentials: 'include',
+                method: options.method,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                },
+                body: (options.body ? JSON.stringify(options.body) : undefined),
+                });
+
+                return response.json();
+            },
+            validateSession: async function() {
+                const result = await this.request({
+                    method: 'GET',
+                    path: '/account',
+                });
+
+                if (result?.success) {
+                    this.auth = result;
+                    console.log('authenticated', this.auth);
+                } else if (result?.success === false) {
+                    this.auth = null;
+                }
+                //else server down?
+            },
+        },
+        render: h => h(App)
+    }).$mount('#app')
 }
 
 init();

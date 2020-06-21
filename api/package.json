@@ -25,10 +25,10 @@
     "node-ipc": "^9.1.1",
     "nodemon": "^2.0.4",
     "npm-check-updates": "^7.0.1",
-    "puppeteer": "^3.3.0",
+    "puppeteer": "^4.0.0",
     "request": "^2.88.2",
     "request-promise": "^4.2.5",
-    "sequelize": "^5.21.12",
+    "sequelize": "^5.21.13",
     "uuid": "^8.1.0"
   },
   "devDependencies": {

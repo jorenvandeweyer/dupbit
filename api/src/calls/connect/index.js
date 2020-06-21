@@ -3,13 +3,7 @@ const wss = require('../../websocket');
 
 module.exports =  express.Router()
     .get('/', async (req, res) => {
-        let sockets = await wss.findConnection(req.auth.uid);
-        if (!sockets || !sockets.size) sockets = [];
-
-        sockets = Array.from(sockets.keys()).map(key => new Object({
-            id: key,
-            auth: sockets.get(key).auth,
-        }));
+        const sockets = await wss.list(req.auth.uid);
 
         res.jsons({
             sockets,
@@ -18,15 +12,18 @@ module.exports =  express.Router()
     .post('/', async (req, res) => {
         const data = req.body;
 
-        if (!data.jti || !data.call) 
-            return res.errors.incomplete();
+        if (!req.hasParams('uuid', 'action')) return;
 
-        const socket = wss.findConnection(req.auth.uid, data.jti);
-        if (!socket)
-            return res.errors.notFound();
+        const socket = wss.find(req.auth.uid, data.uuid);
 
-        const response = await socket.sendR(data);
-        res.json(response);
+        try {
+            const response = await socket.send({
+                action: data.action,
+                content: data.content,
+            });
+
+            res.jsons(response);
+        } catch(err) {
+            res.jsonf(err);
+        }
     });
-
-    

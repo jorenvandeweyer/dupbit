@@ -6,11 +6,16 @@ const privateKey = process.env.KEY_PRIVATE.replace(/\\n/gm, '\n');
 const publicKey = process.env.KEY_PUBLIC.replace(/\\n/gm, '\n');
 
 module.exports = async (req, res, next) => {
-    res.createToken = createToken;
-    res.simpleToken = simpleToken;
-    req.checkToken = checkToken;
-    req.auth = await decode(req, res);
-    next();
+    if (typeof next === 'function') {
+        res.createToken = createToken;
+        res.simpleToken = simpleToken;
+        req.checkToken = checkToken;
+        req.auth = await decode(req, res);
+
+        next();
+    } else {
+        return await decode(req, res);
+    }
 };
 
 function checkToken(string) {
@@ -50,7 +55,7 @@ async function decode(req, res) {
         // if token does not exists anymore session invalidated
         // if token exists a new token is sended to skip this function
         // untill next toe (faster) but not required
-        if (decoded.toe*1000 < Date.now()) {
+        if (decoded.toe*1000 < Date.now() && res) {
             const token = await db.Tokens.findByPk(decoded.jti);
 
             const newToken = await token.refresh();

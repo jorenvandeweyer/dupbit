@@ -58,6 +58,14 @@ const routes = [
       login: true,
       permissions: ['PROJECTS.CONNECT'],
     }
+  }, {
+    path: '/portal/connect-api',
+    name: 'ConnectApi',
+    component: () => import('@/views/portal/ConnectApi.vue'),
+    meta: {
+      login: true,
+      permissions: ['PROJECTS.CONNECT'],
+    }
   }
 ]
 

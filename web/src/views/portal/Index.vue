@@ -13,6 +13,15 @@
       </div>
       <div class="w-full md:w-1/2 lg:w-1/3 p-4">
         <div class="p-4 border border-white rounded">
+          <h2 class="text-2xl">Connect API</h2>
+          <div class="h-20">Interact with your connected devices through the web browser</div>
+          <div>
+            <router-link class="inline-block bg-white rounded text-black py-1 px-2 mt-4 hover:bg-gray-400" to="/portal/connect-api">Open</router-link>
+          </div>
+        </div>
+      </div>
+      <div class="w-full md:w-1/2 lg:w-1/3 p-4">
+        <div class="p-4 border border-white rounded">
           <h2 class="text-2xl">Dupbot</h2>
           <div class="h-20">A discord bot for discord</div>
           <button class="bg-white rounded text-black py-1 px-2 mt-4 hover:bg-gray-400">Open</button>
