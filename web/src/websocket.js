@@ -1,6 +1,6 @@
-import { WebSocketClient } from './websocket-request';
-import WebSocketHelper from './websocket-request/src/helpers/WebSocket';
-console.log(WebSocketHelper);
+import { WebSocketClient, WebSocketMessage } from 'websocket-request';
+import WebSocketHelper from 'websocket-request/src/helpers/WebSocket';
+
 export default class extends WebSocketClient {
     constructor(store) {
         super();
@@ -26,7 +26,7 @@ export default class extends WebSocketClient {
         });
 
         this.on('message', (message) => {
-            console.log(message);
+            this.handle(message);
         });
 
         this.reconnect();
@@ -55,4 +55,40 @@ export default class extends WebSocketClient {
         const ws = new WebSocketHelper(`${this.store.ws_host}`);
         this.attachSocket(ws);
     }
+
+    async handle(message) {
+        const { action, data} = message.content ?? {};
+
+        console.log('handling message');
+        console.log(action, data);
+
+        if (!(action in ACTIONS)) {
+            console.log('Action not found');
+            message.reject('Action not found');
+            return;
+        }
+
+        console.log('Action found', data);
+        message.resolve('Action found');
+
+        try {
+            const result = await ACTIONS[action](data);
+
+            console.log(result);
+
+            if (message._type === WebSocketMessage.TYPES.ASYNC) {
+                // message.respond(result);
+            } else {
+                // message.resolve(result)
+            }
+        } catch (e) {
+            message.reject('action not found');
+        }
+    }
 }
+
+const ACTIONS = {
+    async test(data) {
+        console.log('nice', data)
+    }
+};

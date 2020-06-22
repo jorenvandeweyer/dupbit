@@ -1,6 +1,6 @@
 const cookie = require('cookie');
 const authResolver = require('./auth');
-const { WebSocketServer } = require ('./websocket-request');
+const { WebSocketServer } = require('websocket-request');
 
 class WSS extends WebSocketServer {
     constructor() {
@@ -29,7 +29,7 @@ class WSS extends WebSocketServer {
     findSafe(uid, uuid) {
         const client = this.find(uuid);
 
-        if (!client || client.userId !== uid) {
+        if (!client || client._auth.uid !== uid) {
             return null;
         }
 

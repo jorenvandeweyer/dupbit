@@ -13,18 +13,19 @@ module.exports =  express.Router()
     .post('/', async (req, res) => {
         const data = req.body;
 
-        if (!req.hasParams('uuid', 'action')) return;
+        if (!req.hasParams('uuid')) return;
 
         const socket = wss.findSafe(req.auth.uid, data.uuid);
 
         try {
             const response = await socket.send({
-                action: data.action,
+                type: data.type,
                 content: data.content,
             });
 
-            res.jsons(response);
-        } catch(err) {
-            res.jsonf(err);
+            res.jsons({response});
+        } catch(response) {
+            console.log('error', response);
+            res.jsonf({response});
         }
     });

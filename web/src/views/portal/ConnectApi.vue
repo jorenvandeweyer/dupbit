@@ -50,13 +50,13 @@ export default {
                 this.sockets = [];
             }
         },
-        async action(socket, action, content) {
+        async action(socket, type, content) {
             const result = await this.$root.request({
                 method: 'POST',
                 path: '/connect',
                 body: {
                     uuid: socket.uuid,
-                    action,
+                    type,
                     content,
                 }
             });
@@ -64,7 +64,10 @@ export default {
             return result;
         },
         async test(socket) {
-            this.action(socket, 'ping', null);
+            this.action(socket, 'async', {
+                'action': 'test2',
+                'data': 'cool',
+            });
         }
     }
 }
