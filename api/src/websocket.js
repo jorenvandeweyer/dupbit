@@ -46,6 +46,36 @@ const wss = new WSS();
 
 wss.on('message', (message) => {
     console.log('message received', message.raw);
+
+    try {
+        const { action, data } = message.content;
+
+        handle(message, action, data);
+    } catch(e) {
+        message.reject('Message content not supported');
+    }
 });
+
+async function handle(message, action, data) {
+    if (!(action in ACTIONS)) {
+        return message.reject('Action not supported');
+    }
+
+    try {
+        const result = await ACTIONS[action](message, data);
+        message.resolve(result);
+    } catch (e) {
+        message.reject(e);
+    }
+}
+
+const ACTIONS = {
+    list(message) {
+        const sockets = wss.listSafe(message._wsc._auth.uid)
+            .map(socket => socket.data);
+
+        message.resolve(sockets);
+    }
+};
 
 module.exports = wss;
