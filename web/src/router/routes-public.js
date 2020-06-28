@@ -4,10 +4,6 @@ export default [
         name: 'Index',
         component: () => import('@/views/public/Index.vue'),
     }, {
-        path: '/about',
-        name: 'About',
-        component: () => import('@/views/public/About.vue')
-    }, {
         path: '/login',
         name: 'Login',
         component: () => import('@/views/public/Login.vue'),

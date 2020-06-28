@@ -3,7 +3,8 @@
         <div class="w-full flex flex-row bg-black rounded-full py-2 px-4">
             <template v-if="!authenticated">
                 <router-link to="/">Dupbit</router-link>
-                <router-link to="/about" class="ml-2">About</router-link>
+                <router-link to="/apps" class="ml-4">Apps</router-link>
+                <router-link to="/contact" class="ml-4">Contact</router-link>
                 <router-link to="/login" class="ml-auto">Login</router-link>
             </template>
             <template v-else>
@@ -42,7 +43,7 @@ export default {
 #nav {
   a {
     font-weight: bold;
-    
+
     &.router-link-exact-active {
       color: #42b983;
     }
