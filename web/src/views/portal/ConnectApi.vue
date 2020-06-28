@@ -11,12 +11,6 @@
                 v-bind:key="socket.uuid"
                 v-bind:socket="socket"
             />
-            <!-- <div class="w-full md:w-1/2 lg:w-1/3 xl:w-1/4 p-4">
-                <div class="p-4 border border-white rounded">
-                    <h2 class="text-2xl">SELF</h2>
-                    <div>{{ $root.wsc.data}}</div>
-                </div>
-            </div> -->
         </div>
     </div>
 </template>
@@ -63,12 +57,6 @@ export default {
 
             return result;
         },
-        async test(socket) {
-            this.action(socket, 'async', {
-                'action': 'test2',
-                'data': 'cool',
-            });
-        }
     }
 }
 </script>
