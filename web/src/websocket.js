@@ -1,5 +1,5 @@
-import { WebSocketClient, WebSocketMessage } from 'websocket-request';
-import WebSocketHelper from 'websocket-request/src/helpers/WebSocket';
+import { WebSocketClient, WebSocketMessage } from 'ws-async';
+import WebSocketHelper from 'ws-async/src/helpers/WebSocket';
 
 export default class extends WebSocketClient {
     constructor(store) {

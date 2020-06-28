@@ -29,7 +29,8 @@
     "request": "^2.88.2",
     "request-promise": "^4.2.5",
     "sequelize": "^6.2.3",
-    "uuid": "^8.2.0"
+    "uuid": "^8.2.0",
+    "ws-async": "github:jorenvandeweyer/ws-async"
   },
   "devDependencies": {
     "sequelize-cli": "^6.1.0"

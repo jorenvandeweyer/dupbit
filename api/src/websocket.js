@@ -1,6 +1,6 @@
 const cookie = require('cookie');
 const authResolver = require('./auth');
-const { WebSocketServer } = require('websocket-request');
+const { WebSocketServer } = require('ws-async');
 
 class WSS extends WebSocketServer {
     constructor() {
@@ -8,8 +8,6 @@ class WSS extends WebSocketServer {
     }
 
     async upgrade(req, socket, head) {
-        console.log('upgrading connection');
-
         if (req.headers.cookie) {
             req.cookies = cookie.parse(req.headers.cookie);
         } else {
@@ -45,8 +43,6 @@ class WSS extends WebSocketServer {
 const wss = new WSS();
 
 wss.on('message', (message) => {
-    console.log('message received', message.raw);
-
     try {
         const { action, data } = message.content;
 
