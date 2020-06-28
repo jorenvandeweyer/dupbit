@@ -8,6 +8,10 @@
             <div @click="ping(socket)" v-bind:class="isSelfButton(socket)" class="rounded py-1 mt-4 cursor-pointer">
                 Ping
             </div>
+
+            <div @click="list(socket)" v-bind:class="isSelfButton(socket)" class="rounded py-1 mt-4 cursor-pointer">
+                List
+            </div>
         </div>
     </div>
 </template>
@@ -25,6 +29,11 @@ export default {
             s.ping = Date.now() - result;
 
             console.log(s);
+        },
+        async list(socket) {
+            const result = await this.$parent.action(socket, 'async', { action: 'list'});
+
+            console.log(result);
         },
         isSelfButton(socket) {
             if(socket.uuid === this.$root.wsc.uuid) {
