@@ -67,13 +67,13 @@ function createVueInstance(store) {
         methods: {
             request: async function(options) {
                 const response = await fetch(`${this.host}${options.path}`, {
-                credentials: 'include',
-                method: options.method,
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json',
-                },
-                body: (options.body ? JSON.stringify(options.body) : undefined),
+                    credentials: 'include',
+                    method: options.method,
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                    },
+                    body: (options.body ? JSON.stringify(options.body) : undefined),
                 });
 
                 return response.json();
