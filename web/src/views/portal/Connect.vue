@@ -32,19 +32,16 @@ export default {
     },
     methods: {
         async update() {
-            const result = await this.action(null, 'async', {
+            this.sockets = await this.action(null, 'async', {
                 action: 'list',
             });
-
-            this.sockets = result;
-            console.log('WOOOW', result);
         },
         async action(socket, type, content) {
             return await this.$root.wsc.send({
                 to: socket ? socket.uuid : 'server',
                 type,
                 content,
-            })
+            }).then(result => result.response);
         }
     }
 }

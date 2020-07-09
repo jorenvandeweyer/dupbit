@@ -45,7 +45,7 @@ export default {
             }
         },
         async action(socket, type, content) {
-            const result = await this.$root.request({
+            return await this.$root.request({
                 method: 'POST',
                 path: '/connect',
                 body: {
@@ -53,9 +53,7 @@ export default {
                     type,
                     content,
                 }
-            });
-
-            return result;
+            }).then(result => result.response);
         },
     }
 }
