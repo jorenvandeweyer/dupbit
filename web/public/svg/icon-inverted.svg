@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   inkscape:export-ydpi="96"
+   inkscape:export-xdpi="96"
+   inkscape:export-filename="/Users/joren/repos/dupbit-desktop/public/img/icon-inverted@512px.png"
+   width="512"
+   height="512"
+   viewBox="0 0 135.46666 135.46667"
+   version="1.1"
+   id="svg8"
+   sodipodi:docname="icon-inverted.svg"
+   inkscape:version="1.0 (4035a4f, 2020-05-01)">
+  <defs
+     id="defs2" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.99277228"
+     inkscape:cx="-152.58227"
+     inkscape:cy="270.2628"
+     inkscape:document-units="mm"
+     inkscape:current-layer="layer1"
+     inkscape:document-rotation="0"
+     showgrid="false"
+     units="px"
+     inkscape:window-width="1541"
+     inkscape:window-height="965"
+     inkscape:window-x="172"
+     inkscape:window-y="93"
+     inkscape:window-maximized="0"
+     inkscape:pagecheckerboard="true" />
+  <metadata
+     id="metadata5">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <path
+       transform="scale(0.26458333)"
+       d="M 67.369141 26.009766 C 44.455245 26.009766 26.009766 44.455245 26.009766 67.369141 L 26.009766 444.63086 C 26.009766 467.54477 44.455245 485.99219 67.369141 485.99219 L 444.63086 485.99219 C 467.54474 485.99219 485.99219 467.54477 485.99219 444.63086 L 485.99219 67.369141 C 485.99219 44.455245 467.54474 26.009766 444.63086 26.009766 L 67.369141 26.009766 z M 94.3125 128.38867 L 176.57227 128.38867 C 195.05522 128.38867 210.99907 130.23909 224.4043 133.9375 C 237.80952 137.51661 249.08273 142.64714 258.22266 149.32812 C 273.86208 160.54266 286.14912 175.69268 295.08594 194.78125 C 304.1243 213.75052 308.64453 236.12107 308.64453 261.89062 C 308.64453 286.70577 303.81956 308.95555 294.17188 328.64062 C 284.52417 348.20641 272.33871 363.23761 257.61328 373.73633 C 246.54382 381.61037 234.40719 387.09929 221.20508 390.20117 C 208.00297 393.30306 192.36385 394.85352 174.28711 394.85352 L 94.3125 394.85352 L 94.3125 128.38867 z M 152.80859 178.13867 L 152.80859 344.92578 L 167.58398 344.92578 C 181.49698 344.92578 191.70363 344.20899 198.20312 342.77734 C 204.70262 341.2264 211.0493 338.48388 217.24414 334.54688 C 227.90738 327.38866 235.72695 317.84442 240.70312 305.91406 C 245.67931 293.8644 248.16797 279.01044 248.16797 261.35352 C 248.16797 243.81589 245.42536 228.84312 239.94141 216.43555 C 234.55901 203.90867 225.97761 194.12485 214.19727 187.08594 C 208.20554 183.62613 202.06202 181.30045 195.76562 180.10742 C 189.5708 178.79508 180.17677 178.13867 167.58398 178.13867 L 152.80859 178.13867 z M 352.21094 324.52539 L 409.18359 324.52539 L 409.18359 394.85352 L 352.21094 394.85352 L 352.21094 324.52539 z "
+       style="fill:#000000;fill-opacity:1;stroke:#ffffff;stroke-width:52.0176;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:0"
+       id="rect833" />
+  </g>
+</svg>

@@ -41,7 +41,7 @@ export default {
                 to: socket ? socket.uuid : 'server',
                 type,
                 content,
-            }).then(result => result.response);
+            });
         }
     }
 }
