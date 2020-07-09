@@ -1,2 +1,3 @@
-cd web && npm run build
-cd -
+cd web
+npm install
+npm run build
