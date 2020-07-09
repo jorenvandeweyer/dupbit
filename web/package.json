@@ -18,6 +18,8 @@
     "tailwindcss": "^1.4.6",
     "vue": "^2.6.11",
     "vue-router": "^3.3.4",
+    "vue-slider-component": "^3.2.2",
+    "vuesax": "^3.11.17",
     "ws-async": "github:jorenvandeweyer/ws-async"
   },
   "devDependencies": {

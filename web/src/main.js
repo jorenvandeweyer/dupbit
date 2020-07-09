@@ -1,16 +1,17 @@
 import Vue from 'vue'
+import moment from 'moment';
+import Vuesax from 'vuesax';
 import App from './App.vue'
 import router from './router'
 import NavigationGuard from './router/navigationGuard';
-import moment from 'moment';
 import WebSocketClient from './websocket';
-
-import './assets/styles/index.scss';
-
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
-Vue.component('font-awesome-icon', FontAwesomeIcon)
+import './assets/styles/index.scss';
+import 'vuesax/dist/vuesax.css';
 
+Vue.use(Vuesax, { })
+Vue.component('font-awesome-icon', FontAwesomeIcon)
 Vue.config.productionTip = false;
 
 Vue.prototype.moment = (date, format) => {
