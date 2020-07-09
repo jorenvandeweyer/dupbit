@@ -1,4 +1,4 @@
-FROM node:10-stretch
+FROM node:12-stretch
 
 WORKDIR /usr/src/app
 
@@ -9,8 +9,6 @@ RUN apt-get update && \
 RUN curl -L https://yt-dl.org/downloads/latest/youtube-dl -o /usr/local/bin/youtube-dl
 
 RUN chmod a+rx /usr/local/bin/youtube-dl
-
-ARG CACHEBUST=3
 
 RUN git clone https://github.com/jorenvandeweyer/youtube-dl-docker-api.git .
 

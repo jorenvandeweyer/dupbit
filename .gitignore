@@ -1,4 +1,15 @@
 .database/
 .logs/
+.certs/
+.files/
+.local/
+.vscode/
+
+.env*
+
+node_modules/
+package-lock.json
+
 secrets
 files/
+node/

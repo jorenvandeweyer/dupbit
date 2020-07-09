@@ -1,0 +1,31 @@
+{
+  "name": "dupbit-test",
+  "version": "1.0.0",
+  "description": "test code",
+  "main": "index.js",
+  "scripts": {
+    "pretest": "node scripts/rebuild-db.js test",
+    "test": "jest --silent --runInBand",
+    "test-ns": "npm run pretest && jest --runInBand",
+    "rebuild-db": "node scripts/rebuild-db.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jorenvandeweyer/Dupbit.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jorenvandeweyer/Dupbit/issues"
+  },
+  "homepage": "https://github.com/jorenvandeweyer/Dupbit#readme",
+  "devDependencies": {
+    "@types/jest": "^24.0.18",
+    "@types/node": "^12.7.3",
+    "dotenv": "^8.1.0",
+    "eslint": "^6.6.0",
+    "eslint-plugin-vue": "^5.2.3",
+    "jest": "^24.9.0",
+    "supertest": "^4.0.2"
+  }
+}
