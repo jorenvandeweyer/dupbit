@@ -4,20 +4,22 @@
             <div class="p-4 flex flex-col">
                 <h1 class="font-medium text-lg">Login</h1>
                 <div v-if="error" class="text-red-500">{{ error }}</div>
-                <input 
+                <input
                     type="text"
+                    name="username"
                     class="mt-4 px-2 py-1 rounded bg-black border-white border text-white"
                     v-model="username"
                     v-on:keyup.enter="login()"
                     placeholder="username">
-                <input 
+                <input
                     type="password"
+                    name="password"
                     class="mt-4 px-2 py-1 rounded bg-black border-white border text-white"
                     v-model="password"
                     v-on:keyup.enter="login()"
                     placeholder="password">
-                <button 
-                    @click="login()" 
+                <button
+                    @click="login()"
                     class="mt-8 border-white border rounded mx-4 hover:text-black hover:bg-white"
                 >Login</button>
                 <router-link class="mt-8 hover:underline" to="/register">Register</router-link>

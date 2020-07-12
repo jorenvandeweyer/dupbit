@@ -58,8 +58,8 @@ async function decode(req, res) {
         if (decoded.toe*1000 < Date.now() && res) {
             const token = await db.Tokens.findByPk(decoded.jti);
 
-            const newToken = await token.refresh();
             if (!token) return false;
+            const newToken = await token.refresh();
 
             const result = await res.createToken({
                 token: newToken,

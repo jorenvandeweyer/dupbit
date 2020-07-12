@@ -5,7 +5,7 @@ import App from './App.vue'
 import router from './router'
 import NavigationGuard from './router/navigationGuard';
 import WebSocketClient from './websocket';
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
 import './assets/styles/index.scss';
 import 'vuesax/dist/vuesax.css';
