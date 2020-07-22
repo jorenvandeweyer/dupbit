@@ -1,16 +1,7 @@
-.database/
-.logs/
-.certs/
 .files/
-.local/
 .vscode/
 
 .env*
+.DS_Store
 
 node_modules/
-
-secrets
-files/
-node/
-
-.DS_Store
