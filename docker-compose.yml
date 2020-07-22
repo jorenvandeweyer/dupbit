@@ -1,19 +1,8 @@
 version: "3.7"
 services:
-    nginx:
-        build: ./nginx
-        volumes:
-            - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf
-            - ./.logs/:/etc/logs/
-            - ./.certs/:/etc/certs/
-            - ./web/dist/:/var/www/dupbit.com/
-        restart: always
-        ports:
-            - "80:80"
-            - "443:443"
-        networks:
-            - dupbit-network
+
     api:
+        container_name: "dupbit-api"
         build: ./api
         env_file:
             - ./.env
@@ -23,28 +12,13 @@ services:
             - ./.files/:/usr/src/app/.files/
             - ./.certs/:/usr/src/app/.certs/
         restart: always
-        depends_on:
-            - database
-        networks:
-            - dupbit-network
-    youtube-dl:
-        build: ./youtube-dl
-        volumes:
-          - ./.files/youtube-dl/:/usr/src/app/files/
-        networks:
-          - dupbit-network
-    database:
-        image: mariadb:latest
-        env_file:
-            - ./.env
-        ports:
-            - "3306:3306"
-        volumes:
-            - ./.database/:/var/lib/mysql
-        restart: always
-        networks:
-            - dupbit-network
+
+    # youtube-dl:
+    #     build: ./youtube-dl
+    #     volumes:
+    #       - ./.files/youtube-dl/:/usr/src/app/files/
+
 networks:
-    dupbit-network:
-        name: dupbit-network
-        driver: bridge
+    default:
+        external:
+            name: default-helper

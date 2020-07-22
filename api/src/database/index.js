@@ -8,11 +8,11 @@ const sequelize = new Sequelize(process.env.MYSQL_DATABASE, process.env.MYSQL_US
         timezone: process.env.db_timezone
     },
 });
-  
+
 const state = sequelize
     .authenticate()
     .then(async () => {
-        await sequelize.sync();    
+        await sequelize.sync();
     })
     .catch(err => {
         console.error('Unable to connect to the database:', err);
