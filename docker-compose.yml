@@ -1,7 +1,7 @@
 version: "3.7"
 services:
 
-    api:
+    dupbit-api:
         container_name: "dupbit-api"
         build: ./api
         env_file:
@@ -12,6 +12,30 @@ services:
             - ./.files/:/usr/src/app/.files/
             - ./.certs/:/usr/src/app/.certs/
         restart: always
+        labels:
+            - "traefik.enable=true"
+            - "traefik.http.routers.dupbit-api.rule=Host(`api.${HOST}`) || (Host(`${HOST}`) && PathPrefix(`/api`))"
+            - "traefik.http.routers.dupbit-api.priority=15"
+            - "traefik.http.routers.dupbit-api.entrypoints=websecure"
+            - "traefik.http.routers.dupbit-api.tls.certresolver=le"
+            - "traefik.http.services.dupbit-api.loadbalancer.server.port=3000"
+
+    dupbit-web:
+        container_name: "dupbit-web"
+        image: nginx
+        env_file:
+            - .env
+        restart: always
+        volumes:
+            - /var/www/dupbit.com/:/app
+            - ./nginx-web.conf:/etc/nginx/nginx.conf
+        labels:
+            - "traefik.enable=true"
+            - "traefik.http.routers.dupbit-web.rule=Host(`${HOST}`)"
+            - "traefik.http.routers.dupbit-web.priority=10"
+            - "traefik.http.routers.dupbit-web.entrypoints=websecure"
+            - "traefik.http.routers.dupbit-web.tls.certresolver=le"
+            - "traefik.http.services.dupbit-web.loadbalancer.server.port=80"
 
     # youtube-dl:
     #     build: ./youtube-dl
